@@ -1,0 +1,43 @@
+@startuml
+
+class User {
+  Username
+  PasswordHash
+  Trainer
+}
+
+class Trainer {
+  List<Pokemon>
+}
+
+class Pokemon {
+  SpeciesId
+  CurrentLevel
+  CurrentExp
+  List<PokemonMove>
+}
+
+class PokemonMove {
+  Name
+  Power
+  Type
+}
+
+class DamageCalculator
+class ExpCalculator
+class TypeChart
+
+class PlayerRepository
+class PokemonRepository
+
+User --> Trainer
+Trainer --> Pokemon
+Pokemon --> PokemonMove
+
+DamageCalculator --> TypeChart
+ExpCalculator --> Pokemon
+
+PlayerRepository --> User
+PokemonRepository --> Pokemon
+
+@enduml

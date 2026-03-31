@@ -1,0 +1,23 @@
+@startuml
+left to right direction
+actor Player
+
+rectangle "Pokemon Game System" {
+  usecase "Start Battle" as UC1
+  usecase "Select Move" as UC2
+  usecase "Switch Pokemon" as UC3
+  usecase "Run from Battle" as UC4
+  usecase "Gain Experience" as UC5
+  usecase "Level Up" as UC6
+  usecase "Evolve Pokemon" as UC7
+}
+
+Player --> UC1
+Player --> UC2
+Player --> UC3
+Player --> UC4
+
+UC1 ..> UC5 : <<include>>
+UC5 ..> UC6 : <<trigger>>
+UC6 ..> UC7 : <<conditional>>
+@endum

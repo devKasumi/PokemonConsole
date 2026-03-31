@@ -1,0 +1,566 @@
+{
+  "Phases": [
+    {
+      "PhaseId": 1,
+      "Name": "Kanto Early Journey",
+      "Locations": [
+        {
+          "Id": 0,
+          "Name": "Pallet Town",
+          "WildPokemons": ["Pidgey", "Rattata"],
+          "MinLevel": 2, "MaxLevel": 5,
+          "Narratives": [
+            "Welcome to Pallet Town, where your journey begins!",
+            "Shades of your future start to unfold in this quiet corner of Kanto.",
+            "The air is filled with the scent of fresh grass and new beginnings."
+          ],
+          "NPCs": [
+            {
+              "Name": "Professor Oak",
+              "Role": "Guide",
+              "Dialogue": [
+                "Hello there! Welcome to the world of POKEMON! My name is OAK!",
+                "People call me the POKEMON PROF!",
+                "This world is inhabited by creatures called POKEMON!",
+                "For some people, POKEMON are pets. Others use them for fights. Myself... I study POKEMON as a profession.",
+                "First, what is your name?"
+              ],
+              "Action": "None"
+            }
+          ]
+        },
+        {
+          "Id": 1,
+          "Name": "Viridian City",
+          "WildPokemons": ["Caterpie", "Weedle", "Nidoran"],
+          "MinLevel": 4, "MaxLevel": 7,
+          "Narratives": [
+            "You've reached Viridian City, the eternally green paradise.",
+            "Trainers bustle around the busy Pokemon Center.",
+            "A mysterious aura lingers near the locked local Gym."
+          ],
+          "NPCs": [
+            {
+              "Name": "Old Man",
+              "Role": "Guide",
+              "Dialogue": [
+                "I've had my coffee now and I feel great!",
+                "To be a trainer, you need to know how to catch POKEMON."
+              ],
+              "Action": "None"
+            }
+          ]
+        },
+        {
+          "Id": 2,
+          "Name": "Pewter City",
+          "WildPokemons": ["Spearow", "Geodude"],
+          "MinLevel": 8, "MaxLevel": 12,
+          "Narratives": [
+            "The road leads you to the stone-gray streets of Pewter City.",
+            "Giant rock formations surround this mountain-side town.",
+            "The atmosphere here feels as solid and unyielding as granite."
+          ],
+          "NPCs": [
+            {
+              "Name": "Brock",
+              "Role": "Gym Leader",
+              "Dialogue": ["I'm Brock! I'm Pewter's Gym Leader!", "My rock-hard willpower is evident even in my Pokémon.", "Are you ready to endure my attacks?"],
+              "Action": "StartBattle",
+              "PokemonTeam": [
+                {
+                  "Name": "Geodude", "Level": 12,
+                  "MoveSet": [
+                    { "Name": "Tackle", "Power": 40, "MoveType": "Physical", "Type": "Normal" },
+                    { "Name": "Rock Throw", "Power": 50, "MoveType": "Physical", "Type": "Rock" },
+                    { "Name": "Mud-Slap", "Power": 20, "MoveType": "Special", "Type": "Ground" },
+                    { "Name": "Rollout", "Power": 30, "MoveType": "Physical", "Type": "Rock" }
+                  ]
+                },
+                {
+                  "Name": "Onix", "Level": 14,
+                  "MoveSet": [
+                    { "Name": "Tackle", "Power": 40, "MoveType": "Physical", "Type": "Normal" },
+                    { "Name": "Rock Tomb", "Power": 60, "MoveType": "Physical", "Type": "Rock" },
+                    { "Name": "Bind", "Power": 15, "MoveType": "Physical", "Type": "Normal" },
+                    { "Name": "Dig", "Power": 80, "MoveType": "Physical", "Type": "Ground" }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Id": 3,
+          "Name": "Mt. Moon",
+          "WildPokemons": ["Zubat", "Geodude", "Clefairy"],
+          "MinLevel": 10, "MaxLevel": 14,
+          "Narratives": [
+            "You step into the dark, echoing tunnels of Mt. Moon.",
+            "The cave air is damp, smelling of ancient earth and minerals.",
+            "Shadows dance on the walls as Zubats flutter high above."
+          ],
+          "NPCs": [
+            {
+              "Name": "Team Rocket Grunt",
+              "Role": "Villain",
+              "Dialogue": [
+                "TEAM ROCKET finds all the fossils!",
+                "Stop right there, brat!"
+              ],
+              "Action": "StartBattle",
+              "ActionParam": "NPC_ROCKET_GRUNT_1"
+            }
+          ]
+        },
+        {
+          "Id": 4,
+          "Name": "Cerulean City",
+          "WildPokemons": ["Psyduck", "Oddish", "Bellsprout"],
+          "MinLevel": 14, "MaxLevel": 18,
+          "Narratives": [
+            "A misty, blue horizon welcomes you to Cerulean City.",
+            "The soothing sound of flowing water echoes through every street.",
+            "Flowers bloom vividly in this city surrounded by canals."
+          ],
+          "NPCs": [
+            {
+              "Name": "Misty", 
+              "Role": "Gym Leader", 
+              "Dialogue": ["Hi, you're a new face!", "My policy is an all-out offensive with Water-type Pokémon.", "Can you handle my Starmie's speed?"],
+              "Action": "StartBattle",
+              "PokemonTeam": [
+                { "Name": "Staryu", "Level": 18, "Moves": [{ "Name": "Water Gun", "Power": 40, "MoveType": "Special", "Type": "Water" }, { "Name": "Swift", "Power": 60, "MoveType": "Special", "Type": "Normal" }, { "Name": "Psybeam", "Power": 65, "MoveType": "Special", "Type": "Psychic" }, { "Name": "Bubble Beam", "Power": 65, "MoveType": "Special", "Type": "Water" }] },
+                { "Name": "Starmie", "Level": 21, "Moves": [{ "Name": "Bubble Beam", "Power": 65, "MoveType": "Special", "Type": "Water" }, { "Name": "Ice Beam", "Power": 90, "MoveType": "Special", "Type": "Ice" }, { "Name": "Swift", "Power": 60, "MoveType": "Special", "Type": "Normal" }, { "Name": "Water Pulse", "Power": 60, "MoveType": "Special", "Type": "Water" }] }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "PhaseId": 2,
+      "Name": "The Mid-Journey Challenge",
+      "Locations": [
+        {
+          "Id": 5,
+          "Name": "Vermilion City",
+          "WildPokemons": ["Diglett", "Meowth", "Magnemite"],
+          "MinLevel": 18, "MaxLevel": 22,
+          "Narratives": [
+            "The salty sea breeze tells you that you're in Vermilion City.",
+            "The City of Magnificent Sunsets glows in the evening light.",
+            "A giant luxury liner, the S.S. Anne, is docked at the harbor."
+          ],
+          "NPCs": [
+            {
+              "Name": "Lt. Surge",
+              "Role": "Gym Leader",
+              "Dialogue": ["Hey, kid! What do you think you're doing here?", "You won't live long in combat! Not with your puny power!", "I'll zap you into paralysis!"],
+              "Action": "StartBattle",
+              "PokemonTeam": [
+                {
+                  "Name": "Voltorb", "Level": 21,
+                  "MoveSet": [
+                    { "Name": "Sonic Boom", "Power": 20, "MoveType": "Special", "Type": "Normal" },
+                    { "Name": "Spark", "Power": 65, "MoveType": "Physical", "Type": "Electric" },
+                    { "Name": "Rollout", "Power": 30, "MoveType": "Physical", "Type": "Rock" },
+                    { "Name": "Swift", "Power": 60, "MoveType": "Special", "Type": "Normal" }
+                  ]
+                },
+                {
+                  "Name": "Pikachu", "Level": 23,
+                  "MoveSet": [
+                    { "Name": "Thunder Shock", "Power": 40, "MoveType": "Special", "Type": "Electric" },
+                    { "Name": "Quick Attack", "Power": 40, "MoveType": "Physical", "Type": "Normal" },
+                    { "Name": "Slam", "Power": 80, "MoveType": "Physical", "Type": "Normal" },
+                    { "Name": "Thunderbolt", "Power": 90, "MoveType": "Special", "Type": "Electric" }
+                  ]
+                },
+                {
+                  "Name": "Raichu", "Level": 24,
+                  "MoveSet": [
+                    { "Name": "Thunderbolt", "Power": 90, "MoveType": "Special", "Type": "Electric" },
+                    { "Name": "Thunder Punch", "Power": 75, "MoveType": "Physical", "Type": "Electric" },
+                    { "Name": "Iron Tail", "Power": 100, "MoveType": "Physical", "Type": "Steel" },
+                    { "Name": "Body Slam", "Power": 85, "MoveType": "Physical", "Type": "Normal" }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Id": 6,
+          "Name": "Lavender Town",
+          "WildPokemons": ["Gastly", "Haunter", "Cubone"],
+          "MinLevel": 22, "MaxLevel": 26,
+          "Narratives": [
+            "A heavy, spooky silence falls over Lavender Town.",
+            "The Pokemon Tower looms like a dark sentinel against the purple sky.",
+            "The residents speak in hushed tones, honoring those who have passed."
+          ],
+          "NPCs": [
+            {
+              "Name": "Mr. Fuji",
+              "Role": "Guide",
+              "Dialogue": [
+                "The ghosts here... they are restless."
+              ],
+              "Action": "None"
+            }
+          ]
+        },
+        {
+          "Id": 7,
+          "Name": "Celadon Gym",
+          "WildPokemons": ["Tangela", "Vulpix"],
+          "MinLevel": 27, "MaxLevel": 31,
+          "Narratives": [
+            "You enter the lush, perfume-scented Celadon Gym.",
+            "Nature seems to have reclaimed this beautiful indoor garden."
+          ],
+          "NPCs": [
+            {
+              "Name": "Erika", 
+              "Role": "Gym Leader",
+              "Dialogue": ["Hello... Lovely weather, isn't it?", "I am Erika, the Leader of Celadon Gym.", "My Pokémon are of the grass-type. They are quite elegant."],
+              "Action": "StartBattle",
+              "PokemonTeam": [
+                {
+                  "Name": "Victreebel", "Level": 29,
+                  "MoveSet": [
+                    { "Name": "Razor Leaf", "Power": 55, "MoveType": "Physical", "Type": "Grass" },
+                    { "Name": "Acid", "Power": 40, "MoveType": "Special", "Type": "Poison" },
+                    { "Name": "Sludge Bomb", "Power": 90, "MoveType": "Special", "Type": "Poison" },
+                    { "Name": "Leaf Storm", "Power": 130, "MoveType": "Special", "Type": "Grass" }
+                  ]
+                },
+                {
+                  "Name": "Tangela", "Level": 24,
+                  "MoveSet": [
+                    { "Name": "Vine Whip", "Power": 45, "MoveType": "Physical", "Type": "Grass" },
+                    { "Name": "Ancient Power", "Power": 60, "MoveType": "Special", "Type": "Rock" },
+                    { "Name": "Mega Drain", "Power": 40, "MoveType": "Special", "Type": "Grass" },
+                    { "Name": "Shock Wave", "Power": 60, "MoveType": "Special", "Type": "Electric" }
+                  ]
+                },
+                {
+                  "Name": "Vileplume", "Level": 29,
+                  "MoveSet": [
+                    { "Name": "Petal Dance", "Power": 120, "MoveType": "Special", "Type": "Grass" },
+                    { "Name": "Solar Beam", "Power": 120, "MoveType": "Special", "Type": "Grass" },
+                    { "Name": "Giga Drain", "Power": 75, "MoveType": "Special", "Type": "Grass" },
+                    { "Name": "Acid", "Power": 40, "MoveType": "Special", "Type": "Poison" }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Id": 8,
+          "Name": "Saffron City",
+          "WildPokemons": ["Abra", "Kadabra", "Pidgeotto"],
+          "MinLevel": 31, "MaxLevel": 35,
+          "Narratives": [
+            "You find Saffron City under a tense, military-like lockdown.",
+            "Silph Co. headquarters is surrounded by mysterious men in black.",
+            "The bustling golden city has lost its usual cheer."
+          ],
+          "NPCs": [
+            {
+              "Name": "Sabrina", 
+              "Role": "Gym Leader",
+              "Dialogue": ["I had a vision of your arrival!", "I have had psychic powers since I was a child.", "I dislike fighting, but if you wish, I will show you my powers!"],
+              "Action": "StartBattle",
+              "PokemonTeam": [
+                {
+                  "Name": "Kadabra", "Level": 38,
+                  "MoveSet": [
+                    { "Name": "Psybeam", "Power": 65, "MoveType": "Special", "Type": "Psychic" },
+                    { "Name": "Confusion", "Power": 50, "MoveType": "Special", "Type": "Psychic" },
+                    { "Name": "Shadow Ball", "Power": 80, "MoveType": "Special", "Type": "Ghost" },
+                    { "Name": "Tri Attack", "Power": 80, "MoveType": "Special", "Type": "Normal" }
+                  ]
+                },
+                {
+                  "Name": "Mr. Mime", "Level": 37,
+                  "MoveSet": [
+                    { "Name": "Psychic", "Power": 90, "MoveType": "Special", "Type": "Psychic" },
+                    { "Name": "Magical Leaf", "Power": 60, "MoveType": "Special", "Type": "Grass" },
+                    { "Name": "Thunderbolt", "Power": 90, "MoveType": "Special", "Type": "Electric" },
+                    { "Name": "Confusion", "Power": 50, "MoveType": "Special", "Type": "Psychic" }
+                  ]
+                },
+                {
+                  "Name": "Venomoth", "Level": 38,
+                  "MoveSet": [
+                    { "Name": "Signal Beam", "Power": 75, "MoveType": "Special", "Type": "Bug" },
+                    { "Name": "Psybeam", "Power": 65, "MoveType": "Special", "Type": "Psychic" },
+                    { "Name": "Silver Wind", "Power": 60, "MoveType": "Special", "Type": "Bug" },
+                    { "Name": "Gust", "Power": 40, "MoveType": "Special", "Type": "Flying" }
+                  ]
+                },
+                {
+                  "Name": "Alakazam", "Level": 43,
+                  "MoveSet": [
+                    { "Name": "Psychic", "Power": 90, "MoveType": "Special", "Type": "Psychic" },
+                    { "Name": "Future Sight", "Power": 120, "MoveType": "Special", "Type": "Psychic" },
+                    { "Name": "Shadow Ball", "Power": 80, "MoveType": "Special", "Type": "Ghost" },
+                    { "Name": "Focus Blast", "Power": 120, "MoveType": "Special", "Type": "Fighting" }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "PhaseId": 3,
+      "Name": "Path to Final Gyms",
+      "Locations": [
+        {
+          "Id": 9,
+          "Name": "Fuchsia Gym",
+          "WildPokemons": ["Venomoth", "Weezing"],
+          "MinLevel": 36, "MaxLevel": 40,
+          "Narratives": [
+            "You cautiously enter the maze-like Fuchsia Gym.",
+            "Invisible walls and poisonous traps test your every step."
+          ],
+          "NPCs": [
+            {
+              "Name": "Koga",
+              "Role": "Gym Leader",
+              "Dialogue": ["Fwahahaha! A mere child challenges me?", "Despair to the creeping shadow of poison!", "Ninja techniques are superior to any brute force!"],
+              "Action": "StartBattle",
+              "PokemonTeam": [
+                {
+                  "Name": "Koffing", "Level": 37,
+                  "MoveSet": [
+                    { "Name": "Sludge Bomb", "Power": 90, "MoveType": "Special", "Type": "Poison" },
+                    { "Name": "Smog", "Power": 30, "MoveType": "Special", "Type": "Poison" },
+                    { "Name": "Dark Pulse", "Power": 80, "MoveType": "Special", "Type": "Dark" },
+                    { "Name": "Tackle", "Power": 40, "MoveType": "Physical", "Type": "Normal" }
+                  ]
+                },
+                {
+                  "Name": "Muk", "Level": 39,
+                  "MoveSet": [
+                    { "Name": "Sludge Bomb", "Power": 90, "MoveType": "Special", "Type": "Poison" },
+                    { "Name": "Gunk Shot", "Power": 120, "MoveType": "Physical", "Type": "Poison" },
+                    { "Name": "Ice Punch", "Power": 75, "MoveType": "Physical", "Type": "Ice" },
+                    { "Name": "Fire Punch", "Power": 75, "MoveType": "Physical", "Type": "Fire" }
+                  ]
+                },
+                {
+                  "Name": "Weezing", "Level": 43,
+                  "MoveSet": [
+                    { "Name": "Sludge Bomb", "Power": 90, "MoveType": "Special", "Type": "Poison" },
+                    { "Name": "Thunderbolt", "Power": 90, "MoveType": "Special", "Type": "Electric" },
+                    { "Name": "Flamethrower", "Power": 90, "MoveType": "Special", "Type": "Fire" },
+                    { "Name": "Shadow Ball", "Power": 80, "MoveType": "Special", "Type": "Ghost" }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Id": 10,
+          "Name": "Cinnabar Gym",
+          "WildPokemons": ["Ponyta", "Magmar", "Growlithe"],
+          "MinLevel": 40, "MaxLevel": 44,
+          "Narratives": [
+            "The searing heat of Cinnabar Gym hits you like a furnace.",
+            "Lava glows in the cracks beneath the metallic floor."
+          ],
+          "NPCs": [
+            {
+              "Name": "Blaine",
+              "Role": "Gym Leader",
+              "Dialogue": ["Hah! I am Blaine! The red-hot Leader of Cinnabar Gym!", "You better have Burn Heal ready!", "My fiery Pokémon will incinerate your challenge!"],
+              "Action": "StartBattle",
+              "PokemonTeam": [
+                {
+                  "Name": "Growlithe", "Level": 42,
+                  "MoveSet": [
+                    { "Name": "Flamethrower", "Power": 90, "MoveType": "Special", "Type": "Fire" },
+                    { "Name": "Bite", "Power": 60, "MoveType": "Physical", "Type": "Dark" },
+                    { "Name": "Take Down", "Power": 90, "MoveType": "Physical", "Type": "Normal" },
+                    { "Name": "Fire Blast", "Power": 110, "MoveType": "Special", "Type": "Fire" }
+                  ]
+                },
+                {
+                  "Name": "Rapidash", "Level": 40,
+                  "MoveSet": [
+                    { "Name": "Fire Blast", "Power": 110, "MoveType": "Special", "Type": "Fire" },
+                    { "Name": "Stomp", "Power": 65, "MoveType": "Physical", "Type": "Normal" },
+                    { "Name": "Fury Attack", "Power": 15, "MoveType": "Physical", "Type": "Normal" },
+                    { "Name": "Flame Wheel", "Power": 60, "MoveType": "Physical", "Type": "Fire" }
+                  ]
+                },
+                {
+                  "Name": "Arcanine", "Level": 47,
+                  "MoveSet": [
+                    { "Name": "Extreme Speed", "Power": 80, "MoveType": "Physical", "Type": "Normal" },
+                    { "Name": "Fire Blast", "Power": 110, "MoveType": "Special", "Type": "Fire" },
+                    { "Name": "Crunch", "Power": 80, "MoveType": "Physical", "Type": "Dark" },
+                    { "Name": "Thunder Fang", "Power": 65, "MoveType": "Physical", "Type": "Electric" }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Id": 11,
+          "Name": "Viridian Gym",
+          "WildPokemons": ["Rhyhorn", "Nidoking"],
+          "MinLevel": 44, "MaxLevel": 47,
+          "Narratives": [
+            "You return to Viridian Gym for your final challenge.",
+            "The air is thick with the scent of earth and overwhelming power."
+          ],
+          "NPCs": [
+            {
+              "Name": "Giovanni",
+              "Role": "Gym Leader",
+              "Dialogue": ["Fwahahaha! Welcome to my hideout!", "I am the leader of Team Rocket, and the strongest Gym Leader.", "Let me show you the ultimate power of Ground-type Pokémon!"],
+              "Action": "StartBattle",
+              "PokemonTeam": [
+                {
+                  "Name": "Nidorino", "Level": 45,
+                  "MoveSet": [
+                    { "Name": "Horn Drill", "Power": 100, "MoveType": "Physical", "Type": "Normal" },
+                    { "Name": "Double Kick", "Power": 30, "MoveType": "Physical", "Type": "Fighting" },
+                    { "Name": "Poison Jab", "Power": 80, "MoveType": "Physical", "Type": "Poison" },
+                    { "Name": "Dig", "Power": 80, "MoveType": "Physical", "Type": "Ground" }
+                  ]
+                },
+                {
+                  "Name": "Nidoking", "Level": 45,
+                  "MoveSet": [
+                    { "Name": "Earthquake", "Power": 100, "MoveType": "Physical", "Type": "Ground" },
+                    { "Name": "Thrash", "Power": 120, "MoveType": "Physical", "Type": "Normal" },
+                    { "Name": "Ice Beam", "Power": 90, "MoveType": "Special", "Type": "Ice" },
+                    { "Name": "Thunderbolt", "Power": 90, "MoveType": "Special", "Type": "Electric" }
+                  ]
+                },
+                {
+                  "Name": "Rhyhorn", "Level": 48,
+                  "MoveSet": [
+                    { "Name": "Take Down", "Power": 90, "MoveType": "Physical", "Type": "Normal" },
+                    { "Name": "Horn Attack", "Power": 65, "MoveType": "Physical", "Type": "Normal" },
+                    { "Name": "Stomp", "Power": 65, "MoveType": "Physical", "Type": "Normal" },
+                    { "Name": "Bulldoze", "Power": 60, "MoveType": "Physical", "Type": "Ground" }
+                  ]
+                },
+                {
+                  "Name": "Rhydon", "Level": 50,
+                  "MoveSet": [
+                    { "Name": "Earthquake", "Power": 100, "MoveType": "Physical", "Type": "Ground" },
+                    { "Name": "Rock Slide", "Power": 75, "MoveType": "Physical", "Type": "Rock" },
+                    { "Name": "Megahorn", "Power": 120, "MoveType": "Physical", "Type": "Bug" },
+                    { "Name": "Hammer Arm", "Power": 100, "MoveType": "Physical", "Type": "Fighting" }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "PhaseId": 4,
+      "Name": "Indigo Plateau",
+      "Locations": [
+        {
+          "Id": 12,
+          "Name": "Indigo Plateau",
+          "WildPokemons": ["Machoke", "Golbat", "Dodrio"],
+          "MinLevel": 48, "MaxLevel": 50,
+          "Narratives": [
+            "Before you stands the legendary Indigo Plateau.",
+            "The pinnacle of all trainers, where dreams are made or broken.",
+            "The statues of past champions watch you with silent judgment."
+          ],
+          "NPCs": [
+            {
+              "Name": "Lorelei",
+              "Role": "Elite Four",
+              "Dialogue": ["Welcome to the Pokémon League.", "I am Lorelei of the Elite Four.", "No one can best me when it comes to icy Pokémon. Your Pokémon will be at my mercy when they are frozen solid!"],
+              "Action": "StartBattle",
+              "PokemonTeam": [
+                { "Name": "Dewgong", "Level": 52, "MoveSet": [{ "Name": "Ice Beam", "Power": 90, "MoveType": "Special", "Type": "Ice" }, { "Name": "Surf", "Power": 90, "MoveType": "Special", "Type": "Water" }, { "Name": "Signal Beam", "Power": 75, "MoveType": "Special", "Type": "Bug" }, { "Name": "Take Down", "Power": 90, "MoveType": "Physical", "Type": "Normal" }] },
+                { "Name": "Cloyster", "Level": 51, "MoveSet": [{ "Name": "Spike Cannon", "Power": 20, "MoveType": "Physical", "Type": "Normal" }, { "Name": "Clamp", "Power": 35, "MoveType": "Physical", "Type": "Water" }, { "Name": "Ice Beam", "Power": 90, "MoveType": "Special", "Type": "Ice" }, { "Name": "Hydro Pump", "Power": 110, "MoveType": "Special", "Type": "Water" }] },
+                { "Name": "Slowbro", "Level": 52, "MoveSet": [{ "Name": "Surf", "Power": 90, "MoveType": "Special", "Type": "Water" }, { "Name": "Psychic", "Power": 90, "MoveType": "Special", "Type": "Psychic" }, { "Name": "Ice Beam", "Power": 90, "MoveType": "Special", "Type": "Ice" }, { "Name": "Shadow Ball", "Power": 80, "MoveType": "Special", "Type": "Ghost" }] },
+                { "Name": "Jynx", "Level": 54, "MoveSet": [{ "Name": "Ice Punch", "Power": 75, "MoveType": "Physical", "Type": "Ice" }, { "Name": "Psychic", "Power": 90, "MoveType": "Special", "Type": "Psychic" }, { "Name": "Body Slam", "Power": 85, "MoveType": "Physical", "Type": "Normal" }, { "Name": "Shadow Ball", "Power": 80, "MoveType": "Special", "Type": "Ghost" }] },
+                { "Name": "Lapras", "Level": 54, "MoveSet": [{ "Name": "Hydro Pump", "Power": 110, "MoveType": "Special", "Type": "Water" }, { "Name": "Blizzard", "Power": 110, "MoveType": "Special", "Type": "Ice" }, { "Name": "Body Slam", "Power": 85, "MoveType": "Physical", "Type": "Normal" }, { "Name": "Thunderbolt", "Power": 90, "MoveType": "Special", "Type": "Electric" }] },
+                { "Name": "Lapras", "Level": 56, "MoveSet": [{ "Name": "Sheer Cold", "Power": 150, "MoveType": "Special", "Type": "Ice" }, { "Name": "Surf", "Power": 90, "MoveType": "Special", "Type": "Water" }, { "Name": "Psychic", "Power": 90, "MoveType": "Special", "Type": "Psychic" }, { "Name": "Ice Beam", "Power": 90, "MoveType": "Special", "Type": "Ice" }] }
+              ]
+            },
+            {
+              "Name": "Bruno",
+              "Role": "Elite Four",
+              "Dialogue": ["I am Bruno of the Elite Four!", "Through rigorous training, people and Pokémon can become stronger.", "We will grind you down with our superior might!"],
+              "Action": "StartBattle",
+              "PokemonTeam": [
+                { "Name": "Onix", "Level": 51, "MoveSet": [{ "Name": "Rock Slide", "Power": 75, "MoveType": "Physical", "Type": "Rock" }, { "Name": "Earthquake", "Power": 100, "MoveType": "Physical", "Type": "Ground" }, { "Name": "Iron Tail", "Power": 100, "MoveType": "Physical", "Type": "Steel" }, { "Name": "Bind", "Power": 15, "MoveType": "Physical", "Type": "Normal" }] },
+                { "Name": "Hitmonchan", "Level": 53, "MoveSet": [{ "Name": "Fire Punch", "Power": 75, "MoveType": "Physical", "Type": "Fire" }, { "Name": "Ice Punch", "Power": 75, "MoveType": "Physical", "Type": "Ice" }, { "Name": "Thunder Punch", "Power": 75, "MoveType": "Physical", "Type": "Electric" }, { "Name": "Sky Uppercut", "Power": 85, "MoveType": "Physical", "Type": "Fighting" }] },
+                { "Name": "Hitmonlee", "Level": 53, "MoveSet": [{ "Name": "Jump Kick", "Power": 100, "MoveType": "Physical", "Type": "Fighting" }, { "Name": "Mega Kick", "Power": 120, "MoveType": "Physical", "Type": "Normal" }, { "Name": "Blaze Kick", "Power": 85, "MoveType": "Physical", "Type": "Fire" }, { "Name": "Brick Break", "Power": 75, "MoveType": "Physical", "Type": "Fighting" }] },
+                { "Name": "Onix", "Level": 54, "MoveSet": [{ "Name": "Earthquake", "Power": 100, "MoveType": "Physical", "Type": "Ground" }, { "Name": "Stone Edge", "Power": 100, "MoveType": "Physical", "Type": "Rock" }, { "Name": "Dragon Breath", "Power": 60, "MoveType": "Special", "Type": "Dragon" }, { "Name": "Slam", "Power": 80, "MoveType": "Physical", "Type": "Normal" }] },
+                { "Name": "Machamp", "Level": 56, "MoveSet": [{ "Name": "Submission", "Power": 80, "MoveType": "Physical", "Type": "Fighting" }, { "Name": "Cross Chop", "Power": 100, "MoveType": "Physical", "Type": "Fighting" }, { "Name": "Strength", "Power": 80, "MoveType": "Physical", "Type": "Normal" }, { "Name": "Rock Tomb", "Power": 60, "MoveType": "Physical", "Type": "Rock" }] },
+                { "Name": "Machamp", "Level": 58, "MoveSet": [{ "Name": "Dynamic Punch", "Power": 100, "MoveType": "Physical", "Type": "Fighting" }, { "Name": "Earthquake", "Power": 100, "MoveType": "Physical", "Type": "Ground" }, { "Name": "Poison Jab", "Power": 80, "MoveType": "Physical", "Type": "Poison" }, { "Name": "Hyper Beam", "Power": 150, "MoveType": "Physical", "Type": "Normal" }] }
+              ]
+            },
+            {
+              "Name": "Agatha",
+              "Role": "Elite Four",
+              "Dialogue": ["I am Agatha of the Elite Four.", "Oak's taken a lot of interest in you, child.", "That old duffer was once tough and handsome! That was decades ago.", "Now he just wants to fiddle with his Pokédex! I'll show you how a real trainer fights!"],
+              "Action": "StartBattle",
+              "PokemonTeam": [
+                { "Name": "Gengar", "Level": 54, "MoveSet": [{ "Name": "Shadow Ball", "Power": 80, "MoveType": "Special", "Type": "Ghost" }, { "Name": "Sludge Bomb", "Power": 90, "MoveType": "Special", "Type": "Poison" }, { "Name": "Dark Pulse", "Power": 80, "MoveType": "Special", "Type": "Dark" }, { "Name": "Thunderbolt", "Power": 90, "MoveType": "Special", "Type": "Electric" }] },
+                { "Name": "Golbat", "Level": 54, "MoveSet": [{ "Name": "Air Cutter", "Power": 60, "MoveType": "Special", "Type": "Flying" }, { "Name": "Bite", "Power": 60, "MoveType": "Physical", "Type": "Dark" }, { "Name": "Poison Fang", "Power": 50, "MoveType": "Physical", "Type": "Poison" }, { "Name": "Wing Attack", "Power": 60, "MoveType": "Physical", "Type": "Flying" }] },
+                { "Name": "Haunter", "Level": 53, "MoveSet": [{ "Name": "Night Shade", "Power": 50, "MoveType": "Special", "Type": "Ghost" }, { "Name": "Dream Eater", "Power": 100, "MoveType": "Special", "Type": "Psychic" }, { "Name": "Shadow Ball", "Power": 80, "MoveType": "Special", "Type": "Ghost" }, { "Name": "Sludge", "Power": 65, "MoveType": "Special", "Type": "Poison" }] },
+                { "Name": "Arbok", "Level": 56, "MoveSet": [{ "Name": "Sludge Bomb", "Power": 90, "MoveType": "Special", "Type": "Poison" }, { "Name": "Bite", "Power": 60, "MoveType": "Physical", "Type": "Dark" }, { "Name": "Iron Tail", "Power": 100, "MoveType": "Physical", "Type": "Steel" }, { "Name": "Giga Drain", "Power": 75, "MoveType": "Special", "Type": "Grass" }] },
+                { "Name": "Gengar", "Level": 58, "MoveSet": [{ "Name": "Shadow Ball", "Power": 80, "MoveType": "Special", "Type": "Ghost" }, { "Name": "Psychic", "Power": 90, "MoveType": "Special", "Type": "Psychic" }, { "Name": "Sludge Bomb", "Power": 90, "MoveType": "Special", "Type": "Poison" }, { "Name": "Thunderbolt", "Power": 90, "MoveType": "Special", "Type": "Electric" }] },
+                { "Name": "Gengar", "Level": 60, "MoveSet": [{ "Name": "Dream Eater", "Power": 100, "MoveType": "Special", "Type": "Psychic" }, { "Name": "Shadow Ball", "Power": 80, "MoveType": "Special", "Type": "Ghost" }, { "Name": "Dazzling Gleam", "Power": 80, "MoveType": "Special", "Type": "Fairy" }, { "Name": "Energy Ball", "Power": 90, "MoveType": "Special", "Type": "Grass" }] }
+              ]
+            },
+            {
+              "Name": "Lance",
+              "Role": "Elite Four",
+              "Dialogue": ["Ah! I heard about you!", "I lead the Elite Four. You can call me Lance the dragon trainer.", "You know that dragons are mythical Pokémon!", "They're hard to catch and raise, but their powers are superior!"],
+              "Action": "StartBattle",
+              "PokemonTeam": [
+                { "Name": "Gyarados", "Level": 56, "MoveSet": [{ "Name": "Hydro Pump", "Power": 110, "MoveType": "Special", "Type": "Water" }, { "Name": "Hyper Beam", "Power": 150, "MoveType": "Physical", "Type": "Normal" }, { "Name": "Dragon Rage", "Power": 40, "MoveType": "Special", "Type": "Dragon" }, { "Name": "Bite", "Power": 60, "MoveType": "Physical", "Type": "Dark" }] },
+                { "Name": "Dragonair", "Level": 54, "MoveSet": [{ "Name": "Dragon Rage", "Power": 40, "MoveType": "Special", "Type": "Dragon" }, { "Name": "Ice Beam", "Power": 90, "MoveType": "Special", "Type": "Ice" }, { "Name": "Thunderbolt", "Power": 90, "MoveType": "Special", "Type": "Electric" }, { "Name": "Slam", "Power": 80, "MoveType": "Physical", "Type": "Normal" }] },
+                { "Name": "Dragonair", "Level": 54, "MoveSet": [{ "Name": "Dragon Rage", "Power": 40, "MoveType": "Special", "Type": "Dragon" }, { "Name": "Surf", "Power": 90, "MoveType": "Special", "Type": "Water" }, { "Name": "Fire Blast", "Power": 110, "MoveType": "Special", "Type": "Fire" }, { "Name": "Slam", "Power": 80, "MoveType": "Physical", "Type": "Normal" }] },
+                { "Name": "Aerodactyl", "Level": 58, "MoveSet": [{ "Name": "Wing Attack", "Power": 60, "MoveType": "Physical", "Type": "Flying" }, { "Name": "Ancient Power", "Power": 60, "MoveType": "Special", "Type": "Rock" }, { "Name": "Hyper Beam", "Power": 150, "MoveType": "Physical", "Type": "Normal" }, { "Name": "Crunch", "Power": 80, "MoveType": "Physical", "Type": "Dark" }] },
+                { "Name": "Dragonite", "Level": 60, "MoveSet": [{ "Name": "Outrage", "Power": 120, "MoveType": "Physical", "Type": "Dragon" }, { "Name": "Hyper Beam", "Power": 150, "MoveType": "Physical", "Type": "Normal" }, { "Name": "Wing Attack", "Power": 60, "MoveType": "Physical", "Type": "Flying" }, { "Name": "Dragon Claw", "Power": 80, "MoveType": "Physical", "Type": "Dragon" }] },
+                { "Name": "Dragonite", "Level": 62, "MoveSet": [{ "Name": "Hyper Beam", "Power": 150, "MoveType": "Physical", "Type": "Normal" }, { "Name": "Dragon Claw", "Power": 80, "MoveType": "Physical", "Type": "Dragon" }, { "Name": "Fire Blast", "Power": 110, "MoveType": "Special", "Type": "Fire" }, { "Name": "Thunderbolt", "Power": 90, "MoveType": "Special", "Type": "Electric" }] }
+              ]
+            },
+            {
+              "Name": "Blue",
+              "Role": "Champion",
+              "Dialogue": ["Yo! Finally you're here.", "I'm the world's most powerful Trainer!", "Do you know what that means? I'll show you!", "Get ready to taste defeat!"],
+              "Action": "StartFinalBattle",
+              "PokemonTeam": [
+                { "Name": "Pidgeot", "Level": 61, "MoveSet": [{ "Name": "Sky Attack", "Power": 140, "MoveType": "Physical", "Type": "Flying" }, { "Name": "Wing Attack", "Power": 60, "MoveType": "Physical", "Type": "Flying" }, { "Name": "Steel Wing", "Power": 70, "MoveType": "Physical", "Type": "Steel" }, { "Name": "Air Slash", "Power": 75, "MoveType": "Special", "Type": "Flying" }] },
+                { "Name": "Alakazam", "Level": 59, "MoveSet": [{ "Name": "Psychic", "Power": 90, "MoveType": "Special", "Type": "Psychic" }, { "Name": "Shadow Ball", "Power": 80, "MoveType": "Special", "Type": "Ghost" }, { "Name": "Future Sight", "Power": 120, "MoveType": "Special", "Type": "Psychic" }, { "Name": "Focus Blast", "Power": 120, "MoveType": "Special", "Type": "Fighting" }] },
+                { "Name": "Rhydon", "Level": 61, "MoveSet": [{ "Name": "Earthquake", "Power": 100, "MoveType": "Physical", "Type": "Ground" }, { "Name": "Rock Slide", "Power": 75, "MoveType": "Physical", "Type": "Rock" }, { "Name": "Megahorn", "Power": 120, "MoveType": "Physical", "Type": "Bug" }, { "Name": "Take Down", "Power": 90, "MoveType": "Physical", "Type": "Normal" }] },
+                { "Name": "Exeggutor", "Level": 61, "MoveSet": [{ "Name": "Solar Beam", "Power": 120, "MoveType": "Special", "Type": "Grass" }, { "Name": "Psychic", "Power": 90, "MoveType": "Special", "Type": "Psychic" }, { "Name": "Egg Bomb", "Power": 100, "MoveType": "Physical", "Type": "Normal" }, { "Name": "Sludge Bomb", "Power": 90, "MoveType": "Special", "Type": "Poison" }] },
+                { "Name": "Arcanine", "Level": 63, "MoveSet": [{ "Name": "Fire Blast", "Power": 110, "MoveType": "Special", "Type": "Fire" }, { "Name": "Extreme Speed", "Power": 80, "MoveType": "Physical", "Type": "Normal" }, { "Name": "Flamethrower", "Power": 90, "MoveType": "Special", "Type": "Fire" }, { "Name": "Crunch", "Power": 80, "MoveType": "Physical", "Type": "Dark" }] },
+                { "Name": "Blastoise", "Level": 65, "MoveSet": [{ "Name": "Hydro Pump", "Power": 110, "MoveType": "Special", "Type": "Water" }, { "Name": "Skull Bash", "Power": 130, "MoveType": "Physical", "Type": "Normal" }, { "Name": "Ice Beam", "Power": 90, "MoveType": "Special", "Type": "Ice" }, { "Name": "Bite", "Power": 60, "MoveType": "Physical", "Type": "Dark" }] }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

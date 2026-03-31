@@ -1,0 +1,27 @@
+@startuml PvP System
+left to right direction
+actor "Player 1 (Host)" as P1
+actor "Player 2 (Opponent)" as P2
+actor "System / Database" as Sys
+
+rectangle "PvP System" {
+  usecase "Matchmaking" as UC5
+  usecase "Load Competitor Data" as UC6
+  usecase "Execute Turn-based Battle" as UC7
+  usecase "Sync Match Results" as UC8
+  usecase "Update EXP & Level" as UC_Sub1
+  usecase "Write to user.json" as UC_Sub2
+}
+
+P1 --> UC5
+P1 --> UC7
+P2 --> UC5
+P2 --> UC7
+
+UC5 ..> UC6 : <<include>>
+UC6 --> Sys
+UC7 ..> UC8 : <<include>>
+UC8 ..> UC_Sub1 : <<include>>
+UC8 ..> UC_Sub2 : <<include>>
+UC_Sub2 --> Sys
+@enduml

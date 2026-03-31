@@ -1,0 +1,17 @@
+C:\C#\TurnBasedPokemon\bin\Debug\net9.0\TurnBasedPokemon.exe
+C:\C#\TurnBasedPokemon\bin\Debug\net9.0\TurnBasedPokemon.deps.json
+C:\C#\TurnBasedPokemon\bin\Debug\net9.0\TurnBasedPokemon.runtimeconfig.json
+C:\C#\TurnBasedPokemon\bin\Debug\net9.0\TurnBasedPokemon.dll
+C:\C#\TurnBasedPokemon\bin\Debug\net9.0\TurnBasedPokemon.pdb
+C:\C#\TurnBasedPokemon\obj\Debug\net9.0\TurnBasedPokemon.GeneratedMSBuildEditorConfig.editorconfig
+C:\C#\TurnBasedPokemon\obj\Debug\net9.0\TurnBasedPokemon.AssemblyInfoInputs.cache
+C:\C#\TurnBasedPokemon\obj\Debug\net9.0\TurnBasedPokemon.AssemblyInfo.cs
+C:\C#\TurnBasedPokemon\obj\Debug\net9.0\TurnBasedPokemon.csproj.CoreCompileInputs.cache
+C:\C#\TurnBasedPokemon\obj\Debug\net9.0\TurnBasedPokemon.dll
+C:\C#\TurnBasedPokemon\obj\Debug\net9.0\refint\TurnBasedPokemon.dll
+C:\C#\TurnBasedPokemon\obj\Debug\net9.0\TurnBasedPokemon.pdb
+C:\C#\TurnBasedPokemon\obj\Debug\net9.0\TurnBasedPokemon.genruntimeconfig.cache
+C:\C#\TurnBasedPokemon\obj\Debug\net9.0\ref\TurnBasedPokemon.dll
+C:\C#\TurnBasedPokemon\obj\Debug\net9.0\TurnBasedPokemon.csproj.AssemblyReference.cache
+C:\C#\TurnBasedPokemon\bin\Debug\net9.0\BCrypt.Net-Next.dll
+C:\C#\TurnBasedPokemon\obj\Debug\net9.0\TurnBase.E1D0C680.Up2Date

@@ -1,0 +1,29 @@
+@startuml
+participant BattleScreen
+participant "PlayerPoke : Pokemon" as Poke
+participant ExpCalculator
+participant PokemonSpawner
+
+BattleScreen -> ExpCalculator : CalculateExpGain(enemyStats)
+return expAmount
+
+BattleScreen -> Poke : GainExperience(expAmount)
+
+loop while CanLevelUp is true
+    BattleScreen -> Poke : LevelUp()
+    activate Poke
+    Poke -> Poke : Increase Stats & Level
+    deactivate Poke
+    
+    BattleScreen -> BattleScreen : RenderText() (UI Update)
+    
+    alt CanEvolve is true
+        BattleScreen -> PokemonSpawner : SpawnPokemonById(evolutionId, currentLevel)
+        activate PokemonSpawner
+        return evolvedInstance
+        
+        BattleScreen -> Poke : Evolve(evolvedInstance)
+        note right: Species and Stats are swapped here
+    end
+end
+@endum

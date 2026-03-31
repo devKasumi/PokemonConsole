@@ -1,0 +1,25 @@
+@startuml
+[*] --> MainMenu
+
+state MainMenu {
+  [*] --> Idle
+  Idle --> StoryScreen : Select "New Game"
+}
+
+state StoryScreen {
+  [*] --> Wandering
+  Wandering --> BattleScreen : Random Encounter (Wild)
+  Wandering --> BattleScreen : Interact with NPC (Gym)
+}
+
+state BattleScreen {
+  [*] --> CombatLoop
+  CombatLoop --> Victory : Enemy Fainted
+  CombatLoop --> Defeat : Player Fainted
+  CombatLoop --> StoryScreen : Run Away (Wild Only)
+}
+
+Victory --> StoryScreen : Gain EXP / Unlock Badge
+Defeat --> StoryScreen : Return to Safety (Pokemon Center)
+
+@endum

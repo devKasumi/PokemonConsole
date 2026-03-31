@@ -1,0 +1,28 @@
+[
+  {
+    "Username": "dadad",
+    "Password": "$2a$11$z6cfpkSx4o4LFJoixVBIcenHuvIP5CIDv2Yx0TyxhByrIba2Q2gdC",
+    "Level": 1,
+    "PlayerData": {
+      "CurrentPhase": 1,
+      "CurrentLocation": "Pallet Town",
+      "Badges": [],
+      "PokemonTeam": [
+        { "Name": "Pikachu", "Level": 5 }
+      ]
+    }
+  },
+  {
+    "Username": "nhonbonchel",
+    "Password": "$2a$11$5dyD/16LcjeNtsErhekTBOTLyr1TcVFAC1Upi0QKDmiuneIBIUf/S",
+    "Level": 1,
+    "PlayerData": {
+      "CurrentPhase": 1,
+      "CurrentLocation": "Pallet Town",
+      "Badges": [],
+      "PokemonTeam": [
+        { "Name": "Pikachu", "Level": 5 }
+      ]
+    }
+  }
+]

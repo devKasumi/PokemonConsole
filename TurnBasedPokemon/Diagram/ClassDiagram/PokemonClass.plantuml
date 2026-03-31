@@ -1,0 +1,57 @@
+@startuml
+package "Domain Models" {
+    class Pokemon {
+        - int currentHP
+        - int level
+        - int totalExp
+        + List<PokemonMove> Moves
+        + PokemonSpecies Specie
+        + void TakeDamage(int dmg)
+        + void GainExperience(int exp)
+        + void LevelUp()
+        + void Evolve(Pokemon evolvedForm)
+    }
+
+    class PokemonSpecies {
+        + int Id
+        + string Name
+        + List<ElementType> Types
+        + Stats BaseStats
+        + List<PokemonMove> MoveSet
+    }
+
+    class PokemonMove {
+        + string Name
+        + int BasePower
+        + int LevelLearned
+    }
+
+    class Stats {
+        + int HP
+        + int Attack
+        + int Defense
+    }
+}
+
+package "Services & Logic" {
+    class PokemonSpawner {
+        + Pokemon SpawnPokemon(string name, int level)
+        - PokemonSpecies CloneSpecie(PokemonSpecies original)
+    }
+
+    class DamageCalculator {
+        {static} + int CalculateDamage(attacker, defender, move)
+    }
+
+    class ExpCalculator {
+        {static} + int CalculateExpGain(...)
+        {static} + bool CanLevelUp(...)
+    }
+}
+
+Pokemon "1" *-- "1" PokemonSpecies : has template
+Pokemon "1" *-- "0..4" PokemonMove : learned moves
+PokemonSpecies "1" *-- "1" Stats : base values
+PokemonSpawner ..> Pokemon : creates
+BattleScreen ..> DamageCalculator : uses
+@endum
