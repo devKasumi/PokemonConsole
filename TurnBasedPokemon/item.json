@@ -1,0 +1,30 @@
+[
+  {
+    "Id": 1,
+    "Name": "Potion",
+    "Type": "Healing",
+    "HealAmount": 10,
+    "Description": "Restores 20 HP."
+  },
+  {
+    "Id": 2,
+    "Name": "Super Potion",
+    "Type": "Healing",
+    "HealAmount": 100,
+    "Description": "Restores 50 HP."
+  },
+  {
+    "Id": 3,
+    "Name": "Hyper Potion",
+    "Type": "Healing",
+    "HealAmount": 200,
+    "Description": "Restores 200 HP."
+  },
+  {
+    "Id": 4,
+    "Name": "Poke Ball",
+    "Type": "Capture",
+    "CatchRateMultiplier": 1.0,
+    "Description": "A tool for catching Pokemon."
+  }
+]

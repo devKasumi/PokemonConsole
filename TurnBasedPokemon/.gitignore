@@ -1,0 +1,5 @@
+[Bb]in/
+[Oo]bj/
+
+echo "bin/" >> .gitignore
+echo "obj/" >> .gitignore

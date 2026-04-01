@@ -4,6 +4,12 @@ public class InventoryContext
 {
     public Player? Player { get; set; }
     public Pokemon? Enemy { get; set; }
+
+    public InventoryContext(Player player, Pokemon pokemon)
+    {
+        Player = player;
+        Enemy = pokemon;
+    }
 }
 
 public class InventoryScreen : IScreen
@@ -69,20 +75,34 @@ public class InventoryScreen : IScreen
             return;
         }
 
-        if (_player.Inventory.Count != 0)
+        if (_player != null && _targetPokemon != null)
         {
-            var groupedItems = _player.GetGroupedItems().ToList();
-            if (int.TryParse(input, out int index) && index > 0 && index <= groupedItems.Count)
+            if (_player.Inventory.Count != 0)
             {
-                Item selectedItem = groupedItems[index - 1].Item;
-                UseItem(selectedItem);
+                var groupedItems = _player.GetGroupedItems().ToList();
+                if (groupedItems.Count == 0 || groupedItems == null)
+                {
+                    Console.WriteLine("No Item Found!!");
+                    return;
+                }
+
+                if (int.TryParse(input, out int index) && index > 0 && index <= groupedItems.Count)
+                {
+                    Item selectedItem = groupedItems[index - 1].Item;
+                    UseItem(selectedItem);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Your inventory is empty!");
+                Thread.Sleep(1000);
             }
         }
         else
         {
-            Console.WriteLine("Your inventory is empty!");
-            Thread.Sleep(1000);
+            Console.WriteLine("player null or target pokemon null");
         }
+        
     }
 
     private void UseItem(Item item)
