@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 public class ItemRepository
 {
-    private readonly string _filePath = "items.json";
+    private readonly string _filePath = "item.json";
 
     // Cache to store items by their Name for fast lookup
     private Dictionary<string, Item> _cache = new Dictionary<string, Item>();
@@ -40,38 +40,69 @@ public class ItemRepository
     // Helper to convert plain JSON data into specific Class types
     private Item MapDtoToEntity(ItemDTO dto)
     {
-        switch (dto.Type.ToLower())
+        // Console.WriteLine($"curren _cache count: {_cache.Count}");
+        string typeLower = dto.Type?.ToLower() ?? "";
+
+        // Convert string from JSON to C# Enum
+        ItemCategory category = typeLower switch
+        {
+            "healing" => ItemCategory.Healing,
+            "capture" => ItemCategory.Capture,
+            _         => ItemCategory.Utility
+        };
+
+        // Based on the string 'Type' from JSON, create the concrete class
+        switch (typeLower)
         {
             case "healing":
-                return new HealingItem {
-                    ItemId = dto.ItemId,
+                return new HealingItem 
+                {
+                    Id = dto.Id,
                     Name = dto.Name,
                     Description = dto.Description,
-                    HealAmount = dto.HealAmount ?? 0,
-                    Price = dto.Price
+                    Price = dto.Price,
+                    Category = category, // Assign the converted Enum here
+                    HealAmount = dto.HealAmount ?? 0
                 };
+
             case "capture":
-                return new CaptureItem {
-                    ItemId = dto.ItemId,
+                return new CaptureItem 
+                {
+                    Id = dto.Id,
                     Name = dto.Name,
                     Description = dto.Description,
-                    CatchRateMultiplier = dto.CatchRateMultiplier ?? 1.0,
-                    Price = dto.Price
+                    Price = dto.Price,
+                    Category = category, // Assign the converted Enum here
+                    CatchRateMultiplier = dto.CatchRateMultiplier ?? 1.0
                 };
+
             default:
-                throw new Exception($"Unknown item type found in JSON: {dto.Type}");
+                throw new NotSupportedException($"Item type '{dto.Type}' is not mapped in Repository.");
         }
     }
 
     public Item? GetItemByName(string name)
     {
-        return _cache.TryGetValue(name, out var item) ? item : null;
+        if (!_cache.TryGetValue(name, out var template)) return null;
+
+        return template switch
+        {
+            HealingItem h => new HealingItem { 
+                Id = h.Id, Name = h.Name, Description = h.Description, 
+                Price = h.Price, Category = h.Category, HealAmount = h.HealAmount 
+            },
+            CaptureItem c => new CaptureItem { 
+                Id = c.Id, Name = c.Name, Description = c.Description, 
+                Price = c.Price, Category = c.Category, CatchRateMultiplier = c.CatchRateMultiplier 
+            },
+            _ => null
+        };
     }
 
-    public Item? GetItemById(string id)
+    public Item? GetItemById(int id)
     {
         // Search through the values to find a matching Id
-        return _cache.Values.FirstOrDefault(i => i.ItemId == id);
+        return _cache.Values.FirstOrDefault(i => i.Id == id);
     }
 
     // Get all items (useful for ItemSpawner)

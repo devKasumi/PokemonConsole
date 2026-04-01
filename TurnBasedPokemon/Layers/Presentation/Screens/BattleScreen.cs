@@ -81,7 +81,7 @@ public class BattleScreen : IScreen
     private void HandleOpenBag()
     {
         // Console.SetCursorPosition(0, 20);
-        _screenManager.SwitchTo(ScreenType.Inventory, new { Player = _player, EnemyPokemon = EnemyActivePokemon });
+        _screenManager.SwitchTo(ScreenType.Inventory, new InventoryContext(_player, EnemyActivePokemon));
         // Console.WriteLine("Bag is empty!");
         // Thread.Sleep(800);
     }

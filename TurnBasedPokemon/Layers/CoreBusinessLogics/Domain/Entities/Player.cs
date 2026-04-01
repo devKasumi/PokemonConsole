@@ -8,8 +8,17 @@ public class Player
     public List<string> Badges { get; private set; } = new();
     
     public List<Pokemon> PokemonTeam { get; private set; } = new();
-    public List<Item> Inventory { get; private set; } = new();
+    // public List<Item> Inventory { get; private set; } = new();
+    public Dictionary<int, Dictionary<string, List<Item>>> Inventory { get; private set; } = new();
     public Pokemon CurrentPokemon => PokemonTeam.FirstOrDefault();
+
+    public Player()
+    {
+        foreach (ItemCategory cat in Enum.GetValues(typeof(ItemCategory)))
+        {
+            Inventory[(int)cat] = new Dictionary<string, List<Item>>();
+        }
+    }
 
     public void AddBadge(string badgeName)
     {
@@ -31,13 +40,45 @@ public class Player
         }
     }
 
-    public void AddItem(Item item) => Inventory.Add(item);
-
-    public void RemoveItem(Item item) => Inventory.Remove(item);
-
-    public IEnumerable<(Item Item, int Count)> GetGroupedItems()
+    public void AddItem(Item item)
     {
-        return Inventory.GroupBy(i => i.Name)
-                        .Select(g => (Item: g.First(), Count: g.Count()));
+        int categoryKey = (int)item.Category;
+        string itemName = item.Name;
+
+        if (!Inventory.ContainsKey(categoryKey))
+        {
+            Inventory[categoryKey] = new Dictionary<string, List<Item>>();
+        }
+
+        if (!Inventory[categoryKey].ContainsKey(itemName))
+        {
+            Inventory[categoryKey][itemName] = new List<Item>();
+        }
+
+        Inventory[categoryKey][itemName].Add(item);
+    }
+
+    public void RemoveItem(Item item)
+    {
+        int categoryKey = (int)item.Category;
+        string itemName = item.Name;
+
+        // Check if the category and item name exist in our inventory
+        if (Inventory.ContainsKey(categoryKey) && Inventory[categoryKey].ContainsKey(itemName))
+        {
+            var itemList = Inventory[categoryKey][itemName];
+            
+            // Remove the specific instance if it exists in the list
+            if (itemList.Contains(item))
+            {
+                itemList.Remove(item);
+            }
+
+            // Cleanup: If the list is now empty, remove the key from inner dictionary
+            if (itemList.Count == 0)
+            {
+                Inventory[categoryKey].Remove(itemName);
+            }
+        }
     }
 }

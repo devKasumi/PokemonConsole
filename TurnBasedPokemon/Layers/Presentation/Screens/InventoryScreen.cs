@@ -33,6 +33,7 @@ public class InventoryScreen : IScreen
         else
         {
             Console.WriteLine("Invalid data passed to InventoryScreen!");
+            Console.ReadKey(true);
             _screenManager.SwitchTo(ScreenType.Story);
         }
     }
@@ -69,40 +70,74 @@ public class InventoryScreen : IScreen
 
     private void HandleSelection(string input)
     {
-        if (input == "3")
+        if (_player == null) return;
+
+        switch (input)
         {
-            _screenManager.SwitchTo(ScreenType.Battle); 
+            case "1": // Capture Pocket
+                OpenPocket(ItemCategory.Capture);
+                break;
+            case "2": // Healing Pocket
+                OpenPocket(ItemCategory.Healing);
+                break;
+            case "3": 
+                _screenManager.SwitchTo(ScreenType.Battle); 
+                break;
+        } 
+    }
+
+    private void OpenPocket(ItemCategory category)
+    {
+        int catKey = (int)category;
+        Dictionary<string, List<Item>> pocket = _player.Inventory[catKey];
+
+        if (pocket.Count == 0)
+        {
+            Console.WriteLine($"\nYour {category} pocket is empty!");
+            Thread.Sleep(1000);
             return;
         }
 
-        if (_player != null && _targetPokemon != null)
-        {
-            if (_player.Inventory.Count != 0)
-            {
-                var groupedItems = _player.GetGroupedItems().ToList();
-                if (groupedItems.Count == 0 || groupedItems == null)
-                {
-                    Console.WriteLine("No Item Found!!");
-                    return;
-                }
+        // Convert dictionary to a list to have numeric indexes for selection
+        var itemGroups = pocket.ToList();
 
-                if (int.TryParse(input, out int index) && index > 0 && index <= groupedItems.Count)
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine($"--- {category.ToString().ToUpper()} POCKET ---");
+            
+            for (int i = 0; i < itemGroups.Count; i++)
+            {
+                // Show: 1. Poke Ball (x5)
+                Console.WriteLine($"{i + 1}. {itemGroups[i].Key} (x{itemGroups[i].Value.Count})");
+            }
+            Console.WriteLine("0. Back");
+            Console.Write("\nSelect an item to use: ");
+
+            string input = Console.ReadLine() ?? "";
+            if (input == "0") break;
+
+            if (int.TryParse(input, out int index) && index > 0 && index <= itemGroups.Count)
+            {
+                // Get the list of instances for the selected name
+                var selectedInstances = itemGroups[index - 1].Value;
+
+                if (selectedInstances.Count > 0)
                 {
-                    Item selectedItem = groupedItems[index - 1].Item;
-                    UseItem(selectedItem);
+                    // Pick the first available instance in the list
+                    Item itemToUse = selectedInstances[0];
+                    UseItem(itemToUse);
+                    
+                    // After using an item (and potentially switching screens), we exit the loop
+                    break; 
                 }
             }
             else
             {
-                Console.WriteLine("Your inventory is empty!");
-                Thread.Sleep(1000);
+                Console.WriteLine("Invalid selection!");
+                Thread.Sleep(800);
             }
         }
-        else
-        {
-            Console.WriteLine("player null or target pokemon null");
-        }
-        
     }
 
     private void UseItem(Item item)
@@ -110,6 +145,19 @@ public class InventoryScreen : IScreen
         // 1. Logic cho CaptureItem (PokeBall, GreatBall...)
         if (item is CaptureItem ball)
         {
+            Console.WriteLine("Use pokemon ball !!!!");
+            
+            Console.WriteLine("\n[DEBUG] --- POKEMON ---");
+            Console.WriteLine($"Name: {_targetPokemon.Specie?.Name}");
+            Console.WriteLine($"HP: {_targetPokemon.CurrentHP} / {_targetPokemon.MaxHP}");
+            Console.WriteLine($"CatchRate: {_targetPokemon.Specie?.CatchRate}");
+            Console.WriteLine($"Status: {_targetPokemon.Status}");
+            Console.WriteLine("---------------------------------\n");
+            // ------------------------------------
+
+            Console.ReadKey(true);
+
+
             if (_targetPokemon == null)
             {
                 Console.WriteLine("You can't use that here!");
@@ -124,7 +172,7 @@ public class InventoryScreen : IScreen
                 _player.RemoveItem(item);
                 _player.AddPokemon(_targetPokemon);
                 
-                _screenManager.SwitchTo(ScreenType.Story);
+                _screenManager.SwitchTo(ScreenType.Story, "MainStoryMenu");
             }
             else
             {

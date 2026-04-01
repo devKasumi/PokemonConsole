@@ -28,10 +28,11 @@ public class ItemSpawner
     public Item? RollForRandomItem()
     {
         // 30% chance to find an item
-        if (_random.NextDouble() > 0.3) return null;
+        if (_random.NextDouble() > 0.8) return null;
 
         // Get all available items from the cache
         List<Item> allItems = _itemRepo.GetAllItems();
+        Console.WriteLine($"curren item get from json count: {allItems.Count}");
         if (allItems.Count == 0) return null;
 
         // Pick one randomly
@@ -50,11 +51,12 @@ public class ItemSpawner
         {
             return new HealingItem
             {
-                ItemId = healing.ItemId,
+                Id = healing.Id,
                 Name = healing.Name,
                 Description = healing.Description,
                 Price = healing.Price,
-                HealAmount = healing.HealAmount
+                Category = ItemCategory.Healing,
+                HealAmount = healing.HealAmount,
             };
         }
         
@@ -62,10 +64,11 @@ public class ItemSpawner
         {
             return new CaptureItem
             {
-                ItemId = capture.ItemId,
+                Id = capture.Id,
                 Name = capture.Name,
                 Description = capture.Description,
                 Price = capture.Price,
+                Category = ItemCategory.Capture,
                 CatchRateMultiplier = capture.CatchRateMultiplier
             };
         }

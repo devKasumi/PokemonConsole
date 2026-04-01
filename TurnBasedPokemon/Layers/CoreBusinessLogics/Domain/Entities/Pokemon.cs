@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+public enum PokemonStatus { None, Asleep, Frozen, Paralyzed, Burned, Poisoned }
+
 public class Pokemon
 {
     public PokemonSpecies Specie { get; set; }
@@ -11,6 +13,7 @@ public class Pokemon
     public int MaxHP { get; set; }
     public List<PokemonMove> Moves { get; set; }
     public bool IsFainted { get; set; }
+    public PokemonStatus Status { get; set; } = PokemonStatus.None;
 
     public Pokemon() { }
 

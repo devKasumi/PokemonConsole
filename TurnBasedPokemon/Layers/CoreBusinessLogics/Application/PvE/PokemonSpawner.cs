@@ -8,50 +8,6 @@ public class PokemonSpawner
         _pokedexRepo = pokedexRepo;
     }
 
-    // public Pokemon SpawnPokemon(string name, int level)
-    // {
-    //     // 1. Get the original template from Repository
-    //     PokemonSpecies? originalSpecie = _pokedexRepo.GetSpecies(name);
-    //     if (originalSpecie == null) return null;
-
-    //     // 2. CLONE first to get a separate instance in memory
-    //     PokemonSpecies instanceSpecie = CloneSpecie(originalSpecie);
-
-    //     // 3. Select moves based on level
-    //     List<PokemonMove> movesForLevel = instanceSpecie.MoveSet
-    //         .Where(m => m.LevelLearned <= level)
-    //         .OrderByDescending(m => m.LevelLearned)
-    //         .Take(4)
-    //         .ToList();
-
-    //     // 4. Calculate dynamic stats based on level using the original base values
-    //     // Note: Using originalSpecie.BaseStats here for the calculation 
-    //     // to ensure we always scale from the "true" base stats.
-    //     int calculatedHP = originalSpecie.BaseStats.HP + (int)(originalSpecie.BaseStats.HP / 50.0 * level);
-    //     int calculatedAtk = originalSpecie.BaseStats.Attack + (int)(originalSpecie.BaseStats.Attack / 50.0 * level);
-    //     int calculatedDef = originalSpecie.BaseStats.Defense + (int)(originalSpecie.BaseStats.Defense / 50.0 * level);
-    //     int calculatedSpAtk = originalSpecie.BaseStats.SpAttack + (int)(originalSpecie.BaseStats.SpAttack / 50.0 * level);
-    //     int calculatedSpDef = originalSpecie.BaseStats.SpDefense + (int)(originalSpecie.BaseStats.SpDefense / 50.0 * level);
-    //     int calculatedSpeed = originalSpecie.BaseStats.Speed + (int)(originalSpecie.BaseStats.Speed / 50.0 * level);
-
-    //     // 5. Update the cloned instance's stats
-    //     instanceSpecie.BaseStats = new Stats
-    //     {
-    //         HP = calculatedHP,
-    //         Attack = calculatedAtk,
-    //         Defense = calculatedDef,
-    //         SpAttack = calculatedSpAtk,
-    //         SpDefense = calculatedSpDef,
-    //         Speed = calculatedSpeed
-    //     };
-
-    //     // 6. Create and return the Pokemon object
-    //     Pokemon pokemon = new Pokemon(instanceSpecie, level, calculatedHP, calculatedHP);
-    //     pokemon.UpdateMoveSet(movesForLevel);
-
-    //     return pokemon;
-    // }
-
     public Pokemon SpawnPokemon(string name, int level)
     {
         // 1. Retrieve the species template from the repository
@@ -142,7 +98,8 @@ public class PokemonSpawner
         {
             Id = original.Id,
             Name = original.Name,
-            Types = new List<ElementType>(original.Types), // Copy the list to a new one
+            Types = new List<ElementType>(original.Types),
+            CatchRate = original.CatchRate,
             BaseExp = original.BaseExp,
             EvolutionId = original.EvolutionId,
             EvolutionLevel = original.EvolutionLevel,

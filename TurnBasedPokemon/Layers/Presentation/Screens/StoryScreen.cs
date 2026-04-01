@@ -9,15 +9,17 @@ public class StoryScreen : IScreen
     private GameData _gameData;
     private Player _player;
     private PokemonSpawner _pokemonSpawner;
+    private ItemSpawner _itemSpawner;
     private bool isNewGame;
     private bool _hasPlayedNarrative = false;
     LocationData _currentLocation;
 
-    public StoryScreen(ScreenManager screenManager, Player player, PokemonSpawner pokemonSpawner)
+    public StoryScreen(ScreenManager screenManager, Player player, PokemonSpawner pokemonSpawner, ItemSpawner itemSpawner)
     {
         _screenManager = screenManager;
         _player = player;
         _pokemonSpawner = pokemonSpawner;
+        _itemSpawner = itemSpawner;
         isNewGame = false;
         LoadData();
     }
@@ -108,6 +110,16 @@ public class StoryScreen : IScreen
             RenderText("System", $"Congratulations! {selectedName} has joined your team!", ConsoleColor.Green);
             Console.WriteLine("\nPress any key to continue the journey....");
             Console.ReadKey(true);
+        }
+
+        // Auto give player 5 poke balls
+        for (int i = 0; i < 5; i++)
+        {
+            Item? pokeball = _itemSpawner.SpawnItem("Poke Ball");
+            if (pokeball != null) 
+            {
+                _player.AddItem(pokeball);
+            }
         }
 
         isNewGame = false;
@@ -300,9 +312,15 @@ public class StoryScreen : IScreen
         }
 
         // Console.Clear();
-        RenderText("System", "Searching for wild Pokemon in the tall grass...", ConsoleColor.Green);
+        RenderText("System", "You Entered wild area...", ConsoleColor.Green);
         Thread.Sleep(1000);
 
+        FindRandomItem();
+        StartWildBattle();
+    }
+
+    private void StartWildBattle()
+    {
         // Get Current location data
         var phaseData = _gameData.Phases.FirstOrDefault(p => p.PhaseId == _player.CurrentPhase);
         var currentLocation = phaseData?.Locations.FirstOrDefault(l => l.Name == _player.CurrentLocation);
@@ -339,6 +357,27 @@ public class StoryScreen : IScreen
             RenderText("System", "You searched for a while but found nothing...", ConsoleColor.Gray);
             ShowNpcMenu(_currentLocation.NPCs);
         }
+    }
+
+    private void FindRandomItem()
+    {
+        Item? foundItem = _itemSpawner.RollForRandomItem();
+
+        if (foundItem != null)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"\n[!] You found a {foundItem.Name}!");
+            Console.ResetColor();
+            
+            _player.AddItem(foundItem); 
+            
+            Console.WriteLine($"Added {foundItem.Name} to your Bag.");
+        }
+        else
+        {
+            Console.WriteLine("You found nothing!");
+        }
+        Thread.Sleep(2000);
     }
 
     private void HandleBattleGymLeader()
