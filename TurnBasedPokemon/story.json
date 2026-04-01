@@ -67,6 +67,7 @@
               "Role": "Gym Leader",
               "Dialogue": ["I'm Brock! I'm Pewter's Gym Leader!", "My rock-hard willpower is evident even in my Pokémon.", "Are you ready to endure my attacks?"],
               "Action": "StartBattle",
+              "RequiredBadge": 0,
               "PokemonTeam": [
                 {
                   "Name": "Geodude", "Level": 12,
@@ -129,6 +130,7 @@
               "Role": "Gym Leader", 
               "Dialogue": ["Hi, you're a new face!", "My policy is an all-out offensive with Water-type Pokémon.", "Can you handle my Starmie's speed?"],
               "Action": "StartBattle",
+              "RequiredBadge": 1,
               "PokemonTeam": [
                 { "Name": "Staryu", "Level": 18, "Moves": [{ "Name": "Water Gun", "Power": 40, "MoveType": "Special", "Type": "Water" }, { "Name": "Swift", "Power": 60, "MoveType": "Special", "Type": "Normal" }, { "Name": "Psybeam", "Power": 65, "MoveType": "Special", "Type": "Psychic" }, { "Name": "Bubble Beam", "Power": 65, "MoveType": "Special", "Type": "Water" }] },
                 { "Name": "Starmie", "Level": 21, "Moves": [{ "Name": "Bubble Beam", "Power": 65, "MoveType": "Special", "Type": "Water" }, { "Name": "Ice Beam", "Power": 90, "MoveType": "Special", "Type": "Ice" }, { "Name": "Swift", "Power": 60, "MoveType": "Special", "Type": "Normal" }, { "Name": "Water Pulse", "Power": 60, "MoveType": "Special", "Type": "Water" }] }
@@ -158,6 +160,7 @@
               "Role": "Gym Leader",
               "Dialogue": ["Hey, kid! What do you think you're doing here?", "You won't live long in combat! Not with your puny power!", "I'll zap you into paralysis!"],
               "Action": "StartBattle",
+              "RequiredBadge": 2,
               "PokemonTeam": [
                 {
                   "Name": "Voltorb", "Level": 21,
@@ -226,6 +229,7 @@
               "Role": "Gym Leader",
               "Dialogue": ["Hello... Lovely weather, isn't it?", "I am Erika, the Leader of Celadon Gym.", "My Pokémon are of the grass-type. They are quite elegant."],
               "Action": "StartBattle",
+              "RequiredBadge": 3,
               "PokemonTeam": [
                 {
                   "Name": "Victreebel", "Level": 29,
@@ -274,6 +278,7 @@
               "Role": "Gym Leader",
               "Dialogue": ["I had a vision of your arrival!", "I have had psychic powers since I was a child.", "I dislike fighting, but if you wish, I will show you my powers!"],
               "Action": "StartBattle",
+              "RequiredBadge": 4,
               "PokemonTeam": [
                 {
                   "Name": "Kadabra", "Level": 38,
@@ -336,6 +341,7 @@
               "Role": "Gym Leader",
               "Dialogue": ["Fwahahaha! A mere child challenges me?", "Despair to the creeping shadow of poison!", "Ninja techniques are superior to any brute force!"],
               "Action": "StartBattle",
+              "RequiredBadge": 5,
               "PokemonTeam": [
                 {
                   "Name": "Koffing", "Level": 37,
@@ -383,6 +389,7 @@
               "Role": "Gym Leader",
               "Dialogue": ["Hah! I am Blaine! The red-hot Leader of Cinnabar Gym!", "You better have Burn Heal ready!", "My fiery Pokémon will incinerate your challenge!"],
               "Action": "StartBattle",
+              "RequiredBadge": 6,
               "PokemonTeam": [
                 {
                   "Name": "Growlithe", "Level": 42,
@@ -430,6 +437,7 @@
               "Role": "Gym Leader",
               "Dialogue": ["Fwahahaha! Welcome to my hideout!", "I am the leader of Team Rocket, and the strongest Gym Leader.", "Let me show you the ultimate power of Ground-type Pokémon!"],
               "Action": "StartBattle",
+              "RequiredBadge": 7,
               "PokemonTeam": [
                 {
                   "Name": "Nidorino", "Level": 45,

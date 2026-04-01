@@ -203,7 +203,7 @@ public class StoryScreen : IScreen
         }
 
         // TODO: handle NPC action after dialogue
-        if (npc.Action == "StartBattle")
+        if (npc.Action == "StartBattle" && _player.Badges.Count == npc.RequiredBadge)
         {
             _screenManager.SwitchTo(ScreenType.Battle);
         }

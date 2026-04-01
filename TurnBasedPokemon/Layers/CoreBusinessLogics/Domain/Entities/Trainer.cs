@@ -9,7 +9,8 @@ public class NPC : Trainer
 {
     public NPCRole Role { get; set; }   // Gym Leader, Elite Four, Champion, Rival, etc.
     public string ChallengeQuote { get; set; }   // A unique quote that the NPC says when challenged to a battle
-    public string DefeatQuote { get; set; }      // A unique quote that the NPC says when defeated in battle    
+    public string DefeatQuote { get; set; }      // A unique quote that the NPC says when defeated in battle  
+    public int RequiredBadge { get; set; }  
 }
 
 public enum NPCRole

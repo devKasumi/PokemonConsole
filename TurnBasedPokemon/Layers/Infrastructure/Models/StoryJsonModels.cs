@@ -28,6 +28,7 @@ public class NpcData
     public string Role { get; set; } 
     public List<string> Dialogue { get; set; }
     public string Action { get; set; }
+    public int RequiredBadge { get; set; }
     public List<NpcPokemon> PokemonTeam { get; set; }
     public string ActionParam { get; set; } 
 }
