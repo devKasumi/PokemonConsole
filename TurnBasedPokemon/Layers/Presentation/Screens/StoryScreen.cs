@@ -105,7 +105,7 @@ public class StoryScreen : IScreen
         if (starter != null)
         {
             _player.PokemonTeam.Add(starter); // Add to your pokemon team
-            
+            _player.CurrentPokemon = starter;
             // Console.Clear();
             RenderText("System", $"Congratulations! {selectedName} has joined your team!", ConsoleColor.Green);
             Console.WriteLine("\nPress any key to continue the journey....");

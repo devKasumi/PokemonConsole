@@ -10,7 +10,7 @@ public class Player
     public List<Pokemon> PokemonTeam { get; private set; } = new();
     // public List<Item> Inventory { get; private set; } = new();
     public Dictionary<int, Dictionary<string, List<Item>>> Inventory { get; private set; } = new();
-    public Pokemon CurrentPokemon => PokemonTeam.FirstOrDefault();
+    public Pokemon CurrentPokemon { get; set; }
 
     public Player()
     {

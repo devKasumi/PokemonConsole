@@ -952,14 +952,14 @@
                 "Power": 40,
                 "MoveType": "Physical",
                 "Type": "Flying",
-                "LevelLearned": 1
+                "LevelLearned": 5
             },
             {
                 "Name": "Quick Attack",
                 "Power": 40,
                 "MoveType": "Physical",
                 "Type": "Normal",
-                "LevelLearned": 7
+                "LevelLearned": 9
             },
             {
                 "Name": "Wing Attack",

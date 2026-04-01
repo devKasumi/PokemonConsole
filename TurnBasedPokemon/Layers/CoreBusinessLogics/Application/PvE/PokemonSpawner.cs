@@ -33,7 +33,7 @@ public class PokemonSpawner
         int calculatedSpeed = originalSpecie.BaseStats.Speed + (int)(originalSpecie.BaseStats.Speed / 50.0 * level);
 
         // 5. Apply the calculated stats to the cloned species instance
-        instanceSpecie.BaseStats = new Stats { 
+        instanceSpecie.BaseStats = new Stats {
             HP = calculatedHP,
             Attack = calculatedAtk,
             Defense = calculatedDef,

@@ -10,7 +10,7 @@ public class BattleScreen : IScreen
     private int _currentEnemyIndex = 0;
     private bool _isTrainerBattle = false;
 
-    // Helper property to get the current active enemy
+    private Pokemon PlayerActivePokemon => _player.CurrentPokemon;
     private Pokemon EnemyActivePokemon => _enemyTeam[_currentEnemyIndex];
 
     public BattleScreen(ScreenManager screenManager, Player player, PokemonSpawner pokemonSpawner)
@@ -48,7 +48,7 @@ public class BattleScreen : IScreen
         RenderEnemyPokemon(_enemyTeam[_currentEnemyIndex]);
         
         // 2. Render Player Info
-        RenderPlayerPokemon(_player.PokemonTeam[0]); // First Pokemon in team is active
+        RenderPlayerPokemon(_player.CurrentPokemon);
         
         // 3. Render Battle Log hoặc Menu
         
@@ -60,7 +60,7 @@ public class BattleScreen : IScreen
         string input = Console.ReadLine() ?? "0";
         
         // Get the current active Pokemon for cleaner code
-        Pokemon activePoke = _player.PokemonTeam[0];
+        Pokemon activePoke = _player.CurrentPokemon;
 
         // Validate input and ensure the move is selected from the learned 'Moves' list, not the template 'MoveSet'
         if (int.TryParse(input, out int moveIndex) && moveIndex > 0 && moveIndex <= activePoke.Moves.Count)
@@ -74,8 +74,31 @@ public class BattleScreen : IScreen
     private void HandleSwitchPokemon()
     {
         // Console.SetCursorPosition(0, 20);
-        Console.WriteLine("Switching Pokemon is not implemented yet!");
-        Thread.Sleep(800);
+        // Console.WriteLine("Switching Pokemon is not implemented yet!");
+        Console.WriteLine("=== POKEMON TEAM ===");
+        var currentTeam = _player.PokemonTeam;
+        for (int i =0;i<currentTeam.Count;i++)
+        {
+            Pokemon p = currentTeam[i];
+            string pokemonTypes = p.Specie.Types.Count == 1 ? $"{p.Specie.Types[0]}" : $"{p.Specie.Types[0]}/{p.Specie.Types[1]}";
+            Console.WriteLine($"{i+1}. {p.Specie.Name} ({pokemonTypes}) [HP: {p.CurrentHP}/{p.MaxHP}]");
+        }
+        Console.WriteLine("0. Back");
+        Console.WriteLine("Select: ");
+        string input = Console.ReadLine() ?? "";
+
+        if (input == "0") return;
+        if (int.TryParse(input, out int index) && index > 0)
+        {
+            if (_player.CurrentPokemon == currentTeam[index - 1]) Console.WriteLine($"{_player.CurrentPokemon.Specie.Name} already in the field!");
+            else
+            {
+                _player.CurrentPokemon = currentTeam[index - 1];
+                Console.WriteLine($"You switch to {_player.CurrentPokemon.Specie.Name}");
+            }
+        }
+        Console.ReadKey(true);
+        // Thread.Sleep(800);
     }
 
     private void HandleOpenBag()
@@ -96,7 +119,7 @@ public class BattleScreen : IScreen
 
     private void ExecuteBattleTurn(PokemonMove playerMove)
     {
-        Pokemon playerPoke = _player.PokemonTeam[0];
+        Pokemon playerPoke = _player.CurrentPokemon;
         Pokemon enemyPoke = EnemyActivePokemon;
 
         // --- STEP 1: PLAYER'S TURN ---
@@ -152,7 +175,7 @@ public class BattleScreen : IScreen
     private void HandleEnemyFainted()
     {
         // 1. Get references to participants
-        Pokemon playerPoke = _player.PokemonTeam[0];
+        Pokemon playerPoke = _player.CurrentPokemon;
         Pokemon enemyPoke = EnemyActivePokemon;
 
         Console.WriteLine($"\n{enemyPoke.Specie.Name} fainted!");
@@ -243,7 +266,7 @@ public class BattleScreen : IScreen
 
     private void HandlePlayerFainted()
     {
-        Console.WriteLine($"\n{_player.PokemonTeam[0].Specie.Name} has fainted!");
+        Console.WriteLine($"\n{_player.CurrentPokemon.Specie.Name} has fainted!");
         Console.WriteLine("You have no more usable Pokemon. Returning to safety...");
         Console.ReadKey(true);
         _screenManager.SwitchTo(ScreenType.Story, "MainStoryMenu");
@@ -321,7 +344,7 @@ public class BattleScreen : IScreen
     {
         // Console.SetCursorPosition(0, 13);
         Console.WriteLine(new string('═', 60));
-        Console.WriteLine($" What will {_player.PokemonTeam[0].Specie.Name} do?");
+        Console.WriteLine($" What will {_player.CurrentPokemon.Specie.Name} do?");
         Console.WriteLine(new string('─', 60));
         Console.WriteLine("  1. FIGHT          2. BAG");
         Console.WriteLine("  3. POKEMON        4. RUN");
@@ -354,8 +377,7 @@ public class BattleScreen : IScreen
         Console.WriteLine(" CHOOSE A MOVE (0 to Go Back):");
         Console.WriteLine(new string('─', 40));
 
-        List<PokemonMove> moves = _player.PokemonTeam[0].Moves;
-        Console.WriteLine($"Total moves of stater pokemon: {_player.PokemonTeam[0].Moves.Count}");
+        List<PokemonMove> moves = _player.CurrentPokemon.Moves;
 
         for (int i = 0; i < moves.Count; i++)
         {

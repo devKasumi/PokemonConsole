@@ -71,7 +71,7 @@ public static class CatchFormula
 
         int x = (d * f / 255) + s;
 
-        // 10. Quyết định số lần rung dựa trên x
+        // 10. Decide the shakes based on x
         if (x < 10) return new CatchResult(false, 0); // Misses completely
         if (x < 30) return new CatchResult(false, 1); // Shakes once
         if (x < 70) return new CatchResult(false, 2); // Shakes twice
