@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\C#\\TurnBasedPokemon\\TurnBasedPokemon.csproj": {}
+    "C:\\C#\\PokemonConsole\\TurnBasedPokemon\\TurnBasedPokemon.csproj": {}
   },
   "projects": {
-    "C:\\C#\\TurnBasedPokemon\\TurnBasedPokemon.csproj": {
+    "C:\\C#\\PokemonConsole\\TurnBasedPokemon\\TurnBasedPokemon.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\C#\\TurnBasedPokemon\\TurnBasedPokemon.csproj",
+        "projectUniqueName": "C:\\C#\\PokemonConsole\\TurnBasedPokemon\\TurnBasedPokemon.csproj",
         "projectName": "TurnBasedPokemon",
-        "projectPath": "C:\\C#\\TurnBasedPokemon\\TurnBasedPokemon.csproj",
+        "projectPath": "C:\\C#\\PokemonConsole\\TurnBasedPokemon\\TurnBasedPokemon.csproj",
         "packagesPath": "C:\\Users\\ADMIN\\.nuget\\packages\\",
-        "outputPath": "C:\\C#\\TurnBasedPokemon\\obj\\",
+        "outputPath": "C:\\C#\\PokemonConsole\\TurnBasedPokemon\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

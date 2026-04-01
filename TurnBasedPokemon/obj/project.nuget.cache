@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "2ZpPjQWkvnE=",
+  "dgSpecHash": "Q07KWGti6WQ=",
   "success": true,
-  "projectFilePath": "C:\\C#\\TurnBasedPokemon\\TurnBasedPokemon.csproj",
+  "projectFilePath": "C:\\C#\\PokemonConsole\\TurnBasedPokemon\\TurnBasedPokemon.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ADMIN\\.nuget\\packages\\bcrypt.net-next\\4.1.0\\bcrypt.net-next.4.1.0.nupkg.sha512"
   ],

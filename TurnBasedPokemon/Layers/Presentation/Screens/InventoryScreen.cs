@@ -9,7 +9,7 @@ public class InventoryContext
 public class InventoryScreen : IScreen
 {
     private Player _player;
-    private Pokemon? _targetPokemon; // Đối thủ nếu đang trong trận
+    private Pokemon? _targetPokemon;
     private ScreenManager _screenManager;
 
     public InventoryScreen(ScreenManager screenManager)
@@ -97,30 +97,24 @@ public class InventoryScreen : IScreen
                 return;
             }
 
-            // Thực hiện ném bóng (hàm Use của CaptureItem trả về true nếu bắt thành công)
             bool success = ball.Use(_targetPokemon);
             
             if (success)
             {
                 _player.RemoveItem(item);
-                _player.AddPokemon(_targetPokemon); // Thêm vào team
+                _player.AddPokemon(_targetPokemon);
                 
-                // Chuyển về màn hình Story hoặc kết thúc trận
                 _screenManager.SwitchTo(ScreenType.Story);
             }
             else
             {
                 _player.RemoveItem(item);
-                // Thất bại: Chuyển về Battle để đối thủ tấn công
                 _screenManager.SwitchTo(ScreenType.Battle);
             }
         }
         // 2. Logic cho HealingItem (Potion...)
         else if (item is HealingItem potion)
         {
-            // Hiển thị danh sách Pokemon trong team để chọn mục tiêu hồi máu
-            // (Phần này bạn có thể làm thêm một sub-menu chọn Pokemon)
-            // Console.WriteLine("Healing logic goes here...");
             _player.CurrentPokemon.Heal(potion.HealAmount);
             _player.RemoveItem(item);
             Thread.Sleep(1000);
