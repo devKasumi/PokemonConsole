@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TurnBasedPokemon")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+be261bfaa6f4d6f89b806a11c7f06d409683f0d5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2a92d57aa3173749ee6a9acb30cb69bf9cca37f3")]
 [assembly: System.Reflection.AssemblyProductAttribute("TurnBasedPokemon")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TurnBasedPokemon")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
