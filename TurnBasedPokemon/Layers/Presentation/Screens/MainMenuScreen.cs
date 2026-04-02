@@ -3,10 +3,12 @@ using Screens;
 public class MainMenuScreen : IScreen
 {
     private readonly ScreenManager _screenManager;
+    private readonly GameSession _gameSession;
 
-    public MainMenuScreen(ScreenManager screenManager)
+    public MainMenuScreen(ScreenManager screenManager, GameSession session)
     {
         _screenManager = screenManager;
+        _gameSession = session;
     }
 
     public void Initialize(object? data = null)

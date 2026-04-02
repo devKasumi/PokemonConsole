@@ -12,7 +12,7 @@ public class ItemSpawner
     /// <summary>
     /// Spawns a specific item by its name (useful for fixed rewards)
     /// </summary>
-    public Item? SpawnItem(string name)
+    public Item SpawnItem(string name)
     {
         // 1. Retrieve the item template from the repository
         Item? originalItem = _itemRepo.GetItemByName(name);

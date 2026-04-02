@@ -4,11 +4,15 @@ using Screens;
 public class LoginScreen : IScreen
 {
     private readonly ScreenManager _screenManager;
+    private readonly GameSession _gameSession;
     private readonly AuthenService _authenService;
 
-    public LoginScreen(ScreenManager screenManager, AuthenService authenService)
+    public LoginScreen(ScreenManager screenManager,
+                       GameSession session,
+                       AuthenService authenService)
     {
         _screenManager = screenManager;
+        _gameSession = session;
         _authenService = authenService;
     }
 

@@ -1,4 +1,6 @@
-public interface IUserRepository {
-    User GetByUsername(string username);
+public interface IUserRepository
+{
+    User? GetByUsername(string username);
     void Save(User user);
+    List<User> GetAll();
 }

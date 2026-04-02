@@ -1,5 +1,10 @@
+using System.Text.Json.Serialization;
+
 public enum ItemCategory { Healing, Capture, Utility }
 
+// STRATEGY PATTERN: Base Item class with JSON Polymorphism support
+[JsonDerivedType(typeof(CaptureItem), typeDiscriminator: "capture")]
+[JsonDerivedType(typeof(HealingItem), typeDiscriminator: "healing")]
 public abstract class Item
 {
     // Match with "Id" in JSON
@@ -13,5 +18,5 @@ public abstract class Item
     
     public int Price { get; set; }
 
-    public abstract bool Use(Pokemon target);
+    // public abstract bool Use(Pokemon target);
 }

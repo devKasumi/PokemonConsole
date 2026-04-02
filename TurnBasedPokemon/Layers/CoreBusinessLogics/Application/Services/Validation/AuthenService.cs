@@ -6,10 +6,12 @@ public record LoginRequest(string Username, string Password);
 public class AuthenService
 {
     private readonly IUserRepository _userRepository;
+    private readonly GameSession _gameSession;
 
-    public AuthenService(IUserRepository userRepository)
+    public AuthenService(IUserRepository userRepository, GameSession session)
     {
         _userRepository = userRepository;
+        _gameSession = session;
     }
 
     public bool Register(RegisterRequest request)
@@ -24,25 +26,27 @@ public class AuthenService
         User newUserName = new User
         {
             Username = request.Username,
-            Password = hashedPassword,
-            Level = 1  
+            Password = hashedPassword
         };
 
         _userRepository.Save(newUserName);
         return true;
     }
 
-    public User Login(LoginRequest request)
+    public bool Login(LoginRequest request)
     {
-        User user = _userRepository.GetByUsername(request.Username);
-        if (user == null)
-            return null; // User not found
+        User? user = _userRepository.GetByUsername(request.Username);
+        
+        if (user == null) return false;
 
-        // Verify the password using BCrypt's Verify method
         bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.Password);
-        if (!isPasswordValid)
-            return null; // Invalid password
+        
+        if (isPasswordValid)
+        {
+            _gameSession.CurrentUser = user; 
+            return true;
+        }
 
-        return user; // Authentication successful
+        return false;
     }
 }

@@ -1,191 +1,153 @@
 using Screens;
 
-public class InventoryContext
-{
-    public Player? Player { get; set; }
-    public Pokemon? Enemy { get; set; }
-
-    public InventoryContext(Player player, Pokemon pokemon)
-    {
-        Player = player;
-        Enemy = pokemon;
-    }
-}
-
 public class InventoryScreen : IScreen
 {
-    private Player _player;
-    private Pokemon? _targetPokemon;
-    private ScreenManager _screenManager;
+    private readonly ScreenManager _screenManager;
+    private readonly GameSession _gameSession;
+    private readonly ICatchService _catchService;
+    private readonly IHealingService _healingService;
 
-    public InventoryScreen(ScreenManager screenManager)
+    public InventoryScreen(ScreenManager screenManager,
+                           GameSession session,
+                           ICatchService catchService,
+                           IHealingService healingService)
     {
         _screenManager = screenManager;
+        _gameSession = session;
+        _catchService = catchService;
+        _healingService = healingService;
     }
 
-    public void Initialize(object? data)
-    {
-        if (data is InventoryContext context)
-        {
-            _player = context.Player;
-            _targetPokemon = context.Enemy;
-        }
-        else
-        {
-            Console.WriteLine("Invalid data passed to InventoryScreen!");
-            Console.ReadKey(true);
-            _screenManager.SwitchTo(ScreenType.Story);
-        }
-    }
-
-    public void RenderText()
-    {
-        Menu.InventoryMenu();
-        
-        Console.Write("Select an item: ");
-        string input = Console.ReadLine() ?? string.Empty;
-
-        if (UserInputValidator.ValidateInventoryMenuInput(input))
-        {
-            HandleSelection(input);
-        }
-        else
-        {
-            Console.WriteLine("Invalid input! Please try again.");
-            Thread.Sleep(1000);
-        }
-    }
+    public void Initialize(object? data = null) => Console.Clear();
 
     public void Update()
     {
         RenderText();
-        // string input = Console.ReadLine() ?? "";
-        // HandleSelection(input);
     }
 
-    public void Shutdown()
+    public void RenderText()
     {
-        
-    }
+        Console.Clear();
+        Menu.InventoryMenu(); 
+        Console.WriteLine("\n" + new string('═', 60));
+        Console.WriteLine(" 1. POCKET: CAPTURE");
+        Console.WriteLine(" 2. POCKET: HEALING");
+        Console.WriteLine(" 3. BACK TO BATTLE");
+        Console.WriteLine(new string('═', 30));
+        Console.Write(" Select category: ");
 
-    private void HandleSelection(string input)
-    {
-        if (_player == null) return;
+        string input = Console.ReadLine() ?? string.Empty;
 
         switch (input)
         {
-            case "1": // Capture Pocket
-                OpenPocket(ItemCategory.Capture);
+            case "1": OpenPocket(ItemCategory.Capture); break;
+            case "2": OpenPocket(ItemCategory.Healing); break;
+            case "3": _screenManager.SwitchTo(ScreenType.Battle); break;
+            default:
+                Console.WriteLine(" Invalid choice!");
+                Thread.Sleep(600);
                 break;
-            case "2": // Healing Pocket
-                OpenPocket(ItemCategory.Healing);
-                break;
-            case "3": 
-                _screenManager.SwitchTo(ScreenType.Battle); 
-                break;
-        } 
+        }
     }
 
     private void OpenPocket(ItemCategory category)
     {
-        int catKey = (int)category;
-        Dictionary<string, List<Item>> pocket = _player.Inventory[catKey];
+        // Get Inventory directly from player in GameSession
+        var inventory = _gameSession.Player?.Inventory;
+        if (inventory == null || !inventory.ContainsKey((int)category)) return;
+
+        var pocket = inventory[(int)category];
 
         if (pocket.Count == 0)
         {
-            Console.WriteLine($"\nYour {category} pocket is empty!");
-            Thread.Sleep(1000);
+            Console.WriteLine($"\n [!] Your {category} pocket is empty!");
+            Thread.Sleep(800);
             return;
         }
-
-        // Convert dictionary to a list to have numeric indexes for selection
-        var itemGroups = pocket.ToList();
 
         while (true)
         {
             Console.Clear();
-            Console.WriteLine($"--- {category.ToString().ToUpper()} POCKET ---");
-            
+            Console.WriteLine($"=== {category.ToString().ToUpper()} POCKET ===");
+            var itemGroups = pocket.ToList();
+
             for (int i = 0; i < itemGroups.Count; i++)
             {
-                // Show: 1. Poke Ball (x5)
-                Console.WriteLine($"{i + 1}. {itemGroups[i].Key} (x{itemGroups[i].Value.Count})");
+                Console.WriteLine($" {i + 1}. {itemGroups[i].Key} (x{itemGroups[i].Value.Count})");
             }
-            Console.WriteLine("0. Back");
-            Console.Write("\nSelect an item to use: ");
+            Console.WriteLine(" 0. Back");
+            Console.Write("\n Select item to use: ");
 
             string input = Console.ReadLine() ?? "";
             if (input == "0") break;
 
             if (int.TryParse(input, out int index) && index > 0 && index <= itemGroups.Count)
             {
-                // Get the list of instances for the selected name
                 var selectedInstances = itemGroups[index - 1].Value;
-
-                if (selectedInstances.Count > 0)
-                {
-                    // Pick the first available instance in the list
-                    Item itemToUse = selectedInstances[0];
-                    UseItem(itemToUse);
-                    
-                    // After using an item (and potentially switching screens), we exit the loop
-                    break; 
-                }
-            }
-            else
-            {
-                Console.WriteLine("Invalid selection!");
-                Thread.Sleep(800);
+                Item itemToUse = selectedInstances[0];
+                
+                if (UseItem(itemToUse)) break; // If success -> break;
             }
         }
     }
 
-    private void UseItem(Item item)
+    private bool UseItem(Item item)
     {
-        // 1. Logic cho CaptureItem (PokeBall, GreatBall...)
+        // 1. Handle capture item
         if (item is CaptureItem ball)
         {
-            Console.WriteLine("Use pokemon ball !!!!");
-            
-            Console.WriteLine("\n[DEBUG] --- POKEMON ---");
-            Console.WriteLine($"Name: {_targetPokemon.Specie?.Name}");
-            Console.WriteLine($"HP: {_targetPokemon.CurrentHP} / {_targetPokemon.MaxHP}");
-            Console.WriteLine($"CatchRate: {_targetPokemon.Specie?.CatchRate}");
-            Console.WriteLine($"Status: {_targetPokemon.Status}");
-            Console.WriteLine("---------------------------------\n");
-            // ------------------------------------
-
-            Console.ReadKey(true);
-
-
-            if (_targetPokemon == null)
+            var target = _gameSession.CurrentEnemyPokemon;
+            if (target == null)
             {
-                Console.WriteLine("You can't use that here!");
+                Console.WriteLine(" [!] There is no wild Pokemon to catch!");
                 Thread.Sleep(1000);
-                return;
+                return false;
             }
 
-            bool success = ball.Use(_targetPokemon);
-            
+            // Gọi CatchService để xử lý logic (tính tỷ lệ bắt...)
+            // bool success = _catchService.AttemptCatch(_gameSession.Player, target, ball);
+            CatchResult result = _catchService.ExecuteCapture(ball, target);
+            bool success = result.IsCaught;
+
             if (success)
             {
-                _player.RemoveItem(item);
-                _player.AddPokemon(_targetPokemon);
-                
+                Console.WriteLine($"\n Gotcha! {target.Specie.Name} was caught!");
+                Thread.Sleep(1500);
                 _screenManager.SwitchTo(ScreenType.Story, "MainStoryMenu");
             }
             else
             {
-                _player.RemoveItem(item);
+                Console.WriteLine($"\n Oh no! The Pokemon broke free!");
+                Thread.Sleep(1500);
                 _screenManager.SwitchTo(ScreenType.Battle);
             }
+            return true;
         }
-        // 2. Logic cho HealingItem (Potion...)
-        else if (item is HealingItem potion)
+
+        // 2. handle healing item
+        if (item is HealingItem potion)
         {
-            _player.CurrentPokemon.Heal(potion.HealAmount);
-            _player.RemoveItem(item);
-            Thread.Sleep(1000);
+            var activePokeName = _gameSession.Player?.CurrentPokemon?.Specie.Name;
+
+            if (_healingService.ExecuteHealing(potion))
+            {
+                Console.WriteLine($"\n {activePokeName} recovered {potion.HealAmount} HP!");
+                Thread.Sleep(1000);
+                
+                // Sau khi hồi máu xong, quay lại màn hình chiến đấu
+                _screenManager.SwitchTo(ScreenType.Battle);
+                return true;
+            }
+            else
+            {
+                Console.WriteLine($"\n [!] {activePokeName} is already at full health!");
+                Thread.Sleep(1000);
+                return false;
+            }
         }
+
+        return false;
     }
+
+    public void Shutdown() { }
 }
