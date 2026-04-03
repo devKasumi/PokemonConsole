@@ -25,6 +25,7 @@ public class BattleScreen : IScreen
 
     public void Update()
     {
+        Console.Clear();
         RenderText();
         ShowCommandMenu();
         
@@ -131,7 +132,12 @@ public class BattleScreen : IScreen
     public void RenderText()
     {
         Console.Clear();
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine("============================================================");
+        Console.WriteLine(" [ WILD BATTLE ] ");
+        Console.WriteLine("------------------------------------------------------------");
         RenderEnemyPokemon(_gameSession.CurrentEnemyPokemon);
+        Console.WriteLine("\n          ( VS )\n");
         RenderPlayerPokemon(_gameSession.Player.CurrentPokemon);
     }
 
@@ -157,65 +163,91 @@ public class BattleScreen : IScreen
 
     private void RenderEnemyPokemon(Pokemon pokemon)
     {
-        Console.SetCursorPosition(35, 1);
         Console.ForegroundColor = ConsoleColor.Red;
-        Console.Write($"{pokemon.Specie.Name.ToUpper()}  Lv.{pokemon.Level}");
-        Console.SetCursorPosition(35, 2);
-        Console.Write("HP: ");
-        DrawHPBar(pokemon.CurrentHP, pokemon.MaxHP);
+        Console.WriteLine($"{"",30}{pokemon.Specie.Name.ToUpper()} [Lv. {pokemon.Level}]");
+        Console.Write($"{"",30}HP: ");
+        PrintHealthBar(pokemon.CurrentHP, pokemon.MaxHP);
+        Console.WriteLine($" {pokemon.CurrentHP}/{pokemon.MaxHP}");
     }
 
     private void RenderPlayerPokemon(Pokemon pokemon)
     {
-        Console.SetCursorPosition(5, 8);
-        Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.Write($"{pokemon.Specie.Name.ToUpper()}  Lv.{pokemon.Level}");
-        Console.SetCursorPosition(5, 9);
-        Console.Write("HP: ");
-        DrawHPBar(pokemon.CurrentHP, pokemon.MaxHP);
+        Console.ForegroundColor = ConsoleColor.Blue;
+        Console.WriteLine($"  {pokemon.Specie.Name.ToUpper()} [Lv. {pokemon.Level}]");
+        Console.Write("  HP:  ");
+        PrintHealthBar(pokemon.CurrentHP, pokemon.MaxHP);
+        Console.WriteLine($" {pokemon.CurrentHP}/{pokemon.MaxHP}");
         
-        Console.SetCursorPosition(5, 11);
-        Console.Write("EXP: ");
-        float progress = ExpCalculator.GetLevelProgressPercentage(pokemon.Level, pokemon.TotalExp);
-        DrawExpBar(progress);
+        Console.ForegroundColor = ConsoleColor.DarkGray;
+        Console.Write("  EXP: ");
+        PrintExpBar(pokemon.CurrentExp, pokemon.MaxExpForNextLevel);
+
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine("\n------------------------------------------------------------");
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine("------------------------------------------------------------");
     }
 
-    private void DrawHPBar(int currentHP, int maxHP)
+    private void PrintHealthBar(int current, int max)
     {
-        float percentage = (float)currentHP / maxHP;
-        int barLength = 20;
-        int filledLength = (int)(barLength * percentage);
+        float percentage = (float)current / max;
+        int barCount = (int)(percentage * 16);
 
-        Console.Write("[");
         if (percentage > 0.5) Console.ForegroundColor = ConsoleColor.Green;
         else if (percentage > 0.2) Console.ForegroundColor = ConsoleColor.Yellow;
         else Console.ForegroundColor = ConsoleColor.Red;
 
-        Console.Write(new string('█', filledLength).PadRight(barLength, '-'));
-        Console.ResetColor();
-        Console.WriteLine($"] {currentHP}/{maxHP}");
+        Console.Write("[");
+        Console.Write(new string('█', barCount));
+        Console.Write(new string('-', 16 - barCount));
+        Console.Write("]");
     }
 
-    private void DrawExpBar(float progress)
+    private void PrintExpBar(int currentExp, int nextLevelExp)
     {
+        if (nextLevelExp <= 0) nextLevelExp = 100; 
+
+        float percentage = Math.Min((float)currentExp / nextLevelExp, 1.0f);
         int barLength = 20;
-        int filledLength = (int)Math.Round(barLength * Math.Clamp(progress, 0, 1));
+        int filledLength = (int)(percentage * barLength);
+        int remaining = nextLevelExp - currentExp;
+
+        Console.ForegroundColor = ConsoleColor.Cyan;
         Console.Write("[");
-        Console.ForegroundColor = ConsoleColor.Blue;
-        Console.Write(new string('=', filledLength).PadRight(barLength, '-'));
-        Console.ResetColor();
+        Console.Write(new string('=', filledLength));
+        Console.ForegroundColor = ConsoleColor.DarkGray;
+        Console.Write(new string('-', barLength - filledLength));
+        Console.ForegroundColor = ConsoleColor.Cyan;
         Console.Write("]");
+        Console.ForegroundColor = ConsoleColor.Gray;
+        Console.WriteLine($" {currentExp}/{nextLevelExp} EXP");
+        
+        if (remaining > 0)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine($"       (Need {remaining} more EXP to Level Up!)");
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("       (Ready to Evolve/Level Up!)");
+        }
+        
+        Console.ResetColor();
     }
 
     private void ShowCommandMenu()
     {
         Console.WriteLine("\n" + new string('═', 60));
         Console.WriteLine($" What will {_gameSession.Player.CurrentPokemon.Specie.Name} do?");
-        Console.WriteLine(new string('─', 60));
-        Console.WriteLine("  1. FIGHT          2. BAG");
-        Console.WriteLine("  3. POKEMON        4. RUN");
-        Console.WriteLine(new string('═', 60));
-        Console.Write("Select: ");
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("  [1] ⚔️ FIGHT          [2] 🎒 BAG");
+        Console.WriteLine("  [3] 🔁 POKEMON        [4] 🏃 RUN");
+        
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine("============================================================");
+        Console.ResetColor();
+        Console.Write("  Select: ");
     }
 
     private void ShowMoveMenu()
@@ -239,8 +271,15 @@ public class BattleScreen : IScreen
     private void HandleRun()
     {
         Console.Clear();
+        if (_gameSession.IsTrainerBattle)
+        {
+            Console.WriteLine("You can not run, this is a trainer battle!");
+            Thread.Sleep(1500);
+            return;
+        }
         Console.WriteLine("You got away safely!");
         Thread.Sleep(1000);
+        _gameSession.ClearBattle();
         _screenManager.SwitchTo(ScreenType.Story, "MainStoryMenu");
     }
 

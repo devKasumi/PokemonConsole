@@ -25,8 +25,6 @@ public class ScreenManager
         {
             if (_screens.ContainsKey(CurrentScreen))
             {
-                // Console.WriteLine($"Screen running: {_pendingData}");
-                Console.WriteLine($"curren screen: {CurrentScreen}");
                 var screen = _screens[CurrentScreen];
                 screen.Initialize(_pendingData);
                 screen.Update();
@@ -45,7 +43,7 @@ public class ScreenManager
         {
             CurrentScreen = screenType;
             _pendingData = data;
-            Console.WriteLine($"swith to: {_pendingData}");
+            // Console.WriteLine($"swith to: {_pendingData}");
         }
         else
         {

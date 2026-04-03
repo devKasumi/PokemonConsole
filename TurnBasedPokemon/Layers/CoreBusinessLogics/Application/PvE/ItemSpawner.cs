@@ -32,7 +32,6 @@ public class ItemSpawner
 
         // Get all available items from the cache
         List<Item> allItems = _itemRepo.GetAllItems();
-        Console.WriteLine($"curren item get from json count: {allItems.Count}");
         if (allItems.Count == 0) return null;
 
         // Pick one randomly

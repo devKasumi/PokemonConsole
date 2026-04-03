@@ -20,7 +20,7 @@ public class GameSession
         ? CurrentEnemyTeam[CurrentEnemyTeamIndex] 
         : null;
 
-    #region Battle Management (MỚI)
+    #region Battle Management
 
     /// <summary>
     /// Prepare data before enter battle
@@ -63,7 +63,7 @@ public class GameSession
 
     #endregion
 
-    #region User & Progress (Nguyên bản của bạn)
+    #region User & Progress
 
     public void Login(string user, string pass)
     {
@@ -89,7 +89,7 @@ public class GameSession
         CurrentUser.PlayerData.CurrentPhase = 1;
         CurrentUser.PlayerData.CurrentLocation = "";
         CurrentUser.PlayerData.PokemonTeam.Clear();
-        // _userRepo.Save(CurrentUser);
+        _userRepo.Save(CurrentUser);
     }
 
     private void SaveProgress()

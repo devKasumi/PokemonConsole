@@ -88,6 +88,8 @@ public class StoryService : IStoryService
                 _gameSession.HasPlayedNarrative = false;
                 return "You advanced to a new Phase of your journey!";
             }
+            _gameSession.IsTrainerBattle = false;
+            Console.ReadKey(true);
             return "You cannot go any further in this direction.";
         }
         else // Backward
@@ -105,6 +107,8 @@ public class StoryService : IStoryService
                 _gameSession.HasPlayedNarrative = false;
                 return "You traveled back to the previous Phase.";
             }
+            _gameSession.IsTrainerBattle = false;
+            Console.ReadKey(true);
             return "You are already at the beginning of your journey.";
         }
     }
@@ -145,6 +149,8 @@ public class StoryService : IStoryService
             return (true, $"A wild {pName} jumped out of the tall grass!", wildP, item);
         }
 
+        _gameSession.IsTrainerBattle = false;
+
         return (false, "You searched the grass but only found peace and quiet.", null, item);
     }
 
@@ -156,10 +162,13 @@ public class StoryService : IStoryService
             return (false, "Your team is not in condition to battle a Gym Leader!", null, null);
 
         var loc = GetCurrentLocation();
-        var leader = loc.NPCs.FirstOrDefault(n => n.Role == "Gym Leader" || n.Role == "Champion");
+        var leader = loc.NPCs.FirstOrDefault(n => n.Role == "Gym Leader" || n.Role == "Champion" || n.Role == "Elite Four");
         
         if (leader == null)
             return (false, "There is no Gym Leader in this area.", null, null);
+
+        if (_gameSession.Player.Badges.Count != leader.RequiredBadge)
+            return (false, "You can not challenge gymleader right now, please collect enough badges.", null, null);
 
         // Init boss's team
         var bossTeam = new List<Pokemon>();
@@ -168,6 +177,10 @@ public class StoryService : IStoryService
             var p = _pokemonSpawner.SpawnPokemon(pData.Name, pData.Level);
             if (p != null) bossTeam.Add(p);
         }
+
+        _gameSession.CurrentEnemyTeam = bossTeam;
+        _gameSession.CurrentEnemyTeamIndex = 0;
+        _gameSession.IsTrainerBattle = true;
 
         return (true, $"You challenge Gym Leader {leader.Name}!", leader, bossTeam);
     }

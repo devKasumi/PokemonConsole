@@ -22,6 +22,7 @@ public class InventoryScreen : IScreen
 
     public void Update()
     {
+        Console.Clear();
         RenderText();
     }
 
@@ -134,7 +135,6 @@ public class InventoryScreen : IScreen
                 Console.WriteLine($"\n {activePokeName} recovered {potion.HealAmount} HP!");
                 Thread.Sleep(1000);
                 
-                // Sau khi hồi máu xong, quay lại màn hình chiến đấu
                 _screenManager.SwitchTo(ScreenType.Battle);
                 return true;
             }

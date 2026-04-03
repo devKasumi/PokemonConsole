@@ -23,6 +23,7 @@ public class LoginScreen : IScreen
 
     public void Update()
     {
+        Console.Clear();
         Menu.LoginMenu();
         string input = Console.ReadLine() ?? string.Empty;
 
@@ -43,12 +44,23 @@ public class LoginScreen : IScreen
 
     private void HandleLogin()
     {
-        Console.Write("Username: ");
-        string username = Console.ReadLine() ?? string.Empty;
-        Console.Write("Password: ");
-        string password = Console.ReadLine() ?? string.Empty;
-        var user = _authenService.Login(new LoginRequest(username, password));
-        if (user != null)
+        // Console.Write("Username: ");
+        // string username = Console.ReadLine() ?? string.Empty;
+        // Console.Write("Password: ");
+        // string password = Console.ReadLine() ?? string.Empty;
+        // var success = _authenService.Login(new LoginRequest(username, password));
+        // Console.Clear();
+        Menu.PrintHeader("LOGIN TO YOUR ADVENTURE");
+        
+        Console.Write("  Enter Username: ");
+        string user = Console.ReadLine() ?? "";
+        
+        Console.Write("  Enter Password: ");
+        string pass = Console.ReadLine() ?? ""; // Helper for hidden password or just ReadLine
+
+        // Calling the Service logic
+        bool success = _authenService.Login(new LoginRequest(user, pass));
+        if (success)
         {
             Console.Clear();
             Console.WriteLine("Login successful!");
@@ -64,29 +76,29 @@ public class LoginScreen : IScreen
 
     private void HandleRegister()
     {
+        // Console.Clear();
+        Console.WriteLine("--- CREATE NEW ADVENTURE ---");
         Console.Write("Choose a username: ");
         string username = Console.ReadLine() ?? string.Empty;
         Console.Write("Choose a password: ");
         string password = Console.ReadLine() ?? string.Empty;
         bool success = _authenService.Register(new RegisterRequest(username, password));
+
+        Console.Clear();
         if (success)
         {
-            Console.Clear();
             Console.WriteLine("Registration successful! You can now log in.");
-            _screenManager.SwitchTo(ScreenType.Login);
         }
         else
         {
-            Console.Clear();
             Console.WriteLine("Registration failed. Username may already be taken.");
-            _screenManager.SwitchTo(ScreenType.Login);
         }
+        _screenManager.SwitchTo(ScreenType.Login);
     }
 
     public void Shutdown()
     {
         // Clean up resources if needed
-        // _screenManager.SwitchTo(ScreenType.Exit);
         _screenManager.ExitGame();
     }
 }

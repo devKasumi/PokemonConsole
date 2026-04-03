@@ -7,6 +7,7 @@ public class StoryScreen : IScreen
     private readonly ScreenManager _screenManager;
     private readonly GameSession _gameSession;
     private readonly IStoryService _storyService;
+    private readonly object? data;
 
     public StoryScreen(ScreenManager sm, GameSession gameSession, IStoryService ss)
     {
@@ -17,18 +18,16 @@ public class StoryScreen : IScreen
 
     public void Initialize(object? data = null)
     {
+        Console.Clear();
         if (data is string cmd) _storyService.InitializeStory(cmd);
     }
 
     public void Update()
     {
-        Console.WriteLine($"curren pokemon team count: {_gameSession.CurrentUser.PlayerData.PokemonTeam.Count}");
-        Console.WriteLine($"curren player pokemon count: {_gameSession.Player.PokemonTeam.Count}");
-        Console.ReadKey(true);
+        Console.Clear();
+
         if (_gameSession.Player.PokemonTeam.Count == 0)
         {
-            // Console.WriteLine($"current player team: {_gameSession.Player.PokemonTeam.Count}");
-            // Console.ReadKey(true);
             ShowStarterMenu();
             // return;
         }
@@ -56,47 +55,79 @@ public class StoryScreen : IScreen
     {
         var loc = _storyService.GetCurrentLocation();
         Console.Clear();
-        Console.WriteLine($"╔══════════════════════════════════════════════════╗");
-        Console.WriteLine($"║ AREA: {loc.Name.PadRight(42)} ║");
-        Console.WriteLine($"╚══════════════════════════════════════════════════╝");
+        
+        // Header
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("============================================================");
+        Console.WriteLine($"   CURRENT LOCATION: [ {loc.Name.ToUpper()} ]");
+        Console.ForegroundColor = ConsoleColor.DarkGray;
+        Console.WriteLine("   Status: Peacefully resting in the breeze.");
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("============================================================");
+        Console.ResetColor();
         
         int i = 1;
-        foreach (var npc in loc.NPCs) Console.WriteLine($" {i++}. Talk to {npc.Name} ({npc.Role})");
-        
-        int centerIdx = i++, fwdIdx = i++, backIdx = i++, wildIdx = i++, gymIdx = i++, exitIdx = i++;
+        // Social
+        Console.WriteLine("\n  --- POPULATION ---");
+        foreach (var npc in loc.NPCs)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"  [{i++}] 🗣️  Talk to {npc.Name} ({npc.Role})");
+        }
 
-        Console.WriteLine($" {centerIdx}. Enter Pokemon Center");
-        Console.WriteLine($" {fwdIdx}. Move Forward");
-        Console.WriteLine($" {backIdx}. Move Backward");
-        Console.WriteLine($" {wildIdx}. Explore Wild Area");
-        Console.WriteLine($" {gymIdx}. Challenge Gym Leader");
-        Console.WriteLine($" {exitIdx}. Back to Main Menu");
-        Console.Write("\n Choose an action: ");
+        // Facilities & Movement
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine("\n  --- FACILITIES & NAVIGATION ---");
+        int centerIdx = i++;
+        int fwdIdx = i++;
+        int backIdx = i++;
+        Console.WriteLine($"  [{centerIdx}] 🏥  Visit Pokemon Center");
+        Console.WriteLine($"  [{fwdIdx}] ⬆️  Move Forward");
+        Console.WriteLine($"  [{backIdx}] ⬇️  Move Backward");
 
-        if (!int.TryParse(Console.ReadLine(), out int choice)) return;
+        // Adventure
+        Console.WriteLine("\n  --- ADVENTURE & CHALLENGE ---");
+        int wildIdx = i++;
+        int gymIdx = i++;
+        Console.ForegroundColor = ConsoleColor.DarkGreen;
+        Console.WriteLine($"  [{wildIdx}] 🌿  Explore Wild Area");
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine($"  [{gymIdx}] 🏆  Challenge Gym Leader");
 
-        if (choice <= loc.NPCs.Count) HandleTalk(loc.NPCs[choice - 1]);
-        else if (choice == centerIdx) HandleResult(_storyService.HealTeamAtCenter(), ConsoleColor.Green);
-        else if (choice == fwdIdx)    HandleResult(_storyService.Move(true), ConsoleColor.Cyan);
-        else if (choice == backIdx)   HandleResult(_storyService.Move(false), ConsoleColor.Cyan);
-        else if (choice == wildIdx)   HandleWildArea();
-        else if (choice == gymIdx)    HandleGymBattle();
-        else if (choice == exitIdx)   _screenManager.SwitchTo(ScreenType.MainMenu);
+        // System
+        Console.ForegroundColor = ConsoleColor.Gray;
+        Console.WriteLine("\n  --- SYSTEM ---");
+        int exitIdx = i++;
+        Console.WriteLine($"  [{exitIdx}] ⚙️   Back to Main Menu");
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("============================================================");
+        Console.ResetColor();
+        Console.Write("  What would you like to do? Select action: ");
+
+        // if (!int.TryParse(Console.ReadLine(), out int choice)) return;
+        string input = Console.ReadLine() ?? "";
+        if (int.TryParse(input, out int choice))
+        {
+            if (choice <= loc.NPCs.Count) HandleTalk(loc.NPCs[choice - 1]);
+            else if (choice == centerIdx) HandleResult(_storyService.HealTeamAtCenter(), ConsoleColor.Green);
+            else if (choice == fwdIdx)    HandleResult(_storyService.Move(true), ConsoleColor.Cyan);
+            else if (choice == backIdx)   HandleResult(_storyService.Move(false), ConsoleColor.Cyan);
+            else if (choice == wildIdx)   HandleWildArea();
+            else if (choice == gymIdx)    HandleGymBattle();
+            else if (choice == exitIdx)   _screenManager.SwitchTo(ScreenType.MainMenu);
+        }
+        else
+        {
+            Console.WriteLine("Invalid input. Please enter a valid number.");
+            Console.ReadKey(true);
+            _screenManager.SwitchTo(ScreenType.Story);
+        }
     }
 
     private void ShowStarterMenu()
     {
-        Console.Clear();
-        Console.WriteLine("╔══════════════════════════════════════════════════╗");
-        Console.WriteLine("║            PROFESSOR OAK'S LABORATORY            ║");
-        Console.WriteLine("╠══════════════════════════════════════════════════╣");
-        Console.WriteLine("║  Please choose your first Pokemon partner:       ║");
-        Console.WriteLine("║                                                  ║");
-        Console.WriteLine("║  1. Bulbasaur (Grass)                            ║");
-        Console.WriteLine("║  2. Charmander (Fire)                            ║");
-        Console.WriteLine("║  3. Squirtle (Water)                             ║");
-        Console.WriteLine("╚══════════════════════════════════════════════════╝");
-        Console.Write(" Select (1-3): ");
+        Menu.StarterSelectionMenu();
 
         string input = Console.ReadLine();
         string selectedName = input switch
@@ -109,10 +140,9 @@ public class StoryScreen : IScreen
 
         if (string.IsNullOrEmpty(selectedName))
         {
+            Console.Clear();
             RenderText("Oak", "Invalid choice. Don't be shy, pick one!", ConsoleColor.Yellow);
             ShowStarterMenu();
-            // _screenManager.SwitchTo(ScreenType.Story);
-            return;
         }
 
         var result = _storyService.GiveStarter(selectedName);
@@ -129,7 +159,6 @@ public class StoryScreen : IScreen
         }
     }
 
-    // Hàm tiện ích để in thông báo từ Service và dừng lại 1 chút
     private void HandleResult(string message, ConsoleColor color)
     {
         RenderText("System", message, color);
@@ -178,6 +207,10 @@ public class StoryScreen : IScreen
             _gameSession.CurrentEnemyTeam.Add(result.WildPokemon);
             _screenManager.SwitchTo(ScreenType.Battle);
         }
+        else
+        {
+            _screenManager.SwitchTo(ScreenType.Story);
+        }
     }
 
     private void HandleGymBattle()
@@ -201,7 +234,11 @@ public class StoryScreen : IScreen
         if (result.Team != null)
         {
             RenderText("System", "!!! BATTLE START !!!", ConsoleColor.Red);
-            _screenManager.SwitchTo(ScreenType.Battle, result.Team);
+            _screenManager.SwitchTo(ScreenType.Battle);
+        }
+        else
+        {
+            _screenManager.SwitchTo(ScreenType.Story);
         }
     }
 

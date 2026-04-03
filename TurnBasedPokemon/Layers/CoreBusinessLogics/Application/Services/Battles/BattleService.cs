@@ -13,21 +13,6 @@ public class BattleService : IBattleService
         _worldGen = worldGen;
     }
 
-    // private bool PerformAttack(Pokemon attacker, Pokemon target, PokemonMove move, string attackerLabel)
-    // {
-    //     Console.Clear();
-
-    //     Console.SetCursorPosition(0, 15);
-    //     Console.WriteLine($"{attackerLabel}'s {attacker.Specie.Name} used {move.Name}!");
-
-    //     int damage = DamageCalculator.CalculateDamage(attacker, target, move);
-    //     target.TakeDamage(damage);
-        
-    //     Thread.Sleep(1000); // Wait for the player to read the combat message
-        
-    //     return target.CurrentHP <= 0;
-    // }
-
     public BattleTurnResult ExecutePlayerTurn(PokemonMove move)
     {
         var playerPoke = _gameSession?.Player?.CurrentPokemon;

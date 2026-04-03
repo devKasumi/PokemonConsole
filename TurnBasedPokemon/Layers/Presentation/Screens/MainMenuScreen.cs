@@ -18,6 +18,7 @@ public class MainMenuScreen : IScreen
 
     public void Update()
     {
+        Console.Clear();
         Menu.MainMenu();
         string input = Console.ReadLine() ?? string.Empty;
 

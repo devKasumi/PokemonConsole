@@ -14,6 +14,8 @@ public class Pokemon
     public List<PokemonMove> Moves { get; set; }
     public bool IsFainted { get; set; }
     public PokemonStatus Status { get; set; } = PokemonStatus.None;
+    public int CurrentExp { get; set; }
+    public int MaxExpForNextLevel { get; set; }
 
     public Pokemon() { }
 
@@ -60,6 +62,11 @@ public class Pokemon
     public void GainExperience(int amount)
     {
         TotalExp += amount;
+        
+        while (ExpCalculator.CanLevelUp(Level, TotalExp))
+        {
+            LevelUp();
+        }
     }
     
 

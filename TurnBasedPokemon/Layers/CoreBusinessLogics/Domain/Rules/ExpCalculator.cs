@@ -55,4 +55,15 @@ public static class ExpCalculator
         float progress = (float)(totalExp - currentLevelExp) / (nextLevelExp - currentLevelExp);
         return Math.Clamp(progress, 0f, 1f);
     }
+
+    public static (int currentExpInLevel, int expNeededForNextLevel) GetProgressStats(int currentLevel, int totalExp)
+    {
+        int expBaseForCurrentLevel = GetRequiredExpForLevel(currentLevel);
+        int expBaseForNextLevel = GetRequiredExpForLevel(currentLevel + 1);
+
+        int currentExpInLevel = totalExp - expBaseForCurrentLevel;
+        int expNeededForNextLevel = expBaseForNextLevel - expBaseForCurrentLevel;
+
+        return (currentExpInLevel, expNeededForNextLevel);
+    }
 }
