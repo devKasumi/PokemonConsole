@@ -10,11 +10,11 @@ public class ExpService : IExpService
     }
 
     public ProcessExpResult GrantExperience(Pokemon pokemon, int amount)
-    {   
+    {   
         int oldLevel = pokemon.Level;
         string oldName = pokemon.Specie.Name;
         string? evolutionName = null;
-        List<string> newlyLearnedMoves = new List<string>();
+        List<string> allNewlyLearnedMoves = new List<string>();
 
         pokemon.GainExperience(amount);
 
@@ -22,8 +22,13 @@ public class ExpService : IExpService
 
         if (leveledUp)
         {
-            newlyLearnedMoves = pokemon.LearnNewMoves();
+            for (int lvl = oldLevel + 1; lvl <= pokemon.Level; lvl++)
+            {
+                var movesAtThisLevel = pokemon.LearnNewMovesAtLevel(lvl);
+                allNewlyLearnedMoves.AddRange(movesAtThisLevel);
+            }
 
+            // CHECK EVOLUTION
             if (pokemon.CanEvolve() && pokemon.Specie.EvolutionId.HasValue)
             {
                 var evolvedForm = _worldGenService.SpawnPokemonById(pokemon.Specie.EvolutionId.Value, pokemon.Level);
@@ -35,7 +40,7 @@ public class ExpService : IExpService
             }
         }
 
-        return new ProcessExpResult(amount, leveledUp, oldName, evolutionName, newlyLearnedMoves);
+        return new ProcessExpResult(amount, leveledUp, oldName, evolutionName, allNewlyLearnedMoves);
     }
 
     public int CalculateExpGain(Pokemon playerPoke, Pokemon enemyPoke)

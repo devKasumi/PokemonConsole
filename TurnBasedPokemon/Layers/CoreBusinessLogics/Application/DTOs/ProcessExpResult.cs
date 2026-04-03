@@ -3,7 +3,7 @@ public record ProcessExpResult(
     bool LeveledUp,
     string? OldName,
     string? EvolutionName,
-    List<string> LearnedMoves
+    List<string> NewMovesLearned
 )
 {
     public bool HasEvolved => !string.IsNullOrEmpty(EvolutionName);

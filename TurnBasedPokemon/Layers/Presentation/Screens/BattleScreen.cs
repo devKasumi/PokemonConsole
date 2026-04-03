@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Screens;
 
 public class BattleScreen : IScreen
@@ -18,8 +19,6 @@ public class BattleScreen : IScreen
 
     public void Initialize(object? data = null)
     {
-        // Lưu ý: Logic khởi tạo EnemyTeam nên nằm ở Service/Manager 
-        // trước khi Switch sang màn hình này.
         Console.Clear();
     }
 
@@ -109,21 +108,25 @@ public class BattleScreen : IScreen
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine($"  ★ LEVEL UP!");
             Console.WriteLine($"  {playerPoke.Specie.Name} reached Level {playerPoke.Level}!");
+            Console.ResetColor();
 
-            if (expResult.LearnedMoves.Any())
+            if (expResult.NewMovesLearned.Count > 0)
             {
-                foreach (var moveName in expResult.LearnedMoves)
+                Console.ForegroundColor = ConsoleColor.Blue;
+                foreach (var moveName in expResult.NewMovesLearned)
                 {
-                    Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine($"  [!] {playerPoke.Specie.Name} learned {moveName}!");
-                    Console.ResetColor();
                     Thread.Sleep(800);
                 }
+                Console.ResetColor();
+                
+                Console.WriteLine("  (Press any key to confirm new moves)");
+                Console.ReadKey(true);
             }
-
-            Console.ResetColor();
-            
-            Thread.Sleep(1500);
+            else 
+            {
+                Thread.Sleep(1500);
+            }
         }
 
         if (!string.IsNullOrEmpty(expResult.EvolutionName))
@@ -302,7 +305,7 @@ public class BattleScreen : IScreen
         var moves = _gameSession.Player.CurrentPokemon.Moves;
         Console.WriteLine("\n" + new string('═', 40));
         for (int i = 0; i < moves.Count; i++)
-            Console.WriteLine($" {i + 1}. {moves[i].Name} [{moves[i].Type}]");
+        Console.WriteLine($" {i + 1}. {moves[i].Name} [{moves[i].Type}]");
         Console.WriteLine(new string('═', 40));
         Console.Write("Select: ");
     }

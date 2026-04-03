@@ -145,30 +145,33 @@ public class Pokemon
         if (this.CurrentHP > MaxHP) this.CurrentHP = MaxHP;
 
         // 4. Inherit moves from the evolved template
-        this.Moves = evolvedTemplate.Moves;
+        // this.Moves = evolvedTemplate.Moves;
         
         // 5. Ensure fainted status is cleared if health was restored
         if (this.CurrentHP > 0) IsFainted = false;
     }
-    public List<string> LearnNewMoves()
-    {
-        var newLearnedMoves = new List<string>();
 
-        var movesAvailable = Specie.MoveSet
-            .Where(m => m.LevelLearned == this.Level)
+    public List<string> LearnNewMovesAtLevel(int levelToCheck)
+    {
+        List<string> newlyLearnedMoves = new List<string>();
+
+        var movesToLearn = Specie.MoveSet
+            .Where(m => m.LevelLearned == levelToCheck)
             .ToList();
 
-        foreach (var move in movesAvailable)
+        foreach (var move in movesToLearn)
         {
+            if (Moves.Any(m => m.Name == move.Name)) continue;
+
             if (Moves.Count >= 4)
             {
                 Moves.RemoveAt(0); 
             }
 
             Moves.Add(move);
-            newLearnedMoves.Add(move.Name);
+            newlyLearnedMoves.Add(move.Name);
         }
 
-        return newLearnedMoves;
+        return newlyLearnedMoves;
     }
 }
