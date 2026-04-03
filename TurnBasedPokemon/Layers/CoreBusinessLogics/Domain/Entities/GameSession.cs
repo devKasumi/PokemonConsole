@@ -1,7 +1,7 @@
 public class GameSession
 {
     // --- Core & Persistence ---
-    private IUserRepository _userRepo = new UserRepository();
+    private IUserRepository _userRepo;
     public User? CurrentUser { get; set; }
     public Player? Player => CurrentUser?.PlayerData;
 
@@ -19,6 +19,11 @@ public class GameSession
         (CurrentEnemyTeam != null && CurrentEnemyTeamIndex < CurrentEnemyTeam.Count) 
         ? CurrentEnemyTeam[CurrentEnemyTeamIndex] 
         : null;
+
+    public GameSession(IUserRepository userRepository)
+    {
+        _userRepo = userRepository;
+    }
 
     #region Battle Management
 

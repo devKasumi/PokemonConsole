@@ -1,31 +1,20 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
+// Persistence/Repositories/UserRepository.cs
 public class UserRepository : IUserRepository
 {
     private readonly string _filePath = "users.json";
-    private readonly JsonSerializerOptions _options;
+    private readonly IFileService _fileService;
 
-    public UserRepository()
+    public UserRepository(IFileService fileService)
     {
-        _options = new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            // Important: This handles the polymorphism ($type) automatically
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
+        _fileService = fileService;
     }
 
+    /// <summary>
+    /// Retrieves all users from the persistent storage.
+    /// </summary>
     public List<User> GetAll()
     {
-        if (!File.Exists(_filePath)) return new List<User>();
-        
-        try
-        {
-            string json = File.ReadAllText(_filePath);
-            return JsonSerializer.Deserialize<List<User>>(json, _options) ?? new List<User>();
-        }
-        catch { return new List<User>(); }
+        return _fileService.Load<List<User>>(_filePath) ?? new List<User>();
     }
 
     public User? GetByUsername(string username)
@@ -33,19 +22,19 @@ public class UserRepository : IUserRepository
         return GetAll().FirstOrDefault(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
     }
 
+    /// <summary>
+    /// Saves the user progress. Updates existing users or adds new ones.
+    /// </summary>
     public void Save(User user)
     {
         List<User> allUsers = GetAll();
-        
-        // Find if user exists to update, otherwise add new
         int index = allUsers.FindIndex(u => u.Username == user.Username);
         
         if (index >= 0)
-            allUsers[index] = user; // Update existing (Save Game)
+            allUsers[index] = user;
         else
-            allUsers.Add(user);    // Add new (Register)
+            allUsers.Add(user);
 
-        string json = JsonSerializer.Serialize(allUsers, _options);
-        File.WriteAllText(_filePath, json);
+        _fileService.Save(_filePath, allUsers);
     }
 }

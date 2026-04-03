@@ -3,15 +3,17 @@
     class Program
     {
         static void Main(string[] args)
-        {
+        {   
+            FileService fileService = new FileService();
+
             // Init Repo -> get Data first
-            UserRepository userRepo = new UserRepository();
-            PokedexRepository pokedexRepo = new PokedexRepository();
+            UserRepository userRepo = new UserRepository(fileService);
+            PokedexRepository pokedexRepo = new PokedexRepository(fileService);
             pokedexRepo.LoadData();
-            ItemRepository itemRepository = new ItemRepository();
+            ItemRepository itemRepository = new ItemRepository(fileService);
             itemRepository.LoadData();
 
-            GameSession gameSession = new GameSession();
+            GameSession gameSession = new GameSession(userRepo);
             PokemonSpawner pokemonSpawner = new PokemonSpawner(pokedexRepo);
             ItemSpawner itemSpawner = new ItemSpawner(itemRepository);
 

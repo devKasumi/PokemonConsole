@@ -1,47 +1,31 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-public class PokedexRepository
-
+// Persistence/Repositories/PokedexRepository.cs
+public class PokedexRepository : IPokedexRepository
 {
     private readonly string _filePath = "pokemon.json";
+    private readonly IFileService _fileService;
+    private Dictionary<string, PokemonSpecies> _cache = new();
 
-    private Dictionary<string, PokemonSpecies> _cache =
-        new Dictionary<string, PokemonSpecies>();
+    public PokedexRepository(IFileService fileService)
+    {
+        _fileService = fileService;
+    }
 
+    /// <summary>
+    /// Loads static Pokemon species data into memory.
+    /// </summary>
     public void LoadData()
     {
-        var json = File.ReadAllText(_filePath);
+        var speciesList = _fileService.Load<List<PokemonSpecies>>(_filePath) ?? new();
 
-        var options = new JsonSerializerOptions
+        _cache.Clear();
+        foreach (var species in speciesList)
         {
-            PropertyNameCaseInsensitive = true
-        };
-
-        options.Converters.Add(new JsonStringEnumConverter());
-
-        List<PokemonSpecies> speciesList =
-            JsonSerializer.Deserialize<List<PokemonSpecies>>(json, options)
-            ?? new List<PokemonSpecies>();
-
-        foreach (var s in speciesList)
-        {
-            // Console.WriteLine($"{s.Name} : {s.Types[0]}\n");
-            _cache[s.Name] = s;
+            _cache[species.Name] = species;
         }
 
-        Console.WriteLine($"Loaded {_cache.Count} Pokemon species.");
+        Console.WriteLine($"[PokedexRepository] Successfully loaded {_cache.Count} species.");
     }
 
-    public PokemonSpecies? GetSpecies(string name)
-    {
-        return _cache.ContainsKey(name)
-            ? _cache[name]
-            : null;
-    }
-
-    public PokemonSpecies? GetSpeciesById(int id)
-    {
-        // Search through the values of the dictionary to find a matching Id
-        return _cache.Values.FirstOrDefault(s => s.Id == id);
-    }
+    public PokemonSpecies? GetSpecies(string name) => _cache.GetValueOrDefault(name);
+    public PokemonSpecies? GetSpeciesById(int id) => _cache.Values.FirstOrDefault(s => s.Id == id);
 }
