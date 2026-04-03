@@ -150,4 +150,25 @@ public class Pokemon
         // 5. Ensure fainted status is cleared if health was restored
         if (this.CurrentHP > 0) IsFainted = false;
     }
+    public List<string> LearnNewMoves()
+    {
+        var newLearnedMoves = new List<string>();
+
+        var movesAvailable = Specie.MoveSet
+            .Where(m => m.LevelLearned == this.Level)
+            .ToList();
+
+        foreach (var move in movesAvailable)
+        {
+            if (Moves.Count >= 4)
+            {
+                Moves.RemoveAt(0); 
+            }
+
+            Moves.Add(move);
+            newLearnedMoves.Add(move.Name);
+        }
+
+        return newLearnedMoves;
+    }
 }

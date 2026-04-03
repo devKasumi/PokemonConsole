@@ -20,7 +20,8 @@
             WorldGenerationService worldGenerationService = new WorldGenerationService(gameSession, pokemonSpawner, itemSpawner);
             AuthenService authenService = new AuthenService(userRepo, gameSession);
             StoryService storyService = new StoryService(gameSession, pokemonSpawner, itemSpawner);
-            BattleService battleService = new BattleService(gameSession, userRepo, worldGenerationService);
+            ExpService expService = new ExpService(gameSession, worldGenerationService);
+            BattleService battleService = new BattleService(gameSession, userRepo, worldGenerationService, expService);
             CatchService catchService = new CatchService(gameSession);
             HealingService healingService = new HealingService(gameSession);
 

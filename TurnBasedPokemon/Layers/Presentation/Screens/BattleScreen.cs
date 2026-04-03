@@ -77,35 +77,63 @@ public class BattleScreen : IScreen
         if (enemyResult.IsPlayerFainted)
         {
             HandlePlayerFainted();
+            _gameSession.ClearBattle();
         }
     }
 
     private void HandleVictory()
     {
-        Console.WriteLine($"\n{_gameSession.CurrentEnemyPokemon.Specie.Name} fainted!");
-        Thread.Sleep(800);
+        var enemyName = _gameSession.CurrentEnemyPokemon.Specie.Name;
+        var playerPoke = _gameSession.Player.CurrentPokemon;
 
-        // Call Service handle reward logic (EXP, Level Up, Tiến hóa)
+        Console.Clear();
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"\n  [ VICTORY! ]");
+        Console.ResetColor();
+        Console.WriteLine($"  {enemyName} fainted!");
+        Thread.Sleep(1000);
+
         var expResult = _battleService.ProcessVictory();
 
-        // Display result from DTO
         Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine($"\nGained {expResult.ExpGained} EXP!");
+        Console.WriteLine($"\n  >> Gained {expResult.ExpGained} EXP!");
         Console.ResetColor();
+        
+        var expStats = ExpCalculator.GetProgressStats(playerPoke.Level, playerPoke.TotalExp);
+        PrintExpBar(expStats.currentExpInLevel, expStats.expNeededForNextLevel);
+        Thread.Sleep(1200);
 
         if (expResult.LeveledUp)
         {
+            Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine($"★ Level Up! Now at Level {_gameSession.Player.CurrentPokemon.Level}!");
+            Console.WriteLine($"  ★ LEVEL UP!");
+            Console.WriteLine($"  {playerPoke.Specie.Name} reached Level {playerPoke.Level}!");
+
+            if (expResult.LearnedMoves.Any())
+            {
+                foreach (var moveName in expResult.LearnedMoves)
+                {
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.WriteLine($"  [!] {playerPoke.Specie.Name} learned {moveName}!");
+                    Console.ResetColor();
+                    Thread.Sleep(800);
+                }
+            }
+
             Console.ResetColor();
-            Thread.Sleep(1000);
+            
+            Thread.Sleep(1500);
         }
 
         if (!string.IsNullOrEmpty(expResult.EvolutionName))
         {
-            DisplayEvolutionScene(expResult.EvolutionName);
+            DisplayEvolutionScene(expResult.OldName ?? playerPoke.Specie.Name, expResult.EvolutionName);
         }
 
+        Console.WriteLine("\n  Press any key to continue...");
+        Console.ReadKey(true);
+        
         CheckNextOpponent();
     }
 
@@ -149,16 +177,35 @@ public class BattleScreen : IScreen
         Thread.Sleep(1000);
     }
 
-    private void DisplayEvolutionScene(string newName)
+    private void DisplayEvolutionScene(string oldName, string newName)
     {
+        Console.Clear();
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine("\n\n  What?");
+        Thread.Sleep(1500);
+        
+        Console.WriteLine($"  {oldName} is evolving!");
+        Thread.Sleep(1000);
+        
+        for (int i = 0; i < 4; i++)
+        {
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Clear();
+            Thread.Sleep(100);
+            
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.Clear();
+            Thread.Sleep(250);
+        }
+
         Console.ForegroundColor = ConsoleColor.Magenta;
-        Console.WriteLine("\n*********************************");
-        Console.WriteLine($"What? Your Pokemon is evolving!");
-        Thread.Sleep(2000);
-        Console.WriteLine($"It evolved into {newName}!");
-        Console.WriteLine("*********************************\n");
+        Console.WriteLine($"\n  ⭐ CONGRATULATIONS! ⭐");
+        Console.WriteLine($"  Your {oldName} evolved into {newName}!");
         Console.ResetColor();
-        Console.ReadKey(true);
+        
+        Console.Beep(440, 200); 
+        Console.Beep(659, 200); 
+        Console.Beep(880, 500);
     }
 
     private void RenderEnemyPokemon(Pokemon pokemon)

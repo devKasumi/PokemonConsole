@@ -4,12 +4,14 @@ public class BattleService : IBattleService
     private readonly GameSession _gameSession;
     private readonly IUserRepository _userRepo;
     private readonly IWorldGenerationService _worldGen;
+    private readonly IExpService _expService;
 
-    public BattleService(GameSession session, IUserRepository userRepo, IWorldGenerationService worldGen)
+    public BattleService(GameSession session, IUserRepository userRepo, IWorldGenerationService worldGen, IExpService expService)
     {
         _gameSession = session;
         _userRepo = userRepo;
         _worldGen = worldGen;
+        _expService = expService;
     }
 
     public BattleTurnResult ExecutePlayerTurn(PokemonMove move)
@@ -44,16 +46,13 @@ public class BattleService : IBattleService
         var playerPoke = _gameSession.Player.CurrentPokemon;
         var enemyPoke = _gameSession.CurrentEnemyPokemon;
 
-        int expGained = ExpCalculator.CalculateExpGain(_gameSession.IsTrainerBattle, enemyPoke.Specie.BaseExp, enemyPoke.Level, playerPoke.Level);
-        playerPoke.GainExperience(expGained);
+        int expGained = _expService.CalculateExpGain(playerPoke, enemyPoke);
 
-        bool leveledUp = false;
-        string? evolutionName = null;
+        var result = _expService.GrantExperience(playerPoke, expGained);
 
-        // Check Level up & Evolution logic... 
-        
         // _userRepo.Save(_gameSession.CurrentUser);
-        return new ProcessExpResult(expGained, leveledUp, evolutionName);
+
+        return result;
     }
 
     public bool CanSwitchPokemon(Pokemon target)
