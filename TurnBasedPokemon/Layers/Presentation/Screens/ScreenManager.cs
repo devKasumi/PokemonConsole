@@ -43,7 +43,6 @@ public class ScreenManager
         {
             CurrentScreen = screenType;
             _pendingData = data;
-            // Console.WriteLine($"swith to: {_pendingData}");
         }
         else
         {

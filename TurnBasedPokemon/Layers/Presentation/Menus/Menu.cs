@@ -74,7 +74,6 @@ public static class Menu
     {
         Console.SetCursorPosition(0, 13);
         Console.WriteLine(new string('═', 60));
-        // Console.WriteLine($" What will {_playerActivePokemon.Name} do?");
         Console.WriteLine(new string('─', 60));
         Console.WriteLine("  1. FIGHT          2. BAG");
         Console.WriteLine("  3. POKEMON        4. RUN");

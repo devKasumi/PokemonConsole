@@ -44,17 +44,9 @@ public class LoginScreen : IScreen
 
     private void HandleLogin()
     {
-        // Console.Write("Username: ");
-        // string username = Console.ReadLine() ?? string.Empty;
-        // Console.Write("Password: ");
-        // string password = Console.ReadLine() ?? string.Empty;
-        // var success = _authenService.Login(new LoginRequest(username, password));
-        // Console.Clear();
         Menu.PrintHeader("LOGIN TO YOUR ADVENTURE");
-        
         Console.Write("  Enter Username: ");
         string user = Console.ReadLine() ?? "";
-        
         Console.Write("  Enter Password: ");
         string pass = Console.ReadLine() ?? ""; // Helper for hidden password or just ReadLine
 

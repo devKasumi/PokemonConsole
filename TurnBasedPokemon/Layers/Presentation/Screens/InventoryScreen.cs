@@ -105,7 +105,7 @@ public class InventoryScreen : IScreen
                 return false;
             }
 
-            // Gọi CatchService để xử lý logic (tính tỷ lệ bắt...)
+            // Call CatchService to handle the logic (...)
             // bool success = _catchService.AttemptCatch(_gameSession.Player, target, ball);
             CatchResult result = _catchService.ExecuteCapture(ball, target);
             bool success = result.IsCaught;

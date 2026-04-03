@@ -29,7 +29,6 @@ public class StoryScreen : IScreen
         if (_gameSession.Player.PokemonTeam.Count == 0)
         {
             ShowStarterMenu();
-            // return;
         }
 
         if (_storyService.ShouldPlayNarrative())
@@ -105,7 +104,6 @@ public class StoryScreen : IScreen
         Console.ResetColor();
         Console.Write("  What would you like to do? Select action: ");
 
-        // if (!int.TryParse(Console.ReadLine(), out int choice)) return;
         string input = Console.ReadLine() ?? "";
         if (int.TryParse(input, out int choice))
         {
@@ -254,7 +252,7 @@ public class StoryScreen : IScreen
             if (!Console.KeyAvailable) Thread.Sleep(15);
         }
         
-        while (Console.KeyAvailable) Console.ReadKey(true); // Xóa buffer phím
+        while (Console.KeyAvailable) Console.ReadKey(true);
         Console.ResetColor();
         Console.WriteLine("\n(Press any key to continue...)");
         Console.ReadKey(true);

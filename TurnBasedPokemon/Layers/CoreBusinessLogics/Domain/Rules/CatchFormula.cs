@@ -35,11 +35,10 @@ public static class CatchFormula
         // 5. Generate a random value, M, between 0 and 255.
         int M = _rand.Next(0, 256);
 
-        // 6. Calculate f (LUÔN PHẢI TÍNH VÌ NÓ DÙNG CHO CẢ VIỆC BẮT VÀ RUNG)
+        // 6. Calculate f
         int ballValueForF = (ball.Name == "Great Ball") ? 8 : 12;
         
         // f = floor( (HPmax * 255 * 4) / (HPcurrent * Ball) )
-        // Dùng double/long để không bị sai số nguyên
         double fCalc = ((double)target.MaxHP * 255.0 * 4.0) / ((double)target.CurrentHP * ballValueForF);
         int f = (int)Math.Floor(fCalc);
         f = Math.Clamp(f, 1, 255); // The minimum value is 1 and maximum is 255.

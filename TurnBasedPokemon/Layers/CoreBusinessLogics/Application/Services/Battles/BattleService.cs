@@ -4,7 +4,6 @@ public class BattleService : IBattleService
     private readonly GameSession _gameSession;
     private readonly IUserRepository _userRepo;
     private readonly IWorldGenerationService _worldGen;
-    // private readonly 
 
     public BattleService(GameSession session, IUserRepository userRepo, IWorldGenerationService worldGen)
     {
@@ -18,7 +17,6 @@ public class BattleService : IBattleService
         var playerPoke = _gameSession?.Player?.CurrentPokemon;
         var enemyPoke = _gameSession?.CurrentEnemyPokemon;
         
-        // 1. Tính sát thương
         int damage = DamageCalculator.CalculateDamage(playerPoke, enemyPoke, move);
         enemyPoke.TakeDamage(damage);
 
@@ -32,7 +30,6 @@ public class BattleService : IBattleService
         var enemyPoke = _gameSession.CurrentEnemyPokemon;
         var playerPoke = _gameSession.Player.CurrentPokemon;
 
-        // AI đơn giản
         var move = enemyPoke.Moves[new Random().Next(enemyPoke.Moves.Count)];
         int damage = DamageCalculator.CalculateDamage(enemyPoke, playerPoke, move);
         playerPoke.TakeDamage(damage);
@@ -53,9 +50,9 @@ public class BattleService : IBattleService
         bool leveledUp = false;
         string? evolutionName = null;
 
-        // Check Level up & Evolution logic... (Đưa logic từ Screen vào đây)
+        // Check Level up & Evolution logic... 
         
-        // _userRepo.Save(_gameSession.CurrentUser); // Lưu sau trận đấu
+        // _userRepo.Save(_gameSession.CurrentUser);
         return new ProcessExpResult(expGained, leveledUp, evolutionName);
     }
 

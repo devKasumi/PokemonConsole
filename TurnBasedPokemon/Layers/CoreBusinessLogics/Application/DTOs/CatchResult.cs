@@ -5,7 +5,6 @@ public record CatchResult
     public string DisplayMessage { get; init; } = string.Empty;
     public ConsoleColor MessageColor { get; init; } = ConsoleColor.White;
 
-    // Static Factory để tạo kết quả nhanh và tường minh
     public static CatchResult Success(int shakes, string pokemonName) => new()
     {
         IsCaught = true,
