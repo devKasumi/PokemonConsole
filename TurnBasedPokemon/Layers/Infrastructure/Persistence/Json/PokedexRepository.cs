@@ -24,6 +24,7 @@ public class PokedexRepository : IPokedexRepository
         }
 
         Console.WriteLine($"[PokedexRepository] Successfully loaded {_cache.Count} species.");
+        Console.ReadKey(true);
     }
 
     public PokemonSpecies? GetSpecies(string name) => _cache.GetValueOrDefault(name);
