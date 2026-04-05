@@ -291,7 +291,7 @@ public class BattleScreen : IScreen
         Console.WriteLine("\n" + new string('═', 60));
         Console.WriteLine($" What will {_gameSession.Player.CurrentPokemon.Specie.Name} do?");
         Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine("  [1] ⚔️ FIGHT          [2] 🎒 BAG");
+        Console.WriteLine("  [1] ⚔️ FIGHT           [2] 🎒 BAG");
         Console.WriteLine("  [3] 🔁 POKEMON        [4] 🏃 RUN");
         
         Console.ForegroundColor = ConsoleColor.Cyan;

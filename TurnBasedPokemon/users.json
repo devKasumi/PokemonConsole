@@ -1,20 +1,5 @@
 [
   {
-    "Username": "dadad",
-    "Password": "$2a$11$z6cfpkSx4o4LFJoixVBIcenHuvIP5CIDv2Yx0TyxhByrIba2Q2gdC",
-    "PlayerData": {
-      "CurrentPhase": 1,
-      "CurrentLocation": "Pallet Town",
-      "Badges": [],
-      "PokemonTeam": [],
-      "Inventory": {
-        "0": {},
-        "1": {},
-        "2": {}
-      }
-    }
-  },
-  {
     "Username": "nhonbonchel",
     "Password": "$2a$11$5dyD/16LcjeNtsErhekTBOTLyr1TcVFAC1Upi0QKDmiuneIBIUf/S",
     "PlayerData": {
@@ -138,55 +123,7 @@
       ],
       "Inventory": {
         "0": {},
-        "1": {
-          "Poke Ball": [
-            {
-              "$type": "capture",
-              "CatchRateMultiplier": 1,
-              "Id": 4,
-              "Name": "Poke Ball",
-              "Description": "A tool for catching Pokemon.",
-              "Category": "Capture",
-              "Price": 200
-            },
-            {
-              "$type": "capture",
-              "CatchRateMultiplier": 1,
-              "Id": 4,
-              "Name": "Poke Ball",
-              "Description": "A tool for catching Pokemon.",
-              "Category": "Capture",
-              "Price": 200
-            },
-            {
-              "$type": "capture",
-              "CatchRateMultiplier": 1,
-              "Id": 4,
-              "Name": "Poke Ball",
-              "Description": "A tool for catching Pokemon.",
-              "Category": "Capture",
-              "Price": 200
-            },
-            {
-              "$type": "capture",
-              "CatchRateMultiplier": 1,
-              "Id": 4,
-              "Name": "Poke Ball",
-              "Description": "A tool for catching Pokemon.",
-              "Category": "Capture",
-              "Price": 200
-            },
-            {
-              "$type": "capture",
-              "CatchRateMultiplier": 1,
-              "Id": 4,
-              "Name": "Poke Ball",
-              "Description": "A tool for catching Pokemon.",
-              "Category": "Capture",
-              "Price": 200
-            }
-          ]
-        },
+        "1": {},
         "2": {}
       },
       "CurrentPokemon": {
@@ -285,7 +222,7 @@
         },
         "Level": 5,
         "TotalExp": 0,
-        "CurrentHP": 42,
+        "CurrentHP": 29,
         "MaxHP": 42,
         "Moves": [
           {

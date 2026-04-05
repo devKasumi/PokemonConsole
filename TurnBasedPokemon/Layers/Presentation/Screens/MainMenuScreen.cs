@@ -111,8 +111,31 @@ public class MainMenuScreen : IScreen
 
     private void HandleSaveGame()
     {
-        // TODO: Implement save game logic
+        Console.CursorVisible = false; 
+        Console.WriteLine();
+        
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        
+        // The text we want to print slowly
+        string savingText = "Saving progress... Please do not turn off the power.";
+        
+        // Typewriter effect: print character by character
+        foreach (char c in savingText)
+        {
+            Console.Write(c);
+            Thread.Sleep(50); // Wait 50 milliseconds between each character
+        }
+        Console.WriteLine();
+        
         _gameSession.SaveProgress();
+
+        Console.ResetColor();
+        
+        Console.WriteLine("\nPress any key to continue...");
+        Console.ReadKey(true); // Wait for player input
+        
+        // Restore the cursor before returning to the main menu
+        Console.CursorVisible = true;
     }
 
     private void HandleBackToLogin()

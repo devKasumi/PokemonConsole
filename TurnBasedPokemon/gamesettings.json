@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "PokemonDb": "Server=127.0.0.1;Database=pokemondb;Uid=root;Pwd=yatokami11235813@;"
+  }
+}

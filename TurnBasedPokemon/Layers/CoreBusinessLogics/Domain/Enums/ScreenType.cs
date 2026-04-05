@@ -5,6 +5,5 @@ public enum ScreenType
     Story,
     WildArea,
     Battle,
-    Inventory,
-    // Exit
+    Inventory
 }

@@ -1,9 +1,10 @@
 // File: Application/Services/PokemonSpawner.cs
 public class PokemonSpawner
 {
-    private readonly PokedexRepository _pokedexRepo;
+    // private readonly PokedexRepository _pokedexRepo;
+    private readonly IPokedexRepository _pokedexRepo;
 
-    public PokemonSpawner(PokedexRepository pokedexRepo)
+    public PokemonSpawner(IPokedexRepository pokedexRepo)
     {
         _pokedexRepo = pokedexRepo;
     }

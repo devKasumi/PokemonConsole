@@ -8,7 +8,7 @@ public class Player
     public List<string> Badges { get; set; } = new();
     
     public List<Pokemon> PokemonTeam { get; set; } = new();
-    public Dictionary<int, Dictionary<string, List<Item>>> Inventory { get; private set; } = new();
+    public Dictionary<int, Dictionary<string, List<Item>>> Inventory { get; set; } = new();
     public Pokemon CurrentPokemon { get; set; }
 
     public Player()
@@ -24,18 +24,6 @@ public class Player
         if (!Badges.Contains(badgeName))
         {
             Badges.Add(badgeName);
-        }
-    }
-
-    public void AddPokemon(Pokemon pokemon)
-    {
-        if (PokemonTeam.Count < 6)
-        {
-            PokemonTeam.Add(pokemon);
-        }
-        else
-        {
-            Console.WriteLine("Your team is full! You can't add more Pokemon.");
         }
     }
 

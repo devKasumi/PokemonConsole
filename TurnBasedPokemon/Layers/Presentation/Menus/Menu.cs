@@ -40,10 +40,7 @@ public static class Menu
         Console.WriteLine("============================================================");
         
         Console.ForegroundColor = ConsoleColor.White;
-        // string location = _session.Player?.CurrentLocation ?? "Unknown";
-        // int badges = _session.Player?.Badges?.Count ?? 0;
         Console.WriteLine($"  Welcome back, Trainer!");
-        // Console.WriteLine($"  Location: [ {location} ] | Badges: [ {badges}/8 ]");
         
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine("============================================================");
@@ -69,17 +66,7 @@ public static class Menu
         Console.WriteLine("3. Goodbye (Leave Pokemon Center)");
         Console.Write("Select: ");
     }
-
-    public static void BattleMenu()
-    {
-        Console.SetCursorPosition(0, 13);
-        Console.WriteLine(new string('═', 60));
-        Console.WriteLine(new string('─', 60));
-        Console.WriteLine("  1. FIGHT          2. BAG");
-        Console.WriteLine("  3. POKEMON        4. RUN");
-        Console.WriteLine(new string('═', 60));
-    }
-
+    
     public static void InventoryMenu()
     {
         Console.WriteLine("=== Inventory ===");

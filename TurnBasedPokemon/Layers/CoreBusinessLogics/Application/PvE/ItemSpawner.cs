@@ -1,10 +1,10 @@
 // File: Application/Services/ItemSpawner.cs
 public class ItemSpawner
 {
-    private readonly ItemRepository _itemRepo;
+    private readonly IItemRepository _itemRepo;
     private readonly Random _random = new Random();
 
-    public ItemSpawner(ItemRepository itemRepo)
+    public ItemSpawner(IItemRepository itemRepo)
     {
         _itemRepo = itemRepo;
     }
