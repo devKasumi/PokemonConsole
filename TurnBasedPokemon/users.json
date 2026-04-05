@@ -6,9 +6,12 @@
       "CurrentPhase": 1,
       "CurrentLocation": "Pallet Town",
       "Badges": [],
-      "PokemonTeam": [
-        { "Name": "Pikachu", "Level": 5 }
-      ]
+      "PokemonTeam": [],
+      "Inventory": {
+        "0": {},
+        "1": {},
+        "2": {}
+      }
     }
   },
   {
@@ -19,8 +22,290 @@
       "CurrentLocation": "Pallet Town",
       "Badges": [],
       "PokemonTeam": [
-        { "Name": "Pikachu", "Level": 5 }
-      ]
+        {
+          "Specie": {
+            "Id": 4,
+            "Name": "Charmander",
+            "Types": [
+              "Fire"
+            ],
+            "BaseStats": {
+              "HP": 42,
+              "Attack": 57,
+              "Defense": 47,
+              "SpAttack": 66,
+              "SpDefense": 55,
+              "Speed": 71
+            },
+            "MoveSet": [
+              {
+                "Name": "Scratch",
+                "Type": "Normal",
+                "Power": 40,
+                "PP": 0,
+                "MoveType": "Physical",
+                "LevelLearned": 1
+              },
+              {
+                "Name": "Ember",
+                "Type": "Fire",
+                "Power": 40,
+                "PP": 0,
+                "MoveType": "Special",
+                "LevelLearned": 7
+              },
+              {
+                "Name": "Dragon Breath",
+                "Type": "Dragon",
+                "Power": 60,
+                "PP": 0,
+                "MoveType": "Special",
+                "LevelLearned": 12
+              },
+              {
+                "Name": "Fire Fang",
+                "Type": "Fire",
+                "Power": 65,
+                "PP": 0,
+                "MoveType": "Physical",
+                "LevelLearned": 17
+              },
+              {
+                "Name": "Fire Spin",
+                "Type": "Fire",
+                "Power": 35,
+                "PP": 0,
+                "MoveType": "Special",
+                "LevelLearned": 20
+              },
+              {
+                "Name": "Slash",
+                "Type": "Normal",
+                "Power": 70,
+                "PP": 0,
+                "MoveType": "Physical",
+                "LevelLearned": 28
+              },
+              {
+                "Name": "Flamethrower",
+                "Type": "Fire",
+                "Power": 90,
+                "PP": 0,
+                "MoveType": "Special",
+                "LevelLearned": 34
+              },
+              {
+                "Name": "Dragon Rush",
+                "Type": "Dragon",
+                "Power": 100,
+                "PP": 0,
+                "MoveType": "Physical",
+                "LevelLearned": 42
+              },
+              {
+                "Name": "Flare Blitz",
+                "Type": "Fire",
+                "Power": 120,
+                "PP": 0,
+                "MoveType": "Physical",
+                "LevelLearned": 50
+              }
+            ],
+            "CatchRate": 45,
+            "BaseExp": 65,
+            "EvolutionId": 5,
+            "EvolutionLevel": 16
+          },
+          "Level": 5,
+          "TotalExp": 0,
+          "CurrentHP": 42,
+          "MaxHP": 42,
+          "Moves": [
+            {
+              "Name": "Scratch",
+              "Type": "Normal",
+              "Power": 40,
+              "PP": 0,
+              "MoveType": "Physical",
+              "LevelLearned": 1
+            }
+          ],
+          "IsFainted": false,
+          "Status": "None",
+          "CurrentExp": 0,
+          "MaxExpForNextLevel": 0
+        }
+      ],
+      "Inventory": {
+        "0": {},
+        "1": {
+          "Poke Ball": [
+            {
+              "$type": "capture",
+              "CatchRateMultiplier": 1,
+              "Id": 4,
+              "Name": "Poke Ball",
+              "Description": "A tool for catching Pokemon.",
+              "Category": "Capture",
+              "Price": 200
+            },
+            {
+              "$type": "capture",
+              "CatchRateMultiplier": 1,
+              "Id": 4,
+              "Name": "Poke Ball",
+              "Description": "A tool for catching Pokemon.",
+              "Category": "Capture",
+              "Price": 200
+            },
+            {
+              "$type": "capture",
+              "CatchRateMultiplier": 1,
+              "Id": 4,
+              "Name": "Poke Ball",
+              "Description": "A tool for catching Pokemon.",
+              "Category": "Capture",
+              "Price": 200
+            },
+            {
+              "$type": "capture",
+              "CatchRateMultiplier": 1,
+              "Id": 4,
+              "Name": "Poke Ball",
+              "Description": "A tool for catching Pokemon.",
+              "Category": "Capture",
+              "Price": 200
+            },
+            {
+              "$type": "capture",
+              "CatchRateMultiplier": 1,
+              "Id": 4,
+              "Name": "Poke Ball",
+              "Description": "A tool for catching Pokemon.",
+              "Category": "Capture",
+              "Price": 200
+            }
+          ]
+        },
+        "2": {}
+      },
+      "CurrentPokemon": {
+        "Specie": {
+          "Id": 4,
+          "Name": "Charmander",
+          "Types": [
+            "Fire"
+          ],
+          "BaseStats": {
+            "HP": 42,
+            "Attack": 57,
+            "Defense": 47,
+            "SpAttack": 66,
+            "SpDefense": 55,
+            "Speed": 71
+          },
+          "MoveSet": [
+            {
+              "Name": "Scratch",
+              "Type": "Normal",
+              "Power": 40,
+              "PP": 0,
+              "MoveType": "Physical",
+              "LevelLearned": 1
+            },
+            {
+              "Name": "Ember",
+              "Type": "Fire",
+              "Power": 40,
+              "PP": 0,
+              "MoveType": "Special",
+              "LevelLearned": 7
+            },
+            {
+              "Name": "Dragon Breath",
+              "Type": "Dragon",
+              "Power": 60,
+              "PP": 0,
+              "MoveType": "Special",
+              "LevelLearned": 12
+            },
+            {
+              "Name": "Fire Fang",
+              "Type": "Fire",
+              "Power": 65,
+              "PP": 0,
+              "MoveType": "Physical",
+              "LevelLearned": 17
+            },
+            {
+              "Name": "Fire Spin",
+              "Type": "Fire",
+              "Power": 35,
+              "PP": 0,
+              "MoveType": "Special",
+              "LevelLearned": 20
+            },
+            {
+              "Name": "Slash",
+              "Type": "Normal",
+              "Power": 70,
+              "PP": 0,
+              "MoveType": "Physical",
+              "LevelLearned": 28
+            },
+            {
+              "Name": "Flamethrower",
+              "Type": "Fire",
+              "Power": 90,
+              "PP": 0,
+              "MoveType": "Special",
+              "LevelLearned": 34
+            },
+            {
+              "Name": "Dragon Rush",
+              "Type": "Dragon",
+              "Power": 100,
+              "PP": 0,
+              "MoveType": "Physical",
+              "LevelLearned": 42
+            },
+            {
+              "Name": "Flare Blitz",
+              "Type": "Fire",
+              "Power": 120,
+              "PP": 0,
+              "MoveType": "Physical",
+              "LevelLearned": 50
+            }
+          ],
+          "CatchRate": 45,
+          "BaseExp": 65,
+          "EvolutionId": 5,
+          "EvolutionLevel": 16
+        },
+        "Level": 5,
+        "TotalExp": 0,
+        "CurrentHP": 42,
+        "MaxHP": 42,
+        "Moves": [
+          {
+            "Name": "Scratch",
+            "Type": "Normal",
+            "Power": 40,
+            "PP": 0,
+            "MoveType": "Physical",
+            "LevelLearned": 1
+          }
+        ],
+        "IsFainted": false,
+        "Status": "None",
+        "CurrentExp": 0,
+        "MaxExpForNextLevel": 0
+      }
     }
+  },
+  {
+    "Username": "kasumi",
+    "Password": "$2a$11$a817BzOEOGHNFMOyGVqxoO6wGWwBQpJMnyPJxfkNebB7nTu0oxX7e"
   }
 ]

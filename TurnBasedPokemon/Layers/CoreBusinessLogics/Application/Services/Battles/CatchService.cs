@@ -18,7 +18,7 @@ public class CatchService : ICatchService
 
         if (result.IsCaught)
         {
-            player?.AddPokemon(targetPokemon);
+            player?.PokemonTeam.Add(targetPokemon);
             _gameSession.ClearBattle();
         }
 

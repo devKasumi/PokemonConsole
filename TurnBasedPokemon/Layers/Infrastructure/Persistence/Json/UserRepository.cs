@@ -28,7 +28,7 @@ public class UserRepository : IUserRepository
     public void Save(User user)
     {
         List<User> allUsers = GetAll();
-        int index = allUsers.FindIndex(u => u.Username == user.Username);
+        int index = allUsers.FindIndex(u => u.Username.Equals(user.Username, StringComparison.OrdinalIgnoreCase));
         
         if (index >= 0)
             allUsers[index] = user;

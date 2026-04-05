@@ -1,13 +1,27 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 public class FileService : IFileService
 {
-    private readonly JsonSerializerOptions _options = new()
+    private readonly JsonSerializerOptions _options;
+
+    public FileService()
     {
-        WriteIndented = true,
-        PropertyNameCaseInsensitive = true,
-        IncludeFields = true
-    };
+        _options = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            PropertyNameCaseInsensitive = true,
+            IncludeFields = true,
+            // 1. IMPORTANT: Help read/write Enum under text (Grass, Fire...) instead of numbers (0, 1...)
+            Converters = { new JsonStringEnumConverter() },
+            
+            // 2. Prevent infinite loops when serializing objects with circular references (e.g., User -> PokemonTeam -> Pokemon -> back to User)
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            
+            // 3. Ignore null values to reduce file size and avoid cluttering JSON with empty fields
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
+    }
 
     public void Save<T>(string fileName, T data)
     {

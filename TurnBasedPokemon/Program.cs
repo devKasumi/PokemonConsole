@@ -4,14 +4,13 @@
     {
         static void Main(string[] args)
         {   
+            // Init File Service
             FileService fileService = new FileService();
 
             // Init Repo -> get Data first
             UserRepository userRepo = new UserRepository(fileService);
             PokedexRepository pokedexRepo = new PokedexRepository(fileService);
-            pokedexRepo.LoadData();
             ItemRepository itemRepository = new ItemRepository(fileService);
-            itemRepository.LoadData();
 
             GameSession gameSession = new GameSession(userRepo);
             PokemonSpawner pokemonSpawner = new PokemonSpawner(pokedexRepo);
@@ -27,7 +26,8 @@
             CatchService catchService = new CatchService(gameSession);
             HealingService healingService = new HealingService(gameSession);
 
-            // init Application
+            // Init Application
+            // Register Screens
             screenManager.RegisterScreen(ScreenType.Login, new LoginScreen(screenManager, gameSession, authenService));
             screenManager.RegisterScreen(ScreenType.MainMenu, new MainMenuScreen(screenManager, gameSession));
             screenManager.RegisterScreen(ScreenType.Story, new StoryScreen(screenManager, gameSession, storyService));

@@ -1,3 +1,4 @@
+using System.Threading;
 using Screens;
 
 public class MainMenuScreen : IScreen
@@ -46,7 +47,61 @@ public class MainMenuScreen : IScreen
 
     private void HandleLoadGame()
     {
-        _screenManager.SwitchTo(ScreenType.Story);
+        Console.Clear();
+        Console.WriteLine("=================================");
+        Console.WriteLine("           LOAD GAME             ");
+        Console.WriteLine("=================================");
+
+        // 1. Safety Check: Ensure there is a username to look for
+        // If CurrentUser is null, it means they haven't even logged in yet
+        if (_gameSession.CurrentUser == null || string.IsNullOrEmpty(_gameSession.CurrentUser.Username))
+        {
+            Console.WriteLine("\n[Error] No active session found. Please login again.");
+            Console.ReadKey();
+            _screenManager.SwitchTo(ScreenType.Login);
+            return;
+        }
+
+        string username = _gameSession.CurrentUser.Username;
+        Console.WriteLine($"\n[System] Loading save data for: {username}...");
+        
+        // 2. Call LoadProgress from GameSession
+        // This will update _gameSession.CurrentUser with data from JSON
+        bool success = _gameSession.LoadProgress(username);
+
+        if (success)
+        {
+            // 3. Check if the loaded user actually has PlayerData
+            // (Sometimes a user exists but has never started a game)
+            if (_gameSession.Player == null)
+            {
+                Console.WriteLine("\n[Notice] Account found, but no character data exists.");
+                Console.WriteLine("Please select 'Start New Game' to create your character.");
+                Console.WriteLine("\nPress any key to return...");
+                Console.ReadKey();
+                _screenManager.SwitchTo(ScreenType.MainMenu);
+                return;
+            }
+
+            // 4. Success feedback
+            Console.WriteLine($"\n[Success] Welcome back, {username}!");
+            Console.WriteLine($"[Stats] Phase: {_gameSession.Player.CurrentPhase}");
+            Console.WriteLine($"[Team] Pokemon: {_gameSession.Player.PokemonTeam.Count}");
+            
+            Console.WriteLine("\nPress any key to continue your journey...");
+            Console.ReadKey();
+
+            // 5. Transition to Story Screen
+            _screenManager.SwitchTo(ScreenType.Story);
+        }
+        else
+        {
+            // Case: Username not found in users.json
+            Console.WriteLine("\n[Error] Save file not found.");
+            Console.WriteLine("Please start a new adventure first!");
+            Console.ReadKey();
+            _screenManager.SwitchTo(ScreenType.MainMenu);
+        }
     }
 
     private void HandlePvP()
@@ -57,6 +112,7 @@ public class MainMenuScreen : IScreen
     private void HandleSaveGame()
     {
         // TODO: Implement save game logic
+        _gameSession.SaveProgress();
     }
 
     private void HandleBackToLogin()

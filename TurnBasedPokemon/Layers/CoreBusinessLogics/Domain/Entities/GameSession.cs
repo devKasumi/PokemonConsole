@@ -97,7 +97,29 @@ public class GameSession
         _userRepo.Save(CurrentUser);
     }
 
-    private void SaveProgress()
+    public bool LoadProgress(string username)
+    {
+        var loadedUser = _userRepo.GetByUsername(username);
+        
+        if (loadedUser != null)
+        {
+            Console.WriteLine(loadedUser.PlayerData != null 
+                ? $"[LoadProgress] User '{username}' loaded with player data." 
+                : $"[LoadProgress] User '{username}' loaded but has no player data.");
+
+
+            Console.WriteLine($"Current PlayerData: {(loadedUser.PlayerData != null ? "Exists" : "Null")}");
+            Console.WriteLine($"Current PLayer's PokemonTeam Count: {(loadedUser.PlayerData != null ? loadedUser.PlayerData.PokemonTeam.Count : "N/A")}");
+            Console.WriteLine($"Current Player's Pokemon: {loadedUser.PlayerData?.CurrentPokemon.Specie.Name}");
+
+            CurrentUser = loadedUser; 
+            return true;
+        }
+        
+        return false;
+    }
+
+    public void SaveProgress()
     {
         if (CurrentUser != null)
             _userRepo.Save(CurrentUser);

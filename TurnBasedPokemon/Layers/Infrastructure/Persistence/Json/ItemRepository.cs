@@ -8,12 +8,13 @@ public class ItemRepository : IItemRepository
     public ItemRepository(IFileService fileService)
     {
         _fileService = fileService;
+        LoadData();
     }
 
     /// <summary>
     /// Loads item data from the file and populates the memory cache.
     /// </summary>
-    public void LoadData()
+    private void LoadData()
     {
         var dtos = _fileService.Load<List<ItemDTO>>(_filePath) ?? new List<ItemDTO>();
 

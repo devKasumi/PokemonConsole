@@ -8,12 +8,13 @@ public class PokedexRepository : IPokedexRepository
     public PokedexRepository(IFileService fileService)
     {
         _fileService = fileService;
+        LoadData();
     }
 
     /// <summary>
     /// Loads static Pokemon species data into memory.
     /// </summary>
-    public void LoadData()
+    private void LoadData()
     {
         var speciesList = _fileService.Load<List<PokemonSpecies>>(_filePath) ?? new();
 
@@ -24,7 +25,6 @@ public class PokedexRepository : IPokedexRepository
         }
 
         Console.WriteLine($"[PokedexRepository] Successfully loaded {_cache.Count} species.");
-        Console.ReadKey(true);
     }
 
     public PokemonSpecies? GetSpecies(string name) => _cache.GetValueOrDefault(name);

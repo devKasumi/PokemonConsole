@@ -5,10 +5,9 @@ public class Player
     // Progress Information
     public int CurrentPhase { get; set; } = 1;  // Starting phase
     public string CurrentLocation { get; set; } = "Pallet Town";  // Starting location
-    public List<string> Badges { get; private set; } = new();
+    public List<string> Badges { get; set; } = new();
     
-    public List<Pokemon> PokemonTeam { get; private set; } = new();
-    // public List<Item> Inventory { get; private set; } = new();
+    public List<Pokemon> PokemonTeam { get; set; } = new();
     public Dictionary<int, Dictionary<string, List<Item>>> Inventory { get; private set; } = new();
     public Pokemon CurrentPokemon { get; set; }
 
