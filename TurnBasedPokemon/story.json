@@ -501,6 +501,7 @@
               "Role": "Elite Four",
               "Dialogue": ["Welcome to the Pokémon League.", "I am Lorelei of the Elite Four.", "No one can best me when it comes to icy Pokémon. Your Pokémon will be at my mercy when they are frozen solid!"],
               "Action": "StartBattle",
+              "RequiredBadge": 8,
               "PokemonTeam": [
                 { "Name": "Dewgong", "Level": 52, "MoveSet": [{ "Name": "Ice Beam", "Power": 90, "MoveType": "Special", "Type": "Ice" }, { "Name": "Surf", "Power": 90, "MoveType": "Special", "Type": "Water" }, { "Name": "Signal Beam", "Power": 75, "MoveType": "Special", "Type": "Bug" }, { "Name": "Take Down", "Power": 90, "MoveType": "Physical", "Type": "Normal" }] },
                 { "Name": "Cloyster", "Level": 51, "MoveSet": [{ "Name": "Spike Cannon", "Power": 20, "MoveType": "Physical", "Type": "Normal" }, { "Name": "Clamp", "Power": 35, "MoveType": "Physical", "Type": "Water" }, { "Name": "Ice Beam", "Power": 90, "MoveType": "Special", "Type": "Ice" }, { "Name": "Hydro Pump", "Power": 110, "MoveType": "Special", "Type": "Water" }] },
@@ -515,6 +516,7 @@
               "Role": "Elite Four",
               "Dialogue": ["I am Bruno of the Elite Four!", "Through rigorous training, people and Pokémon can become stronger.", "We will grind you down with our superior might!"],
               "Action": "StartBattle",
+              "RequiredBadge": 8,
               "PokemonTeam": [
                 { "Name": "Onix", "Level": 51, "MoveSet": [{ "Name": "Rock Slide", "Power": 75, "MoveType": "Physical", "Type": "Rock" }, { "Name": "Earthquake", "Power": 100, "MoveType": "Physical", "Type": "Ground" }, { "Name": "Iron Tail", "Power": 100, "MoveType": "Physical", "Type": "Steel" }, { "Name": "Bind", "Power": 15, "MoveType": "Physical", "Type": "Normal" }] },
                 { "Name": "Hitmonchan", "Level": 53, "MoveSet": [{ "Name": "Fire Punch", "Power": 75, "MoveType": "Physical", "Type": "Fire" }, { "Name": "Ice Punch", "Power": 75, "MoveType": "Physical", "Type": "Ice" }, { "Name": "Thunder Punch", "Power": 75, "MoveType": "Physical", "Type": "Electric" }, { "Name": "Sky Uppercut", "Power": 85, "MoveType": "Physical", "Type": "Fighting" }] },
@@ -529,6 +531,7 @@
               "Role": "Elite Four",
               "Dialogue": ["I am Agatha of the Elite Four.", "Oak's taken a lot of interest in you, child.", "That old duffer was once tough and handsome! That was decades ago.", "Now he just wants to fiddle with his Pokédex! I'll show you how a real trainer fights!"],
               "Action": "StartBattle",
+              "RequiredBadge": 8,
               "PokemonTeam": [
                 { "Name": "Gengar", "Level": 54, "MoveSet": [{ "Name": "Shadow Ball", "Power": 80, "MoveType": "Special", "Type": "Ghost" }, { "Name": "Sludge Bomb", "Power": 90, "MoveType": "Special", "Type": "Poison" }, { "Name": "Dark Pulse", "Power": 80, "MoveType": "Special", "Type": "Dark" }, { "Name": "Thunderbolt", "Power": 90, "MoveType": "Special", "Type": "Electric" }] },
                 { "Name": "Golbat", "Level": 54, "MoveSet": [{ "Name": "Air Cutter", "Power": 60, "MoveType": "Special", "Type": "Flying" }, { "Name": "Bite", "Power": 60, "MoveType": "Physical", "Type": "Dark" }, { "Name": "Poison Fang", "Power": 50, "MoveType": "Physical", "Type": "Poison" }, { "Name": "Wing Attack", "Power": 60, "MoveType": "Physical", "Type": "Flying" }] },
@@ -543,6 +546,7 @@
               "Role": "Elite Four",
               "Dialogue": ["Ah! I heard about you!", "I lead the Elite Four. You can call me Lance the dragon trainer.", "You know that dragons are mythical Pokémon!", "They're hard to catch and raise, but their powers are superior!"],
               "Action": "StartBattle",
+              "RequiredBadge": 8,
               "PokemonTeam": [
                 { "Name": "Gyarados", "Level": 56, "MoveSet": [{ "Name": "Hydro Pump", "Power": 110, "MoveType": "Special", "Type": "Water" }, { "Name": "Hyper Beam", "Power": 150, "MoveType": "Physical", "Type": "Normal" }, { "Name": "Dragon Rage", "Power": 40, "MoveType": "Special", "Type": "Dragon" }, { "Name": "Bite", "Power": 60, "MoveType": "Physical", "Type": "Dark" }] },
                 { "Name": "Dragonair", "Level": 54, "MoveSet": [{ "Name": "Dragon Rage", "Power": 40, "MoveType": "Special", "Type": "Dragon" }, { "Name": "Ice Beam", "Power": 90, "MoveType": "Special", "Type": "Ice" }, { "Name": "Thunderbolt", "Power": 90, "MoveType": "Special", "Type": "Electric" }, { "Name": "Slam", "Power": 80, "MoveType": "Physical", "Type": "Normal" }] },
@@ -557,6 +561,7 @@
               "Role": "Champion",
               "Dialogue": ["Yo! Finally you're here.", "I'm the world's most powerful Trainer!", "Do you know what that means? I'll show you!", "Get ready to taste defeat!"],
               "Action": "StartFinalBattle",
+              "RequiredBadge": 8,
               "PokemonTeam": [
                 { "Name": "Pidgeot", "Level": 61, "MoveSet": [{ "Name": "Sky Attack", "Power": 140, "MoveType": "Physical", "Type": "Flying" }, { "Name": "Wing Attack", "Power": 60, "MoveType": "Physical", "Type": "Flying" }, { "Name": "Steel Wing", "Power": 70, "MoveType": "Physical", "Type": "Steel" }, { "Name": "Air Slash", "Power": 75, "MoveType": "Special", "Type": "Flying" }] },
                 { "Name": "Alakazam", "Level": 59, "MoveSet": [{ "Name": "Psychic", "Power": 90, "MoveType": "Special", "Type": "Psychic" }, { "Name": "Shadow Ball", "Power": 80, "MoveType": "Special", "Type": "Ghost" }, { "Name": "Future Sight", "Power": 120, "MoveType": "Special", "Type": "Psychic" }, { "Name": "Focus Blast", "Power": 120, "MoveType": "Special", "Type": "Fighting" }] },

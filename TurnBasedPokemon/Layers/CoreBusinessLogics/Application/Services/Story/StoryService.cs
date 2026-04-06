@@ -185,6 +185,44 @@ public class StoryService : IStoryService
         return (true, $"You challenge Gym Leader {leader.Name}!", leader, bossTeam);
     }
 
+    public (bool Success, string Message, List<Pokemon>? Team) TryChallengePokemonLeague(NpcData boss)
+    {
+        var playerTeam = _gameSession.Player.PokemonTeam;
+
+        // 1. Check if the player's team is healthy
+        if (playerTeam.Count == 0 || playerTeam.All(p => p.CurrentHP <= 0))
+        {
+            return (false, "Your Pokemon are too weak to battle! Please visit the Pokemon Center first.", null);
+        }
+
+        // 2. Check for required badges (Only applies to Gym Leaders, Elite Four, Champion)
+        if (_gameSession.Player.Badges.Count < boss.RequiredBadge)
+        {
+            return (false, $"You need at least {boss.RequiredBadge} badges to challenge {boss.Name}!", null);
+        }
+
+        // 3. Ensure the boss actually has a team configured
+        if (boss.PokemonTeam == null || boss.PokemonTeam.Count == 0)
+        {
+            return (false, $"{boss.Name} doesn't have any Pokemon configured for battle.", null);
+        }
+
+        // 4. Generate the boss's team from the database/spawner
+        var bossTeam = new List<Pokemon>();
+        foreach (var pData in boss.PokemonTeam)
+        {
+            var p = _pokemonSpawner.SpawnPokemon(pData.Name, pData.Level);
+            if (p != null) bossTeam.Add(p);
+        }
+
+        // 5. Save the state to GameSession for the BattleScreen to use
+        _gameSession.CurrentEnemyTeam = bossTeam;
+        _gameSession.CurrentEnemyTeamIndex = 0;
+        _gameSession.IsTrainerBattle = true;
+
+        return (true, $"You are challenged by {boss.Role} {boss.Name}!", bossTeam);
+    }
+
     public (bool Success, string Message, List<Pokemon>? Team) TryChallengeTrainer(NpcData trainer)
     {
         var playerTeam = _gameSession.Player.PokemonTeam;

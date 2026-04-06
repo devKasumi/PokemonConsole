@@ -8,12 +8,12 @@ using MySql.Data.MySqlClient;
 public class DatabaseSeeder
 {
     private readonly string _connection;
+    private readonly MySqlUserRepository _userRepo;
     private readonly JsonSerializerOptions _options = new JsonSerializerOptions 
     { 
         PropertyNameCaseInsensitive = true,
         Converters = { new JsonStringEnumConverter() } // This tells the parser to read "None" and map it to PokemonStatus.None
     };
-    private readonly MySqlUserRepository _userRepo;
 
     public DatabaseSeeder(MySqlUserRepository userRepo, string connection) 
     { 

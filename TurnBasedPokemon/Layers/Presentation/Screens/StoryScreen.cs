@@ -91,7 +91,9 @@ public class StoryScreen : IScreen
         Console.ForegroundColor = ConsoleColor.DarkGreen;
         Console.WriteLine($"  [{wildIdx}] 🌿  Explore Wild Area");
         Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine($"  [{gymIdx}] 🏆  Challenge Gym Leader");
+        if (_gameSession.CurrentLocation.Name == "Indigo Plateau") 
+            Console.WriteLine($"  [{gymIdx}] 🏆  Challenge Pokemon League");
+        else Console.WriteLine($"  [{gymIdx}] 🏆  Challenge Gym Leader");
 
         // System
         Console.ForegroundColor = ConsoleColor.Gray;
@@ -112,7 +114,12 @@ public class StoryScreen : IScreen
             else if (choice == fwdIdx)    HandleResult(_storyService.Move(true), ConsoleColor.Cyan);
             else if (choice == backIdx)   HandleResult(_storyService.Move(false), ConsoleColor.Cyan);
             else if (choice == wildIdx)   HandleWildArea();
-            else if (choice == gymIdx)    HandleGymBattle();
+            else if (choice == gymIdx)
+            {
+                if (_gameSession.CurrentLocation.Name == "Indigo Plateau") 
+                    HandlePokemonLeagueBattle();
+                else HandleGymBattle();
+            }
             else if (choice == exitIdx)   _screenManager.SwitchTo(ScreenType.MainMenu);
         }
         else
@@ -238,6 +245,89 @@ public class StoryScreen : IScreen
         {
             _screenManager.SwitchTo(ScreenType.Story);
         }
+    }
+
+    private void HandlePokemonLeagueBattle()
+    {
+        var loc = _storyService.GetCurrentLocation();
+        
+        // Get all Elite Four members and the Champion from the current location
+        var leagueMembers = loc.NPCs.Where(n => n.Role == "Elite Four" || n.Role == "Champion").ToList();
+
+        if (leagueMembers.Count == 0)
+        {
+            RenderText("System", "The Pokemon League is currently empty.", ConsoleColor.Red);
+            return;
+        }
+
+        RenderText("System", "Welcome to the Pokemon League! You must face 5 trainers consecutively.", ConsoleColor.Cyan);
+
+        // Loop through each member sequentially
+        foreach (var member in leagueMembers)
+        {
+            // 1. Try to challenge the member using our unified method
+            var result = _storyService.TryChallengePokemonLeague(member);
+
+            if (!result.Success)
+            {
+                RenderText("System", result.Message, ConsoleColor.Red);
+                return; // Stops the gauntlet (e.g., not enough badges)
+            }
+
+            // 2. Play their dialogue
+            RenderText("System", result.Message, ConsoleColor.Magenta);
+            foreach (var line in member.Dialogue) 
+            {
+                RenderText(member.Name, line, ConsoleColor.Yellow);
+            }
+
+            RenderText("System", $"!!! BATTLE START: {member.Name} !!!", ConsoleColor.Red);
+
+            // 3. Switch to battle screen
+            // NOTE: If your ScreenManager doesn't pause here, you will need to store 
+            // a "LeagueIndex" variable in GameSession instead of using a foreach loop.
+            _screenManager.SwitchTo(ScreenType.Battle);
+
+            // 4. After the battle finishes, check if the player survived
+            if (_gameSession.Player.PokemonTeam.All(p => p.CurrentHP <= 0))
+            {
+                RenderText("System", "You were defeated... Your Pokemon League challenge ends here.", ConsoleColor.Red);
+                return; // Break out of the loop, player lost
+            }
+            
+            // Optional: Heal player's team between Elite Four members? 
+            // Standard games don't do this, but you can if you want.
+        }
+
+        // If the loop finishes and the player is still alive, they beat everyone!
+        ShowHallOfFame();
+    }
+    
+    public void ShowHallOfFame()
+    {
+        Console.Clear();
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("====================================================");
+        Console.WriteLine("                HALL OF FAME                        ");
+        Console.WriteLine("====================================================");
+        Console.ResetColor();
+
+        var player = _gameSession.Player;
+        Console.WriteLine($"\nChampion: {player.Name}");
+        Console.WriteLine("Your winning team has been registered:\n");
+
+        foreach (var pkm in player.PokemonTeam)
+        {
+            Console.WriteLine($"- LV.{pkm.Level} {pkm.Specie.Name}");
+        }
+
+        Console.WriteLine("\n----------------------------------------------------");
+        Console.WriteLine("Thank you for playing! You have completed the game.");
+        Console.WriteLine("You can now continue to explore or start a new game.");
+        Console.WriteLine("----------------------------------------------------");
+        
+        Console.WriteLine("\nPress any key to return to Main Menu...");
+        Console.ReadKey(true);
     }
 
     private void RenderText(string speaker, string text, ConsoleColor color)
