@@ -256,11 +256,11 @@ public class StoryScreen : IScreen
 
         if (leagueMembers.Count == 0)
         {
-            RenderText("System", "The Pokemon League is currently empty.", ConsoleColor.Red);
+            RenderText("System", "The Pokemon League members is currently empty.", ConsoleColor.Red);
             return;
         }
 
-        RenderText("System", "Welcome to the Pokemon League! You must face 5 trainers consecutively.", ConsoleColor.Cyan);
+        RenderText("System", "Welcome to the Pokemon League!", ConsoleColor.Cyan);
 
         // Loop through each member sequentially
         foreach (var member in leagueMembers)
@@ -294,15 +294,14 @@ public class StoryScreen : IScreen
                 RenderText("System", "You were defeated... Your Pokemon League challenge ends here.", ConsoleColor.Red);
                 return; // Break out of the loop, player lost
             }
-            
-            // Optional: Heal player's team between Elite Four members? 
-            // Standard games don't do this, but you can if you want.
         }
 
         // If the loop finishes and the player is still alive, they beat everyone!
         ShowHallOfFame();
+        _gameSession.HandlePlayerBecomeChampion();
+
     }
-    
+
     public void ShowHallOfFame()
     {
         Console.Clear();
@@ -312,11 +311,10 @@ public class StoryScreen : IScreen
         Console.WriteLine("====================================================");
         Console.ResetColor();
 
-        var player = _gameSession.Player;
-        Console.WriteLine($"\nChampion: {player.Name}");
+        Console.WriteLine($"\nChampion: {_gameSession.Player.Name}");
         Console.WriteLine("Your winning team has been registered:\n");
 
-        foreach (var pkm in player.PokemonTeam)
+        foreach (var pkm in _gameSession.Player.PokemonTeam)
         {
             Console.WriteLine($"- LV.{pkm.Level} {pkm.Specie.Name}");
         }

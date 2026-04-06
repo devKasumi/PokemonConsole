@@ -30,5 +30,37 @@
     "CatchRateMultiplier": 1.0,
     "Description": "A tool for catching Pokemon.",
     "Price": 200
+  },
+  {
+    "Id": 5,
+    "Name": "Great Ball",
+    "Type": "Capture",
+    "CatchRateMultiplier": 1.5,
+    "Description": "A tool for catching Pokemon.",
+    "Price": 500
+  },
+  {
+    "Id": 6,
+    "Name": "Master Ball",
+    "Type": "Capture",
+    "CatchRateMultiplier": 1.0,
+    "Description": "A tool for catching Pokemon.",
+    "Price": 1000000
+  },
+  {
+    "Id": 7,
+    "Name": "Relic Gold",
+    "Type": "General",
+    "SoldRate": 10.0,
+    "Description": "is a valuable item introduced in Generation V.",
+    "Price": 1000000
+  },
+  {
+    "Id": 8,
+    "Name": "Rainbow Wing",
+    "Type": "General",
+    "SoldRate": 10.0,
+    "Description": "The item required to encounter Ho-Oh in Generation II.",
+    "Price": 1000000
   }
 ]

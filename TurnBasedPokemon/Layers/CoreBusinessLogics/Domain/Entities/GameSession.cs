@@ -125,5 +125,10 @@ public class GameSession
             _userRepo.Save(CurrentUser);
     }
 
+    public void HandlePlayerBecomeChampion()
+    {
+        Player.IsChampion = true;
+    }
+
     #endregion
 }

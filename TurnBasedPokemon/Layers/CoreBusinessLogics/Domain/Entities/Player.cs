@@ -10,6 +10,10 @@ public class Player
     public List<Pokemon> PokemonTeam { get; set; } = new();
     public Dictionary<int, Dictionary<string, List<Item>>> Inventory { get; set; } = new();
     public Pokemon CurrentPokemon { get; set; }
+    
+    public bool IsChampion { get; set; } = false; // Check PVE completion
+    public int PvPWins { get; set; } = 0;
+    public int PvPLosses { get; set; } = 0;
 
     public Player()
     {
