@@ -47,6 +47,7 @@ public class MySqlItemRepository : IItemRepository
                 {
                     "healing" => JsonSerializer.Deserialize<HealingItem>(detailsJson, _jsonOptions),
                     "capture" => JsonSerializer.Deserialize<CaptureItem>(detailsJson, _jsonOptions),
+                    "general" => JsonSerializer.Deserialize<GeneralItem>(detailsJson, _jsonOptions),
                     _ => throw new NotSupportedException($"Item type '{type}' is not supported.")
                 };
 

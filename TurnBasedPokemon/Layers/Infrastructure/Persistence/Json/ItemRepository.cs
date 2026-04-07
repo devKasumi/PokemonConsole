@@ -36,6 +36,7 @@ public class ItemRepository : IItemRepository
         {
             "healing" => ItemCategory.Healing,
             "capture" => ItemCategory.Capture,
+            "general" => ItemCategory.General,
             _         => ItemCategory.Utility
         };
 
@@ -50,6 +51,11 @@ public class ItemRepository : IItemRepository
             {
                 Id = dto.Id, Name = dto.Name, Description = dto.Description,
                 Price = dto.Price, Category = category, CatchRateMultiplier = dto.CatchRateMultiplier ?? 1.0
+            },
+            "general" => new GeneralItem
+            {
+                Id = dto.Id, Name = dto.Name, Description = dto.Description,
+                Price = dto.Price, Category = category, SoldRate = dto.SoldRate ?? 1.0
             },
             _ => throw new NotSupportedException($"Type '{dto.Type}' is not mapped.")
         };

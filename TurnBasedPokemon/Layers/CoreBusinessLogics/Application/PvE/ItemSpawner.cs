@@ -72,6 +72,19 @@ public class ItemSpawner
             };
         }
 
+        if (original is GeneralItem general)
+        {
+            return new GeneralItem
+            {
+                Id = general.Id,
+                Name = general.Name,
+                Description = general.Description,
+                Price = general.Price,
+                Category = ItemCategory.General,
+                SoldRate = general.SoldRate
+            };
+        }
+
         // If it reaches here, it means a new Item type was added to JSON 
         // but not implemented in the Spawner logic.
         throw new NotSupportedException($"Item type '{original.GetType().Name}' is not supported for cloning.");

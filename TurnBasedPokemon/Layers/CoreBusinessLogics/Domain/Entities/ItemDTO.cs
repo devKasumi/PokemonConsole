@@ -10,4 +10,5 @@ public class ItemDTO
     // Specific fields
     public int? HealAmount { get; set; }
     public double? CatchRateMultiplier { get; set; }
+    public double? SoldRate { get; set; }
 }

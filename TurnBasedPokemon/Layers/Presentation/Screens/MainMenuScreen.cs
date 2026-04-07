@@ -107,6 +107,11 @@ public class MainMenuScreen : IScreen
     private void HandlePvP()
     {
         // TODO: Implement PvP mode
+        if (!_gameSession.Player.IsChampion)
+        {
+            Console.WriteLine($"You can only participate in PvP after completing the game's main storyline.");
+            return;
+        }
     }
 
     private void HandleSaveGame()

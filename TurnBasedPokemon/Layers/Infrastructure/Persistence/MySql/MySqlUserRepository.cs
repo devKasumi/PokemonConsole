@@ -139,8 +139,14 @@ public class MySqlUserRepository : IUserRepository
             {
                 // 2. Save Player Progress
                 string sqlInsertPlayer = @"
-                    INSERT INTO players VALUES (@id, @name, @ph, @loc, @b, @i) 
-                    ON DUPLICATE KEY UPDATE Name=@name, CurrentPhase=@ph, CurrentLocation=@loc, Badges=@b, InventoryData=@i";
+                    INSERT INTO players 
+                    (UserId, Name, CurrentPhase, CurrentLocation, Badges, InventoryData, IsChampion, PvPWins, PvPLosses) 
+                    VALUES 
+                    (@id, @name, @ph, @loc, @b, @i, @isChamp, @wins, @losses) 
+                    ON DUPLICATE KEY UPDATE 
+                    Name=@name, CurrentPhase=@ph, CurrentLocation=@loc, Badges=@b, InventoryData=@i, 
+                    IsChampion=@isChamp, PvPWins=@wins, PvPLosses=@losses";
+
                 using var cmdPlayer = new MySqlCommand(sqlInsertPlayer, conn, trans);
                 cmdPlayer.Parameters.AddWithValue("@id", userId); 
                 cmdPlayer.Parameters.AddWithValue("@name", user.PlayerData.Name); 
@@ -148,6 +154,11 @@ public class MySqlUserRepository : IUserRepository
                 cmdPlayer.Parameters.AddWithValue("@loc", user.PlayerData.CurrentLocation);
                 cmdPlayer.Parameters.AddWithValue("@b", JsonSerializer.Serialize(user.PlayerData.Badges, _jsonOptions)); 
                 cmdPlayer.Parameters.AddWithValue("@i", JsonSerializer.Serialize(user.PlayerData.Inventory, _jsonOptions));
+
+                cmdPlayer.Parameters.AddWithValue("@isChamp", user.PlayerData.IsChampion ? 1 : 0);
+                cmdPlayer.Parameters.AddWithValue("@wins", user.PlayerData.PvPWins);
+                cmdPlayer.Parameters.AddWithValue("@losses", user.PlayerData.PvPLosses);
+
                 cmdPlayer.ExecuteNonQuery();
 
                 // 3. Refresh Pokemon Team (Clear old team, insert current team)

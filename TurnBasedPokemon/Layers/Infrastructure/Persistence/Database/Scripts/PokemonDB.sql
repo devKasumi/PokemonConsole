@@ -1,7 +1,7 @@
 -- Drop the database if it already exists to start fresh
 -- DROP DATABASE IF EXISTS pokemondb;
 -- CREATE DATABASE pokemondb;
-USE pokemondb;
+-- USE pokemondb;
 
 -- =========================================
 -- PART 1: STATIC DATA (Items, Pokedex, Story)
@@ -81,11 +81,18 @@ USE pokemondb;
 --     FOREIGN KEY (PlayerId) REFERENCES players(UserId) ON DELETE CASCADE
 -- );
 
-ALTER TABLE players 
-ADD COLUMN IsChampion TINYINT(1) DEFAULT 0,
-ADD COLUMN PvPWins INT DEFAULT 0,
-ADD COLUMN PvPLosses INT DEFAULT 0;
+-- ALTER TABLE players 
+-- ADD COLUMN IsChampion TINYINT(1) DEFAULT 0,
+-- ADD COLUMN PvPWins INT DEFAULT 0,
+-- ADD COLUMN PvPLosses INT DEFAULT 0;
 
+USE pokemondb;
+
+-- ALTER TABLE users ADD IsChampion TINYINT(1) DEFAULT 0;
+-- ALTER TABLE users ADD PvPWins INT DEFAULT 0;
+-- ALTER TABLE users ADD PvPLosses INT DEFAULT 0;
+
+-- DESCRIBE users;
 
 SELECT * FROM users;
 SELECT * FROM players;
