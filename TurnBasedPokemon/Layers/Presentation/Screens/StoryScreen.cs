@@ -92,7 +92,7 @@ public class StoryScreen : IScreen
         Console.ForegroundColor = ConsoleColor.DarkGreen;
         Console.WriteLine($"  [{wildIdx}] 🌿  Explore Wild Area");
         Console.ForegroundColor = ConsoleColor.Red;
-        if (_gameSession.CurrentLocation.Name == "Indigo Plateau") 
+        if (loc.Name == "Indigo Plateau") 
             Console.WriteLine($"  [{gymIdx}] 🏆  Challenge Pokemon League");
         else Console.WriteLine($"  [{gymIdx}] 🏆  Challenge Gym Leader");
 
@@ -117,7 +117,7 @@ public class StoryScreen : IScreen
             else if (choice == wildIdx)   HandleWildArea();
             else if (choice == gymIdx)
             {
-                if (_gameSession.CurrentLocation.Name == "Indigo Plateau") 
+                if (loc.Name == "Indigo Plateau") 
                     HandlePokemonLeagueBattle();
                 else HandleGymBattle();
             }
