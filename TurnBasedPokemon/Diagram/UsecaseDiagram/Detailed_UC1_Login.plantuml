@@ -3,7 +3,7 @@ skinparam linetype ortho
 left to right direction
 
 actor Player
-actor System
+actor System <<right>>
 
 rectangle "Login System" {
   (Enter Username/Password)

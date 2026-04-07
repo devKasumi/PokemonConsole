@@ -3,7 +3,7 @@ skinparam linetype ortho
 left to right direction
 
 actor Player
-actor Admin
+actor Admin <<right>>
 
 rectangle "Match History System" {
   (View Personal Match History)

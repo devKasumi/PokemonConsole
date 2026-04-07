@@ -3,7 +3,7 @@ skinparam linetype ortho
 left to right direction
 
 actor Player
-actor Trainer
+actor Trainer <<right>>
 
 rectangle "Trainer Battle System" {
   (Encounter Trainer)

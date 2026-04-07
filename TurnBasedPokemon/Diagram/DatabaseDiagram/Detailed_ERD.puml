@@ -1,0 +1,177 @@
+@startuml Pokemon_ERD
+skinparam linetype ortho
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontSize 14
+skinparam entity {
+  BackgroundColor #F8F8D8
+  BorderColor #333333
+}
+left to right direction
+
+title Pokemon Game - Entity Relationship Diagram
+
+entity "Users" as U {
+  * user_id : INT
+  --
+  username : VARCHAR(50)
+  password_hash : VARCHAR(255)
+  email : VARCHAR(100)
+  created_at : TIMESTAMP
+  last_login : TIMESTAMP
+}
+
+entity "Players" as P {
+  * player_id : INT
+  --
+  user_id : INT
+  player_name : VARCHAR(100)
+  level : INT
+  current_exp : INT
+  total_exp : INT
+  badges : JSON
+  current_location : VARCHAR(100)
+  current_phase : INT
+  is_champion : BOOLEAN
+  pvp_wins : INT
+  pvp_losses : INT
+  created_at : TIMESTAMP
+}
+
+entity "Pokemon Species" as PS {
+  * species_id : INT
+  --
+  name : VARCHAR(50)
+  image_name : VARCHAR(100)
+  element_type : VARCHAR(20)
+  base_stats : JSON
+  catch_rate : INT
+  evolution_level : INT
+  evolves_into : INT
+  available_moves : JSON
+}
+
+entity "Pokemons" as PK {
+  * pokemon_id : INT
+  --
+  player_id : INT
+  species_id : INT
+  nickname : VARCHAR(50)
+  level : INT
+  current_exp : INT
+  total_exp : INT
+  current_hp : INT
+  max_hp : INT
+  stats : JSON
+  current_moves : JSON
+  status : VARCHAR(20)
+  is_owned : BOOLEAN
+  catch_level : INT
+  evolution_stage : INT
+  injury_count : INT
+  caught_at : TIMESTAMP
+}
+
+entity "Pokemon Moves" as PM {
+  * move_id : INT
+  --
+  name : VARCHAR(50)
+  type : VARCHAR(20)
+  power : INT
+  accuracy : INT
+  critical_chance : DECIMAL(5,2)
+  priority : INT
+  description : TEXT
+}
+
+entity "Items" as I {
+  * item_id : INT
+  --
+  name : VARCHAR(100)
+  description : TEXT
+  item_type : VARCHAR(20)
+  heal_amount : INT
+  catch_multiplier : DECIMAL(5,2)
+  value : INT
+  is_consumable : BOOLEAN
+}
+
+entity "Inventory" as INV {
+  * inventory_id : INT
+  --
+  player_id : INT
+  item_id : INT
+  quantity : INT
+}
+
+entity "Game Sessions" as GS {
+  * session_id : INT
+  --
+  player_id : INT
+  current_location : VARCHAR(100)
+  current_enemy_team : JSON
+  current_enemy_pokemon : INT
+  is_trainer_battle : BOOLEAN
+  session_start : TIMESTAMP
+  last_updated : TIMESTAMP
+}
+
+entity "Locations" as L {
+  * location_id : INT
+  --
+  name : VARCHAR(100)
+  description : TEXT
+  is_discovered : BOOLEAN
+  possible_pokemon : JSON
+  possible_items : JSON
+  connected_locations : JSON
+}
+
+entity "Game Phases" as GP {
+  * phase_id : INT
+  --
+  title : VARCHAR(200)
+  order_number : INT
+  dialogue : JSON
+  battle_required : BOOLEAN
+  npc_team : JSON
+  rewards : JSON
+}
+
+entity "NPCs" as N {
+  * npc_id : INT
+  --
+  name : VARCHAR(100)
+  dialogue : TEXT
+  image_name : VARCHAR(100)
+  team : JSON
+  is_trainer : BOOLEAN
+  defeated : BOOLEAN
+}
+
+entity "Battle History" as BH {
+  * battle_id : INT
+  --
+  player1_id : INT
+  player2_id : INT
+  winner_id : INT
+  battle_type : VARCHAR(20)
+  battle_duration : INT
+  exp_gained : INT
+  battle_date : TIMESTAMP
+}
+
+U ||--|| P : "1 - 1"
+P ||--o{ PK : "1 - N"
+PK }o--|| PS : "N - 1"
+PK }o--o{ PM : "N - N"
+P ||--o{ INV : "1 - N"
+INV }o--|| I : "N - 1"
+P ||--o{ GS : "1 - N"
+GS }o--|| L : "N - 1"
+L ||--o{ GP : "1 - N"
+GP ||--o{ N : "1 - N"
+P ||--o{ BH : "1 - N"
+BH }o--|| N : "N - 1"
+
+@enduml

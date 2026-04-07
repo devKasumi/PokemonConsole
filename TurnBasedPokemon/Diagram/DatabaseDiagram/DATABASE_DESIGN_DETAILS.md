@@ -148,6 +148,25 @@
 ]
 ```
 
+---
+
+## Detailed ER Diagram
+
+For a comprehensive view of all entities and their relationships, see:
+- **[Detailed_ERD.puml](Detailed_ERD.puml)** - Complete Entity Relationship Diagram with all tables, fields, and relationships
+
+This detailed ERD includes additional entities like:
+- pokemon_species (normalized from pokedex)
+- pokemon_moves
+- inventory (separate table)
+- game_sessions
+- locations
+- game_phases
+- npcs
+- battle_history
+
+The diagram shows proper normalization, foreign key relationships, and cardinality.
+
 ### Data (pokedex.Data)
 ```json
 {

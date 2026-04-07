@@ -2,8 +2,10 @@
 skinparam linetype ortho
 left to right direction
 
-actor Player1
-actor Player2
+together {
+  actor Player1
+  actor Player2
+}
 
 rectangle "Matchmaking System" {
   (Select PvP Mode)
