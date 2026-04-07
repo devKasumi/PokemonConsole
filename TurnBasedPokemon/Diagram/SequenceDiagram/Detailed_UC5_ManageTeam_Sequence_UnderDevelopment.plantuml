@@ -1,0 +1,103 @@
+@startuml UC5_ManageTeam_Sequence
+participant Player
+participant TeamScreen
+participant PokemonTeamService
+participant GameSession
+participant UserRepository
+participant Database
+
+Player -> TeamScreen: Open Team Management
+activate TeamScreen
+
+TeamScreen -> GameSession: GetCurrentTeam()
+activate GameSession
+GameSession --> TeamScreen: Current team (up to 6 Pokemon)
+deactivate GameSession
+
+TeamScreen --> Player: Display team roster
+
+Player -> TeamScreen: View team details
+activate TeamScreen
+TeamScreen --> Player: Show each Pokemon stats/moves
+
+Player -> TeamScreen: Select action (add/swap/replace/remove)
+
+alt Action = Add Pokemon
+  TeamScreen -> TeamScreen: Check team size
+  alt Team size < 6
+    TeamScreen -> GameSession: GetPokemonBox()
+    activate GameSession
+    GameSession -> Database: SELECT * FROM Pokemon WHERE box_stored=true AND userId=?
+    Database --> GameSession: Available Pokemon
+    GameSession --> TeamScreen: Pokemon list
+    deactivate GameSession
+    
+    Player -> TeamScreen: Select Pokemon to add
+    TeamScreen -> PokemonTeamService: AddToTeam(pokemon)
+    activate PokemonTeamService
+    PokemonTeamService -> GameSession: AddPokemonToTeam(pokemon)
+    activate GameSession
+    GameSession -> UserRepository: UpdateUserTeam(userId, newTeam)
+    activate UserRepository
+    UserRepository -> Database: UPDATE user_team SET team_data = ?
+    Database --> UserRepository: Success
+    deactivate UserRepository
+    GameSession --> PokemonTeamService: Team updated
+    deactivate GameSession
+    PokemonTeamService --> TeamScreen: Success
+    deactivate PokemonTeamService
+  else Team is full
+    TeamScreen --> Player: "Team is full - remove Pokemon first"
+  end
+
+else Action = Swap Position
+  Player -> TeamScreen: Select two positions to swap
+  TeamScreen -> PokemonTeamService: SwapPositions(pos1, pos2)
+  activate PokemonTeamService
+  PokemonTeamService -> GameSession: ReorderTeam(newOrder)
+  activate GameSession
+  GameSession -> UserRepository: UpdateUserTeam(userId, newOrder)
+  UserRepository -> Database: UPDATE user_team
+  Database --> UserRepository: Success
+  deactivate UserRepository
+  GameSession --> PokemonTeamService: Success
+  deactivate GameSession
+  PokemonTeamService --> TeamScreen: Positions swapped
+  deactivate PokemonTeamService
+
+else Action = Replace Pokemon
+  Player -> TeamScreen: Select Pokemon to remove
+  TeamScreen -> TeamScreen: Move to box
+  TeamScreen -> TeamScreen: Show box Pokemon
+  Player -> TeamScreen: Select Pokemon to add
+  TeamScreen -> PokemonTeamService: ReplaceTeamMember(oldPoke, newPoke)
+  activate PokemonTeamService
+  PokemonTeamService -> GameSession: UpdateTeam(newTeamList)
+  activate GameSession
+  GameSession -> UserRepository: UpdateUserTeam(userId, newTeam)
+  UserRepository -> Database: UPDATE user_team
+  Database --> UserRepository: Success
+  deactivate UserRepository
+  GameSession --> PokemonTeamService: Success
+  deactivate GameSession
+  PokemonTeamService --> TeamScreen: Team updated
+  deactivate PokemonTeamService
+
+else Action = Remove Pokemon
+  Player -> TeamScreen: Select Pokemon to remove
+  TeamScreen -> GameSession: MovePokemonToBox(pokemon)
+  activate GameSession
+  GameSession -> UserRepository: UpdateUserTeam(userId, updatedTeam)
+  UserRepository -> Database: UPDATE user_team WHERE userId=?
+  Database --> UserRepository: Success
+  deactivate UserRepository
+  GameSession --> TeamScreen: Pokemon moved to box
+  deactivate GameSession
+end
+
+TeamScreen -> TeamScreen: Refresh team display
+TeamScreen --> Player: Show updated team
+
+Player -> TeamScreen: Confirm and exit
+deactivate TeamScreen
+@enduml

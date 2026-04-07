@@ -1,0 +1,80 @@
+@startuml UC3_CatchPokemon_Sequence
+participant Player
+participant BattleScreen
+participant InventoryService
+participant CatchService
+participant CatchRateCalculator
+participant GameSession
+participant PokedexService
+participant Database
+
+Player -> BattleScreen: Select "Catch" during battle
+activate BattleScreen
+
+BattleScreen -> InventoryService: GetAvailablePokeballs()
+activate InventoryService
+InventoryService -> GameSession: GetInventory()
+GameSession --> InventoryService: Inventory object
+InventoryService --> BattleScreen: Available balls list
+deactivate InventoryService
+
+alt Has Pokeballs
+  BattleScreen --> Player: Show ball selection menu
+  Player -> BattleScreen: Select Pokeball type
+  
+  BattleScreen -> CatchService: AttemptCatch(wildPokemon, ballType)
+  activate CatchService
+  
+  CatchService -> CatchRateCalculator: CalculateCatchRate(pokemon, ballType)
+  activate CatchRateCalculator
+  
+  note over CatchRateCalculator
+    Calculate based on:
+    - Pokemon species base catch rate
+    - Current HP vs Max HP ratio
+    - Pokemon status (paralyzed, etc)
+    - Ball type modifier
+  end note
+  
+  CatchRateCalculator --> CatchService: catch rate value
+  deactivate CatchRateCalculator
+  
+  CatchService -> CatchService: Generate random number (0-255)
+  CatchService -> CatchService: Compare random vs catch rate
+  
+  alt Catch Successful
+    CatchService -> GameSession: AddPokemonToTeam(pokemon)
+    activate GameSession
+    GameSession --> CatchService: Pokemon added
+    deactivate GameSession
+    
+    CatchService -> PokedexService: UpdatePokedexEntry(pokemon)
+    activate PokedexService
+    PokedexService -> Database: UPDATE pokedex_seen, pokedex_caught
+    Database --> PokedexService: Success
+    deactivate PokedexService
+    
+    CatchService -> GameSession: AwardCatchBonus(bonusEXP)
+    InventoryService -> GameSession: ConsumePokeball(ballType, 1)
+    
+    CatchService --> BattleScreen: CatchResult(success)
+    
+  else Catch Failed
+    InventoryService -> GameSession: ConsumePokeball(ballType, 1)
+    CatchService --> BattleScreen: CatchResult(failed)
+  end
+  
+  deactivate CatchService
+  
+  alt Success
+    BattleScreen --> Player: Show "Pokemon caught!" message
+  else Failed
+    BattleScreen --> Player: Show "Pokemon broke free!" message
+    Player -> BattleScreen: Continue battle
+  end
+else No Pokeballs
+  BattleScreen --> Player: Show "Out of Pokeballs" message
+end
+
+deactivate BattleScreen
+@enduml

@@ -1,0 +1,76 @@
+@startuml UC7_InteractNPC_UseCase
+skinparam linetype ortho
+left to right direction
+
+actor Player
+
+rectangle "NPC Interaction System" {
+  (Encounter NPC)
+  (Check NPC Type)
+  (NPC Available?)
+  (Start Interaction)
+  (Display NPC Dialogue)
+  (NPC dialogue with choices)
+  (Select Response)
+  (NPC Reaction Type)
+  (Trade Pokemon)
+  (Give Item/Quest)
+  (Battle Challenge)
+  (Story Information)
+  (Continue Dialogue)
+  (Pokemon Exchange)
+  (Add Item/Quest)
+  (Start NPC Battle)
+  (Update Story Context)
+  (Update Pokedex)
+  (Quest Log Updated)
+  (Battle sequence)
+  (Mark event)
+  (Interaction Complete)
+  (NPC interaction recorded)
+  (NPC Busy)
+}
+
+Player --> (Encounter NPC)
+(Encounter NPC) --> (Check NPC Type)
+
+(Check NPC Type) --> (Battle Challenge) : Gym Leader/Elite Four/Champion
+(Check NPC Type) --> (NPC Available?) : Other NPC
+
+(Battle Challenge) --> (Start NPC Battle) : <<include>>
+
+(NPC Available?) --> (Start Interaction) : Yes
+(NPC Available?) --> (NPC Busy) : No
+
+(Start Interaction) --> (Display NPC Dialogue)
+(Display NPC Dialogue) --> (NPC dialogue with choices)
+(NPC dialogue with choices) --> (Select Response)
+(Select Response) --> (NPC Reaction Type)
+
+(NPC Reaction Type) --> (Trade Pokemon)
+(NPC Reaction Type) --> (Give Item/Quest)
+(NPC Reaction Type) --> (Battle Challenge)
+(NPC Reaction Type) --> (Story Information)
+(NPC Reaction Type) --> (Continue Dialogue)
+
+(Trade Pokemon) --> (Pokemon Exchange) : <<include>>
+(Give Item/Quest) --> (Add Item/Quest) : <<include>>
+(Battle Challenge) --> (Start NPC Battle) : <<include>>
+(Story Information) --> (Update Story Context) : <<include>>
+
+(Pokemon Exchange) --> (Update Pokedex)
+(Add Item/Quest) --> (Quest Log Updated)
+(Start NPC Battle) --> (Battle sequence)
+(Update Story Context) --> (Mark event)
+
+(Update Pokedex) --> (Interaction Complete)
+(Quest Log Updated) --> (Interaction Complete)
+(Battle sequence) --> (Interaction Complete)
+(Mark event) --> (Interaction Complete)
+
+(Interaction Complete) --> (NPC interaction recorded)
+(NPC interaction recorded) --> Player
+
+(NPC Busy) --> Player
+
+@enduml

@@ -1,0 +1,63 @@
+@startuml UC6_ExploreStory_Activity
+start
+:Player selects Story Mode;
+:Load current story chapter;
+:Determine player progress;
+
+if (Story already started?) then (yes)
+  :Resume from last checkpoint;
+else (no)
+  :Start new story from beginning;
+endif
+
+:Display current location;
+:Show available actions;
+
+repeat
+  :Display chapter narrative & visuals;
+  :Present player choices:;
+  note
+    - Read narrative
+    - Explore area
+    - Talk to NPCs
+    - Battle trainer
+    - Check inventory
+    - Save game
+  end note
+  
+  if (Player action == Read Narrative) then (yes)
+    :Play narration audio (if available);
+    :Scroll through story text;
+    :Mark chapter as read;
+    
+  elseif (Player action == Explore) then (yes)
+    :Move to next location;
+    :Spawn items/Pokemon;
+    :Handle encounters;
+    
+  elseif (Player action == Talk to NPC) then (yes)
+    :Play NPC dialogue;
+    :Show dialogue options;
+    :Run NPC narrative branches;
+    
+  elseif (Player action == Battle) then (yes)
+    :Start story battle;
+    :Apply special rules;
+    :Gain battle rewards;
+    if (Battle triggers milestone?) then (yes)
+      :Mark milestone as complete;
+      :Check next chapter unlock;
+    endif
+  endif
+  
+  :Update story progression state;
+  :Check for story branching;
+  
+  if (Player wants to quit?) then (yes)
+    :Exit story mode;
+  endif
+repeat while (In story mode)
+
+:Auto-save story progress;
+stop
+@enduml

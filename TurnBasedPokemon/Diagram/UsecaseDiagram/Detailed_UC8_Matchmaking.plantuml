@@ -1,0 +1,60 @@
+@startuml UC8_Matchmaking_UseCase
+skinparam linetype ortho
+left to right direction
+
+actor Player1
+actor Player2
+
+rectangle "Matchmaking System" {
+  (Select PvP Mode)
+  (Join Matchmaking Queue)
+  (Add to waiting queue)
+  (Server searches for opponent)
+  (Opponent Found?)
+  (Found match)
+  (Keep waiting)
+  (Create Battle Room)
+  (Load opponent team)
+  (Load opponent stats)
+  (Both players notified)
+  (Accept Match?)
+  (Confirm)
+  (Decline)
+  (Ready for battle)
+  (Return to queue/Main menu)
+  (Proceed to Battle)
+}
+
+Player1 --> (Select PvP Mode)
+Player2 --> (Select PvP Mode)
+
+(Select PvP Mode) --> (Join Matchmaking Queue)
+(Join Matchmaking Queue) --> (Add to waiting queue)
+(Add to waiting queue) --> (Server searches for opponent) : <<invoke>>
+
+(Server searches for opponent) --> (Opponent Found?)
+(Opponent Found?) --> (Found match) : both rank similar
+(Opponent Found?) --> (Keep waiting) : timeout/rank gap
+
+(Found match) --> (Create Battle Room) : <<include>>
+(Create Battle Room) --> (Load opponent team)
+(Create Battle Room) --> (Load opponent stats)
+
+(Load opponent team) --> (Both players notified)
+(Load opponent stats) --> (Both players notified)
+
+(Both players notified) --> Player1
+(Both players notified) --> Player2
+
+Player1 --> (Accept Match?)
+Player2 --> (Accept Match?)
+
+(Accept Match?) --> (Confirm) : Yes
+(Accept Match?) --> (Decline) : No
+
+(Confirm) --> (Ready for battle)
+(Decline) --> (Return to queue/Main menu)
+
+(Ready for battle) --> (Proceed to Battle)
+
+@enduml

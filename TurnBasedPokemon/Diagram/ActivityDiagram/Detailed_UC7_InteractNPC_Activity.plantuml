@@ -1,0 +1,89 @@
+@startuml UC7_InteractNPC_Activity
+start
+:Player approaches NPC;
+:Check NPC state & location;
+
+if (NPC type is Gym Leader, Elite Four, or Champion?) then (yes)
+  :Initiate battle challenge;
+  :Show NPC team;
+  if (Player accepts?) then (yes)
+    :Start NPC battle;
+    if (Player wins?) then (yes)
+      :Award battle reward;
+      :Mark NPC as battled;
+      :Update story progress;
+    else (no)
+      :Mark as lost to NPC;
+    endif
+  else (no)
+    :Battle declined;
+  endif
+  
+else (no)
+  if (NPC is available?) then (yes)
+    :Load NPC interaction state;
+    :Fetch NPC dialogue script;
+    :Display NPC name & portrait;
+    :Play greeting dialogue;
+    :Present interaction options;
+    
+    repeat
+      :Show dialogue choices;
+      :Player selects response;
+      
+      if (Player choice == Trade Pokemon?) then (yes)
+        :Show NPC requested Pokemon;
+        :Show NPC offered Pokemon;
+        if (Player has requested Pokemon?) then (yes)
+          :Player confirms trade;
+          :Exchange Pokemon;
+          :Update Pokedex for both;
+          :Mark trade as complete;
+        else (no)
+          :Display "You don't have that Pokemon";
+        endif
+        
+      elseif (Player choice == Accept Quest?) then (yes)
+        :Display quest details:;
+        note
+          - Quest name & description
+          - Objectives
+          - Rewards (items/money/Pokemon)
+        end note
+        
+        :Add quest to journal;
+        :Update quest markers on map;
+        :Mark quest as active;
+        
+      elseif (Player choice == Battle?) then (yes)
+        :Show NPC team;
+        if (Player accepts?) then (yes)
+          :Start NPC battle;
+          if (Player wins?) then (yes)
+            :Award battle reward;
+            :Mark NPC as battled;
+          else (no)
+            :Mark as lost to NPC;
+          endif
+        endif
+        
+      elseif (Player choice == Get Info?) then (yes)
+        :Display story information;
+        :Unlock story hints;
+        :Mark conversation topic as read;
+        
+      elseif (Player choice == End Chat?) then (yes)
+        :End chat;
+      endif
+    repeat while (NPC interaction active)
+    
+  else (no)
+    :Display "NPC is currently unavailable";
+    :Show time/condition to return;
+  endif
+endif
+
+:Save NPC interaction state;
+:Return to game world;
+stop
+@enduml

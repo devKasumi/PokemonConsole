@@ -1,0 +1,65 @@
+@startuml UC8_Matchmaking_Activity
+start
+:Player selects PvP mode;
+:Choose team configuration;
+if (Use current team or custom?) then (current)
+  :Use active team;
+else (custom)
+  :Select specific Pokemon;
+endif
+
+:Connect to server;
+:Send join matchmaking request;
+:Display "Searching for opponent...";
+
+:Server adds player to queue;
+:Server records:;
+note
+  - Player ID & name
+  - Team composition
+  - ELO rating
+  - Connection info
+end note
+
+repeat
+  :Server checks queue every 500ms;
+  
+  if (Found player with similar rank?) then (yes)
+    :Create match ID;
+    :Create battle room;
+    :Load both player teams;
+    :Load both player stats;
+    :Notify both players;
+  else
+    if (Searching > 60 seconds?) then (yes)
+      :Expand rank search range;
+      if (Searching > 120 seconds?) then (yes)
+        :Suggest cancel or keep waiting;
+      endif
+    endif
+  endif
+  
+  if (Player cancelled?) then (yes)
+    :Remove from queue;
+    :Return to main menu;
+    stop
+  endif
+repeat while (Searching for opponent)
+
+:Display opponent info:;
+note
+  - Player name & level
+  - Team preview (Pokemon names)
+  - Player rank/ELO
+end note
+
+:Player accepts or declines;
+if (Player accepted?) then (yes)
+  :Send confirmation to server;
+  :Proceed to battle;
+else (no)
+  :Return to queue search;
+endif
+
+stop
+@enduml

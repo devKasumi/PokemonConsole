@@ -1,0 +1,64 @@
+@startuml UC6_ExploreStory_UseCase
+skinparam linetype ortho
+left to right direction
+
+actor Player
+
+rectangle "Story Mode System" {
+  (Enter Story Mode)
+  (Load Chapter/Location)
+  (Display Story Narrative)
+  (Narration Screen)
+  (Choose Story Action)
+  (Read Narrative)
+  (Explore Location)
+  (Talk to NPC)
+  (Battle Trainer)
+  (Story Progression)
+  (Discover Items/Pokemon)
+  (Encounter Battles)
+  (NPC Interaction)
+  (Receive Quest/Info)
+  (Special rules/rewards)
+  (Update Story State)
+  (Mark Milestone Reached)
+  (Unlock Next Chapter?)
+  (Advance)
+  (Unlock new areas/events)
+  (Continue Current)
+}
+
+Player --> (Enter Story Mode)
+(Enter Story Mode) --> (Load Chapter/Location)
+(Load Chapter/Location) --> (Display Story Narrative)
+(Display Story Narrative) --> (Narration Screen)
+(Narration Screen) --> (Choose Story Action)
+
+(Choose Story Action) --> (Read Narrative)
+(Choose Story Action) --> (Explore Location)
+(Choose Story Action) --> (Talk to NPC)
+(Choose Story Action) --> (Battle Trainer)
+
+(Read Narrative) --> (Story Progression) : <<include>>
+(Explore Location) --> (Discover Items/Pokemon) : <<extend>>
+(Explore Location) --> (Encounter Battles) : <<extend>>
+(Talk to NPC) --> (NPC Interaction)
+(NPC Interaction) --> (Receive Quest/Info)
+(Battle Trainer) --> (Special rules/rewards)
+
+(Story Progression) --> (Update Story State) : <<invoke>>
+(Discover Items/Pokemon) --> (Update Story State) : <<invoke>>
+(Receive Quest/Info) --> (Update Story State) : <<invoke>>
+(Special rules/rewards) --> (Update Story State) : <<invoke>>
+
+(Update Story State) --> (Mark Milestone Reached)
+(Mark Milestone Reached) --> (Unlock Next Chapter?)
+
+(Unlock Next Chapter?) --> (Advance) : Yes
+(Unlock Next Chapter?) --> (Continue Current) : No
+
+(Advance) --> (Unlock new areas/events)
+(Unlock new areas/events) --> Player
+(Continue Current) --> Player
+
+@enduml

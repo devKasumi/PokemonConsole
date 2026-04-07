@@ -1,0 +1,123 @@
+@startuml UC6_ExploreStory_Sequence
+participant Player
+participant StoryScreen
+participant StoryService
+participant MySqlStoryService
+participant WorldGenerationService
+participant GameSession
+participant Database
+
+Player -> StoryScreen: Enter Story Mode
+activate StoryScreen
+
+StoryScreen -> StoryService: LoadCurrentChapter()
+activate StoryService
+StoryService -> MySqlStoryService: GetPlayerStoryProgress(userId)
+activate MySqlStoryService
+MySqlStoryService -> Database: SELECT * FROM story_progress WHERE userId=?
+Database --> MySqlStoryService: Progress data
+deactivate MySqlStoryService
+MySqlStoryService --> StoryService: Chapter info
+StoryService -> StoryService: Determine current location
+StoryService --> StoryScreen: Chapter loaded
+deactivate StoryService
+
+StoryScreen --> Player: Display story narrative screen
+
+loop while (In story)
+  Player -> StoryScreen: Select action
+  
+  alt Action = Read Narrative
+    StoryScreen -> StoryScreen: Display story text
+    StoryScreen -> StoryService: MarkNarrativeAsPlayed()
+    activate StoryService
+    StoryService -> GameSession: Mark narrative in session
+    deactivate StoryService
+    
+  alt Action = Explore Location
+    StoryScreen -> WorldGenerationService: GenerateStoryLocation(locationId)
+    activate WorldGenerationService
+    WorldGenerationService --> StoryScreen: Location with items/Pokemon
+    deactivate WorldGenerationService
+    
+    alt Random encounter with Pokemon
+      StoryScreen -> StoryScreen: Trigger wild battle
+      note over StoryScreen
+        Go to Battle mechanics
+        (UC_2: Battle Wild Pokemon)
+      end note
+    else Find items/chest
+      StoryScreen -> GameSession: AddItemToInventory(item)
+      activate GameSession
+      GameSession --> StoryScreen: Item added
+      deactivate GameSession
+    end
+    
+  alt Action = Talk to NPC
+    StoryScreen -> StoryService: GetNPCDialogue(npcId, progressLevel)
+    activate StoryService
+    StoryService -> MySqlStoryService: FetchNPCScript(npcId, chapter)
+    activate MySqlStoryService
+    MySqlStoryService -> Database: SELECT dialogue FROM npc_scripts
+    Database --> MySqlStoryService: Dialogue text
+    deactivate MySqlStoryService
+    MySqlStoryService --> StoryService: NPC dialogue
+    StoryService --> StoryScreen: Dialogue + options
+    deactivate StoryService
+    
+    StoryScreen --> Player: Show dialogue with choices
+    Player -> StoryScreen: Select dialogue choice
+    
+    alt NPC triggers quest
+      StoryScreen -> GameSession: AddQuest(questId)
+      GameSession --> StoryScreen: Quest added
+      
+    alt NPC gives reward
+      StoryScreen -> GameSession: AddReward(items/money)
+      GameSession --> StoryScreen: Reward given
+    end
+    
+  alt Action = Battle Trainer
+    StoryScreen -> StoryService: GetTrainerBattle(trainerId, chapterId)
+    activate StoryService
+    StoryService -> MySqlStoryService: FetchTrainerData(trainerId)
+    MySqlStoryService -> Database: SELECT trainer_pokemon, rewards FROM trainers
+    Database --> MySqlStoryService: Trainer data
+    MySqlStoryService --> StoryService: Trainer loaded
+    StoryService --> StoryScreen: Battle initialized
+    deactivate StoryService
+    
+    note over StoryScreen
+      Execute story battle
+      (Similar to UC_2 but with trainer)
+    end note
+    
+    alt Battle Won
+      StoryScreen -> StoryService: ProgressStory(milestone)
+      activate StoryService
+      StoryService -> MySqlStoryService: UpdateStoryProgression(userId, newMilestone)
+      MySqlStoryService -> Database: UPDATE story_progress
+      Database --> MySqlStoryService: Success
+      MySqlStoryService --> StoryService: Updated
+      StoryService -> StoryService: Check if next chapter unlocks
+      StoryService --> StoryScreen: Milestone reached
+      deactivate StoryService
+    end
+  end
+  
+  opt Player exits story
+    StoryScreen -> StoryScreen: Exit story
+  end
+end
+
+StoryScreen -> StoryService: SaveProgress()
+activate StoryService
+StoryService -> MySqlStoryService: PersistStoryState(userId)
+MySqlStoryService -> Database: UPDATE story tables
+Database --> MySqlStoryService: Saved
+StoryService --> StoryScreen: Progress saved
+deactivate StoryService
+
+StoryScreen --> Player: Return to main menu
+deactivate StoryScreen
+@enduml

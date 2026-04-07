@@ -1,0 +1,83 @@
+@startuml PokemonDB_TableDesign
+!define TABLENAME(name) entity name <<table>>
+!define PRIMARY_KEY {PK}
+!define FOREIGN_KEY {FK}
+!define TYPE(type) : type
+
+' Users Table
+entity users {
+  {PK} Id : INT
+  Username : VARCHAR(50)
+  Password : VARCHAR(255)
+}
+
+' Players Table
+entity players {
+  {PK} UserId : INT
+  {FK} UserId
+  Name : VARCHAR(100)
+  CurrentPhase : INT
+  CurrentLocation : VARCHAR(100)
+  Badges : TEXT (JSON)
+  InventoryData : LONGTEXT (JSON)
+  IsChampion : TINYINT(1)
+  PvPWins : INT
+  PvPLosses : INT
+}
+
+' Pokemons Table
+entity pokemons {
+  {PK} Id : INT
+  {FK} PlayerId : INT
+  SpeciesId : INT
+  Level : INT
+  TotalExp : INT
+  CurrentExp : INT
+  MaxExpForNextLevel : INT
+  CurrentHP : INT
+  MaxHP : INT
+  IsFainted : TINYINT(1)
+  Status : INT
+  MovesData : TEXT (JSON)
+}
+
+' Pokedex Table
+entity pokedex {
+  {PK} Id : INT
+  Name : VARCHAR(100)
+  Data : LONGTEXT (JSON)
+}
+
+' Items Table
+entity items {
+  {PK} Id : INT
+  Name : VARCHAR(100)
+  Type : VARCHAR(50)
+  Details : TEXT (JSON)
+}
+
+' GamePhases Table
+entity game_phases {
+  {PK} PhaseId : INT
+  Name : VARCHAR(100)
+}
+
+' Locations Table
+entity locations {
+  {PK} Id : INT
+  {FK} PhaseId : INT
+  Name : VARCHAR(100)
+  MinLevel : INT
+  MaxLevel : INT
+  WildPokemons : TEXT (JSON)
+  Narratives : TEXT (JSON)
+  NPCs : LONGTEXT (JSON)
+}
+
+' Relationships
+users ||--o{ players : "1-to-1"
+players ||--o{ pokemons : "1-to-many"
+pokemons }o--|| pokedex : "references"
+game_phases ||--o{ locations : "1-to-many"
+
+@enduml

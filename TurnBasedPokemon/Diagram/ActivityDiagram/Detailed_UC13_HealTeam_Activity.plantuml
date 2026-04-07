@@ -1,0 +1,42 @@
+@startuml UC13_HealTeam_Activity
+start
+:Player enters Pokemon Center;
+:Display center UI;
+:Player talks to Nurse Joy;
+:Display dialogue "Your Pokemon look tired";
+:Display healing options;
+
+if (Player confirms healing?) then (yes)
+  :Play healing sound effect;
+  :Display healing animation (pink light);
+  
+  repeat
+    :Restore Pokemon HP = Max HP;
+    :Remove all status effects:;
+    note
+      - Poison
+      - Paralysis
+      - Burn
+      - Freeze
+      - Sleep
+      - Confusion
+    end note
+  repeat while (More Pokemon in team)
+  
+  :Payment:;
+  if (Free healing?) then (yes)
+    :Display "Healing complete!";
+  else (Paid healing)
+    :Deduct PokeDollars;
+  endif
+  
+  :Update team display UI;
+  :Show all Pokemon as healthy;
+  :Display "Your Pokemon are ready to battle!";
+  
+else (no)
+  :Cancel healing;
+endif
+
+stop
+@enduml

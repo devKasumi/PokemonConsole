@@ -1,0 +1,44 @@
+@startuml UC17_SelectStarter_UseCase
+skinparam linetype ortho
+left to right direction
+
+actor Player
+
+rectangle "Starter Pokemon System" {
+  (Start new game)
+  (Meet Professor)
+  (Receive starter options)
+  (Display starter choices)
+  (Player selects starter)
+  (Confirm selection)
+  (Receive Pokemon)
+  (Add to Pokedex)
+  (Add to team)
+  (Get Pokedex)
+  (Get Pokeballs)
+  (Game starts)
+}
+
+Player --> (Start new game)
+(Start new game) --> (Meet Professor)
+(Meet Professor) --> (Receive starter options)
+
+(Receive starter options) --> (Display starter choices)
+note right of (Display starter choices)
+  Typically 3 starter options:
+  - Grass type
+  - Fire type
+  - Water type
+end note
+
+(Display starter choices) --> (Player selects starter)
+Player --> (Player selects starter)
+(Player selects starter) --> (Confirm selection)
+(Confirm selection) --> (Receive Pokemon)
+
+(Receive Pokemon) --> (Add to team)
+(Add to team) --> (Get Pokeballs)
+(Get Pokeballs) --> (Game starts)
+(Game starts) --> Player
+
+@enduml

@@ -1,0 +1,49 @@
+@startuml UC11_MatchHistory_UseCase
+skinparam linetype ortho
+left to right direction
+
+actor Player
+actor Admin
+
+rectangle "Match History System" {
+  (View Personal Match History)
+  (View All Matches)
+  (Fetch match records)
+  (Filter by player)
+  (Sort by recent)
+  (Display match list)
+  (Match entry)
+  (Select specific match)
+  (Show detailed stats)
+  (View full battle log)
+  (Filter options)
+  (By player/Date/Result)
+  (Generate statistics)
+  (Export/Report)
+}
+
+Player --> (View Personal Match History)
+Admin --> (View All Matches)
+
+(View Personal Match History) --> (Fetch match records)
+(Fetch match records) --> (Filter by player) : <<include>>
+
+(Filter by player) --> (Sort by recent)
+(Sort by recent) --> (Display match list)
+(Display match list) --> (Match entry)
+
+(Match entry) --> Player
+
+(Player) --> (Select specific match)
+(Select specific match) --> (Show detailed stats)
+(Show detailed stats) --> (View full battle log)
+(View full battle log) --> Player
+
+(View All Matches) --> (Fetch match records) : <<include>>
+(Fetch match records) --> (Filter options)
+(Filter options) --> (By player/Date/Result)
+(By player/Date/Result) --> (Generate statistics)
+(Generate statistics) --> (Export/Report)
+(Export/Report) --> Admin
+
+@enduml

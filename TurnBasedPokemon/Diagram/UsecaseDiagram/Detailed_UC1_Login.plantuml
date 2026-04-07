@@ -1,0 +1,31 @@
+@startuml UC1_Login_UseCase
+skinparam linetype ortho
+left to right direction
+
+actor Player
+actor System
+
+rectangle "Login System" {
+  (Enter Username/Password)
+  (Validate Credentials)
+  (Check User Exists)
+  (Verify Password)
+  (Load User Profile)
+  (Initialize GameSession)
+  (Success - Enter Main Menu)
+  (Fail - Show Error)
+}
+
+Player --> (Enter Username/Password)
+(Enter Username/Password) --> (Validate Credentials)
+(Validate Credentials) --> (Check User Exists) : <<include>>
+(Validate Credentials) --> (Verify Password) : <<include>>
+(Check User Exists) --> (Load User Profile)
+(Verify Password) --> (Load User Profile)
+(Load User Profile) --> (Initialize GameSession)
+(Initialize GameSession) --> (Success - Enter Main Menu)
+(Success - Enter Main Menu) --> Player
+(Validate Credentials) --> (Fail - Show Error) : <<extend>>
+(Fail - Show Error) --> Player
+
+@enduml

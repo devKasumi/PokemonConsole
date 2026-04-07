@@ -1,0 +1,43 @@
+@startuml UC3_CatchPokemon_Activity
+start
+:Player in battle with wild Pokemon;
+:Player selects "Catch" action;
+
+if (Player has Pokeballs?) then (yes)
+  :Display available ball types;
+  :Player selects Pokeball type;
+  
+  if (Throw Pokeball?) then (yes)
+    :Consume 1 Pokeball from inventory;
+    
+    :Calculate catch rate;
+    note
+      Catch Rate = Base Rate × 
+      (3 × MaxHP - 2 × CurrentHP) / (3 × MaxHP) ×
+      Status Modifier × Ball Modifier
+    end note
+    
+    :Generate random number (0-255);
+    if (Random <= Catch Rate?) then (yes)
+      :Shake animation;
+      :Pokemon caught!;
+      :Add Pokemon to player collection;
+      :Award catch bonus EXP;
+      stop
+    else (no)
+      :Shake failed;
+      :"Pokemon broke free!";
+      :Continue battle;
+      stop
+    endif
+  else (no)
+    :Cancel catch attempt;
+    :Continue battle;
+    stop
+  endif
+else (no)
+  :Display "Out of Pokeballs" message;
+  :Continue battle without catching;
+  stop
+endif
+@enduml

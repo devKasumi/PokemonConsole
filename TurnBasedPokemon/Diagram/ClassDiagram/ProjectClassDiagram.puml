@@ -1,0 +1,189 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+' Core state & persistence
+class GameSession {
+  - _userRepo: IUserRepository
+  + CurrentUser: User?
+  + CurrentLocation: LocationData
+  + HasPlayedNarrative: bool
+  + CurrentEnemyTeam: List<Pokemon>
+  + CurrentEnemyTeamIndex: int
+  + IsTrainerBattle: bool
+  + CurrentEnemyPokemon: Pokemon?
+  + Login(user: string, pass: string)
+  + StartNewGame()
+  + LoadProgress(username: string): bool
+  + SaveProgress()
+  + SetupBattle(enemies: List<Pokemon>, isTrainer: bool)
+}
+
+class User {
+  + Username: string
+  + Password: string
+  + PlayerData: Player?
+}
+
+class Player {
+  + Name: string
+  + CurrentPhase: int
+  + CurrentLocation: string
+  + Badges: List<string>
+  + PokemonTeam: List<Pokemon>
+  + Inventory: Dictionary<int, Dictionary<string, List<Item>>>
+  + CurrentPokemon: Pokemon
+  + AddBadge(badgeName: string)
+  + AddItem(item: Item)
+  + RemoveItem(item: Item)
+}
+
+class Pokemon {
+  + Specie: PokemonSpecies
+  + Level: int
+  + TotalExp: int
+  + CurrentHP: int
+  + MaxHP: int
+  + Moves: List<PokemonMove>
+  + IsFainted: bool
+  + Status: PokemonStatus
+  + CurrentExp: int
+  + MaxExpForNextLevel: int
+  + Heal(hpAmount: int)
+  + GainExperience(amount: int)
+  + LevelUp()
+}
+
+class PokemonSpecies {
+  + Id: int
+  + Name: string
+  + Types: List<ElementType>
+  + BaseStats: Stats
+  + MoveSet: List<PokemonMove>
+  + CatchRate: int
+  + BaseExp: int
+  + EvolutionId: int?
+  + EvolutionLevel: int?
+}
+
+class PokemonMove {
+  + Name: string
+  + Type: ElementType
+  + Power: int
+  + PP: int
+  + MoveType: MoveType
+  + LevelLearned: int
+}
+
+class Item {
+  + Id: int
+  + Name: string
+  + Description: string
+  + Category: ItemCategory
+  + Price: int
+}
+class HealingItem
+class CaptureItem
+class GeneralItem
+
+class Inventory {
+  + Items: Dictionary<Item, int>
+  + AddItem(item: Item, amount: int)
+  + RemoveItem(item: Item): bool
+}
+
+class Trainer {
+  + Name: string
+  + Team: List<Pokemon>
+  + IsDefeated: bool
+}
+class NPC {
+  + Role: NPCRole
+  + ChallengeQuote: string
+  + DefeatQuote: string
+  + RequiredBadge: int
+}
+
+class BattleService {
+  - _gameSession: GameSession
+  - _userRepo: IUserRepository
+  - _worldGen: IWorldGenerationService
+  - _expService: IExpService
+  + ExecutePlayerTurn(moveIndex: int): BattleTurnResult
+  + ExecuteEnemyTurn(): BattleTurnResult
+  + ProcessVictory(): ProcessExpResult
+  + CanSwitchPokemon(target: Pokemon): bool
+}
+
+class StoryService {
+  - _gameSession: GameSession
+  - _pokemonSpawner: PokemonSpawner
+  - _itemSpawner: ItemSpawner
+  - _gameData: GameData
+  + InitializeStory(command: string)
+  + GetCurrentLocation(): LocationData
+  + Move(forward: bool): string
+  + HealTeamAtCenter(): string
+  + ExploreWildArea(): (bool, string, Pokemon?, Item?)
+  + TryChallengeGym(): (bool, string, NpcData?, List<Pokemon>?)
+}
+
+class GameData {
+  + Phases: List<PhaseData>
+}
+class PhaseData {
+  + PhaseId: int
+  + Name: string
+  + Locations: List<LocationData>
+}
+class LocationData {
+  + Name: string
+  + WildPokemons: List<string>
+  + Narratives: List<string>
+  + NPCs: List<NpcData>
+}
+class NpcData {
+  + Name: string
+  + Role: string
+  + RequiredBadge: int
+  + PokemonTeam: List<Pokemon>
+}
+
+interface IUserRepository
+class UserRepository
+class MySqlUserRepository
+
+interface IWorldGenerationService
+class PokemonSpawner
+class ItemSpawner
+interface IExpService
+
+GameSession --> User : CurrentUser
+User --> Player : PlayerData
+Player o-- "*" Pokemon : PokemonTeam
+Player --> Item : Inventory
+Pokemon --> PokemonSpecies : Specie
+Pokemon --> PokemonMove : Moves
+PokemonSpecies --> PokemonMove : MoveSet
+Item <|-- HealingItem
+Item <|-- CaptureItem
+Item <|-- GeneralItem
+Player --> Inventory
+Trainer <|-- NPC
+
+BattleService --> GameSession
+BattleService --> IUserRepository
+BattleService --> IWorldGenerationService
+BattleService --> IExpService
+StoryService --> GameSession
+StoryService --> PokemonSpawner
+StoryService --> ItemSpawner
+StoryService --> GameData
+GameData --> PhaseData
+PhaseData --> LocationData
+LocationData --> NpcData
+
+UserRepository ..|> IUserRepository
+MySqlUserRepository ..|> IUserRepository
+PokemonSpawner ..|> IWorldGenerationService
+
+@enduml

@@ -1,0 +1,47 @@
+@startuml UC16_ChallengeTrainer_Activity
+start
+:Player encounters Trainer;
+:Trainer blocks path / initiates battle;
+:Trainer dialogue: "You! Let's battle!";
+
+:Load trainer Pokemon team;
+:Display trainer sprite;
+:Display trainer team (Pokemon names/levels);
+
+:Player ready?;
+if (Player accepts?) then (yes)
+  :Start battle;
+  :Trainer vs Player;
+  note right
+    Execute standard battle mechanics
+    Turn-based combat with trainer AI
+  end note
+  
+  if (Player won?) then (yes)
+    :Victory music;
+    :Trainer defeated dialogue;
+    :Trainer gives money;
+    note
+      Money = 50 × Trainer Level
+    end note
+    
+    :Award experience to team;
+    if (Trainer gives item?) then (yes)
+      :Receive gift item;
+    endif
+    
+    :Mark trainer as beaten;
+    :Trainer moves aside / disappears;
+    
+  else (no)
+    :Defeat screenit;
+    :Trainer gives taunting statement;
+    :Return to Pokemon Center;
+  endif
+  
+else (no)
+  :Trainer says "Maybe next time!";
+endif
+
+stop
+@enduml

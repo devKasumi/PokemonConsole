@@ -1,0 +1,54 @@
+@startuml UC12_LevelUp_Activity
+start
+:Pokemon gains EXP;
+:Calculate total EXP;
+
+:Check EXP needed for next level;
+note
+  EXP Threshold = Base EXP × Level
+  Different formula for each growth type
+end note
+
+if (Current EXP >= Threshold?) then (yes)
+  :Set level = level + 1;
+  :Recalculate stats based on level;
+  note
+    New HP = Base HP + (Level × Growth)
+    New ATK = Base ATK + (Level × Growth)
+    Similar for DEF, SpA, SpD, SPE
+  end note
+  
+  :Check move learn table;
+  if (New moves available at this level?) then (yes)
+    :Display new move choices;
+    note
+      Show up to 4 moves
+      Player chooses which to keep
+    end note
+    :Player selects move or pass;
+    :Add move to moveset;
+  endif
+  
+  :Check evolution conditions;
+  if (Level >= Evolution level?) then (yes)
+    :Display "Pokemon evolving!";
+    :Play evolution animation;
+    :Change Pokemon sprite/stats;
+    :Update Pokedex entry;
+    :Evolution complete;
+  endif
+  
+  :Display level up summary;
+  note
+    - Level gained
+    - Stat changes
+    - New moves learned
+    - Evolution status
+  end note
+  
+else (no)
+  :Continue battle;
+endif
+
+stop
+@enduml

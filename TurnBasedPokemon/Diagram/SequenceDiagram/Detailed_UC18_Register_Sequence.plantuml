@@ -1,0 +1,86 @@
+@startuml UC18_Register_Sequence
+participant NewPlayer
+participant RegisterScreen
+participant AuthenService
+participant UserRepository
+participant Database
+participant PasswordHasher
+
+NewPlayer -> RegisterScreen: Click Register
+activate RegisterScreen
+
+RegisterScreen --> NewPlayer: Show registration form
+
+NewPlayer -> RegisterScreen: Enter username
+RegisterScreen -> RegisterScreen: ValidateUsername(username)
+alt Valid format
+  RegisterScreen -> UserRepository: CheckUsernameAvailable(username)
+  activate UserRepository
+  UserRepository -> Database: SELECT COUNT(*) FROM users WHERE username=?
+  activate Database
+  Database --> UserRepository: Count
+  deactivate Database
+  
+  alt Username available
+    UserRepository --> RegisterScreen: Available
+  else Username taken
+    UserRepository --> RegisterScreen: Already exists
+    RegisterScreen --> NewPlayer: "Username taken, try another"
+  end
+else Invalid format
+  RegisterScreen --> NewPlayer: "Username must be 3-16 chars, alphanumeric + underscore"
+end
+deactivate UserRepository
+
+NewPlayer -> RegisterScreen: Enter password
+RegisterScreen -> RegisterScreen: ValidatePassword(password)
+alt Strong password
+  RegisterScreen --> NewPlayer: Password accepted
+else Weak password
+  RegisterScreen --> NewPlayer: "Password must have 8+ chars, uppercase, number, symbol"
+end
+
+NewPlayer -> RegisterScreen: Confirm password
+alt Passwords match
+  RegisterScreen --> NewPlayer: Passwords confirmed
+else Mismatch
+  RegisterScreen --> NewPlayer: "Passwords don't match"
+end
+
+NewPlayer -> RegisterScreen: Submit registration
+RegisterScreen -> AuthenService: Register(username, password)
+activate AuthenService
+
+AuthenService -> PasswordHasher: HashPassword(password)
+activate PasswordHasher
+PasswordHasher -> PasswordHasher: bcrypt(password, salt=12)
+PasswordHasher --> AuthenService: HashedPassword
+deactivate PasswordHasher
+
+AuthenService -> UserRepository: CreateUser(username, hashedPassword)
+activate UserRepository
+
+UserRepository -> Database: INSERT INTO users (username, password_hash, created_at) VALUES (?, ?, NOW())
+activate Database
+Database --> UserRepository: User created (user_id)
+deactivate Database
+
+UserRepository -> Database: INSERT INTO user_inventory (user_id) VALUES (?)
+Database --> UserRepository: Inventory created
+
+UserRepository -> Database: INSERT INTO pokedex (user_id) VALUES (?)
+Database --> UserRepository: Pokedex created
+
+UserRepository --> AuthenService: User created successfully
+deactivate UserRepository
+
+AuthenService -> AuthenService: CreateGameSession(userId)
+AuthenService --> RegisterScreen: RegistrationSuccess
+
+RegisterScreen --> NewPlayer: "Account created! Proceeding to game setup..."
+RegisterScreen -> RegisterScreen: AutoLogin(userId)
+RegisterScreen --> NewPlayer: Show starter selection
+
+deactivate AuthenService
+deactivate RegisterScreen
+@enduml

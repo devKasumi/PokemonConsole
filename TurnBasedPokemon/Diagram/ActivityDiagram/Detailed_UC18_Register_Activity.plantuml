@@ -1,0 +1,31 @@
+@startuml UC18_Register_Activity
+start
+:Player taps "Register";
+:Display registration form;
+
+:Player enters username;
+:Validate username input;
+:Check if username taken;
+if (Username available?) then (yes)
+  :Username accepted;
+else (no)
+  :Display "Username already taken";
+  :Player enters new username;
+  :Loop back;
+endif
+
+:Player enters password;
+:Player confirms password;
+
+:Hash password (bcrypt/argon2);
+:Create user record in database;
+:Initialize empty Pokemon collection;
+:Initialize inventory;
+:Create game session;
+
+:Display "Account created successfully!";
+:Auto-login player;
+:Display starter selection screen;
+
+stop
+@enduml

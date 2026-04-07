@@ -1,0 +1,36 @@
+@startuml UC13_HealTeam_UseCase
+skinparam linetype ortho
+left to right direction
+
+actor Player
+
+rectangle "Pokemon Center Healing System" {
+  (Arrive at Pokemon Center)
+  (Talk to Nurse Joy)
+  (Request healing)
+  (Healing animation)
+  (Full restore all Pokemon)
+  (Restore HP to max)
+  (Remove all status effects)
+  (Update UI)
+  (Healing complete)
+  (Thank you message)
+}
+
+Player --> (Arrive at Pokemon Center)
+(Arrive at Pokemon Center) --> (Talk to Nurse Joy)
+(Talk to Nurse Joy) --> (Request healing) : <<action>>
+(Request healing) --> (Healing animation)
+
+(Healing animation) --> (Full restore all Pokemon) : <<include>>
+(Full restore all Pokemon) --> (Restore HP to max)
+(Full restore all Pokemon) --> (Remove all status effects)
+
+(Restore HP to max) --> (Update UI)
+(Remove all status effects) --> (Update UI)
+
+(Update UI) --> (Healing complete)
+(Healing complete) --> (Thank you message)
+(Thank you message) --> Player
+
+@enduml

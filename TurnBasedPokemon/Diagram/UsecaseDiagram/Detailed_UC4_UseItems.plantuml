@@ -1,0 +1,39 @@
+@startuml UC4_UseItems_UseCase
+skinparam linetype ortho
+left to right direction
+
+actor Player
+
+rectangle "Item System" {
+  (Enter Inventory)
+  (View Items)
+  (Select Item)
+  (Item Type Check)
+  (Healing Item)
+  (Pokeball)
+  (Choose Target Pokemon)
+  (Apply item effect)
+  (Consume item)
+  (Cannot use Pokeball outside battle)
+  (Use catch mechanics)
+}
+
+Player --> (Enter Inventory)
+(Enter Inventory) --> (View Items)
+(View Items) --> (Select Item)
+(Select Item) --> (Item Type Check)
+
+(Item Type Check) --> (Healing Item) : Healing
+(Item Type Check) --> (Pokeball) : Pokeball
+
+(Healing Item) --> (Choose Target Pokemon)
+(Choose Target Pokemon) --> (Apply item effect)
+(Apply item effect) --> (Consume item)
+(Consume item) --> Player
+
+(Pokeball) --> (Use catch mechanics)
+(Pokeball) --> (Cannot use Pokeball outside battle)
+(Use catch mechanics) --> Player
+(Cannot use Pokeball outside battle) --> Player
+
+@enduml

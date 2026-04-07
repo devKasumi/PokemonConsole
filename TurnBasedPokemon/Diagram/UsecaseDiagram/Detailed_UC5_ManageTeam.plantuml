@@ -1,0 +1,53 @@
+@startuml UC5_ManageTeam_UseCase
+skinparam linetype ortho
+left to right direction
+
+actor Player
+
+rectangle "Team Management System" {
+  (Access Team Management)
+  (View Current Team)
+  (Team Size Check)
+  (Add Pokemon from Box)
+  (Select Pokemon)
+  (Add to Team)
+  (Modify Team)
+  (Replace/Swap Pokemon)
+  (Remove Pokemon)
+  (Select target position)
+  (Choose replacement)
+  (Swap confirmed)
+  (Select Pokemon to remove)
+  (Confirm removal)
+  (Move to PC Box)
+  (Save Team Configuration)
+}
+
+Player --> (Access Team Management)
+(Access Team Management) --> (View Current Team)
+(View Current Team) --> (Team Size Check)
+
+(Team Size Check) --> (Add Pokemon from Box) : < 6 Pokemon
+(Team Size Check) --> (Modify Team) : = 6 Pokemon
+
+(Add Pokemon from Box) --> (Select Pokemon)
+(Select Pokemon) --> (Add to Team)
+
+(Modify Team) --> (Replace/Swap Pokemon)
+(Modify Team) --> (Remove Pokemon)
+
+(Replace/Swap Pokemon) --> (Select target position)
+(Select target position) --> (Choose replacement)
+(Choose replacement) --> (Swap confirmed) : <<confirm>>
+
+(Remove Pokemon) --> (Select Pokemon to remove)
+(Select Pokemon to remove) --> (Confirm removal)
+(Confirm removal) --> (Move to PC Box) : <<move>>
+
+(Swap confirmed) --> (Save Team Configuration) : <<invoke>>
+(Move to PC Box) --> (Save Team Configuration) : <<invoke>>
+(Add to Team) --> (Save Team Configuration) : <<invoke>>
+
+(Save Team Configuration) --> Player
+
+@enduml

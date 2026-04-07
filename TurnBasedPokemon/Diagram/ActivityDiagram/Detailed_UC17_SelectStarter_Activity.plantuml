@@ -1,0 +1,37 @@
+@startuml UC17_SelectStarter_Activity
+start
+:Start new game;
+:Display intro sequence;
+:Meet Professor Oak / your regional professor;
+:Professor: "Welcome! There are 3 starter Pokemon";
+
+:Display 3 starter options;
+note
+  Typically shown as:
+  - Picture
+  - Name
+  - Type
+  - Level 5 stats
+end note
+
+:Player selects starter;
+repeat
+  if (Change mind?) then (yes)
+    :Display options again;
+  endif
+repeat while (Change mind?)
+
+:Confirm selection;
+:Display "You received [Starter Name]!";
+:Starter added to team;
+
+:Professor gives items;
+:Receive initial Pokeballs (5x Pokéballs);
+:Receive Potions (2x);
+
+:Game officially starts;
+:Player in home town;
+
+
+stop
+@enduml

@@ -1,0 +1,70 @@
+@startuml UC9_PvPBattle_Activity
+start
+:Both players loaded in battle room;
+:Initialize turn counter;
+:Display both teams on screen;
+
+:Calculate initial turn order (speed stat);
+:Notify players of battle start;
+
+repeat
+  :Display current turn Pokemon;
+  :Player 1 selects move:;
+  note
+    - Choose move from active Pokemon
+    - Time limit: 30 seconds
+  end note
+  
+  :Player 2 selects move:;
+  note
+    - Choose move from active Pokemon
+    - Time limit: 30 seconds
+  end note
+  
+  if (Both selected moves?) then (yes)
+    :Proceed with turn execution;
+  else
+    note
+      One or both players timed out
+      Use default action (1st move/switch)
+    end note
+  endif
+  
+  :Calculate turn order (speed comparison);
+  
+  :Process each turn in order;
+  :Apply attack damage;
+  :Check for status effects;
+  :Display critical hit (if applicable);
+  :Show damage animation (client-side);
+  :Sync damage to opponent client;
+  
+  :Check Pokemon fainting;
+  if (Pokemon fainted?) then (yes)
+    if (More Pokemon available?) then (yes)
+      :Prompt to send next Pokemon;
+      :Wait for selection;
+    else (no)
+      :Battle over - opponent wins;
+    endif
+  endif
+  
+  :Increment turn counter;
+  
+repeat while (Battle ongoing)
+
+:Determine winner & loser;
+:Award EXP to battle-participating Pokemon;
+:Calculate ELO change:;
+note
+  Winner: +ELO
+  Loser: -ELO
+  Size depends on ELO difference
+end note
+
+:Award money/items to winner;
+:Record battle statistics;
+:Sync results to database;
+
+stop
+@enduml

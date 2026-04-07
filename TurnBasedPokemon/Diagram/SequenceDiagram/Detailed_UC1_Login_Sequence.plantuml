@@ -1,0 +1,48 @@
+@startuml UC1_Login_Sequence
+participant Player
+participant LoginScreen
+participant AuthenService
+participant UserRepository
+participant Database
+
+Player -> LoginScreen: Enter username & password
+activate LoginScreen
+LoginScreen -> AuthenService: ValidateCredentials(username, password)
+activate AuthenService
+
+AuthenService -> UserRepository: GetUserByUsername(username)
+activate UserRepository
+UserRepository -> Database: SELECT * FROM Users WHERE Username = ?
+activate Database
+Database --> UserRepository: User record
+deactivate Database
+deactivate UserRepository
+UserRepository --> AuthenService: User object
+
+alt User exists
+  AuthenService -> AuthenService: ComparePasswordHash(inputPassword, storedHash)
+  alt Password matches
+    AuthenService -> UserRepository: GetUserWithTeamAndInventory(userId)
+    activate UserRepository
+    UserRepository -> Database: SELECT * from Users + Pokemon + Items
+    Database --> UserRepository: Complete user data
+    deactivate UserRepository
+    UserRepository --> AuthenService: UserProfileData
+    
+    AuthenService -> AuthenService: CreateGameSession(userProfile)
+    AuthenService --> LoginScreen: Success + GameSession
+    deactivate AuthenService
+    LoginScreen --> Player: Show Main Menu
+  else Password incorrect
+    AuthenService --> LoginScreen: AuthenticationFailed
+    deactivate AuthenService
+    LoginScreen --> Player: Show error "Incorrect Password"
+  end
+else User not found
+  AuthenService --> LoginScreen: AuthenticationFailed
+  deactivate AuthenService
+  LoginScreen --> Player: Show error "User not found"
+end
+
+deactivate LoginScreen
+@enduml

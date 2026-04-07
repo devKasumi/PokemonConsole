@@ -1,0 +1,38 @@
+@startuml UC12_LevelUp_UseCase
+skinparam linetype ortho
+left to right direction
+
+actor Player
+
+rectangle "Level Up & Evolution System" {
+  (Pokemon gains experience)
+  (Check EXP threshold)
+  (Enough EXP to level up?)
+  (Level up Pokemon)
+  (Increase stats)
+  (Learn new moves?)
+  (Add new move)
+  (Check evolution condition)
+  (Can evolve?)
+  (Trigger evolution)
+  (Update Pokedex)
+  (Evolution complete)
+  (Display level up screen)
+}
+
+Player --> (Pokemon gains experience)
+(Pokemon gains experience) --> (Check EXP threshold)
+(Check EXP threshold) --> (Enough EXP to level up?)
+(Enough EXP to level up?) --> (Level up Pokemon)
+(Level up Pokemon) --> (Increase stats)
+(Increase stats) --> (Learn new moves?)
+(Learn new moves?) --> (Add new move)
+(Add new move) --> (Check evolution condition)
+(Check evolution condition) --> (Can evolve?)
+(Can evolve?) --> (Trigger evolution)
+(Trigger evolution) --> (Update Pokedex)
+(Update Pokedex) --> (Evolution complete)
+(Evolution complete) --> (Display level up screen)
+(Display level up screen) --> Player
+
+@enduml

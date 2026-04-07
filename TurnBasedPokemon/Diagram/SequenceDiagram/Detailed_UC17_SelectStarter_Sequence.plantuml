@@ -1,0 +1,55 @@
+@startuml UC17_SelectStarter_Sequence
+participant Player
+participant GameStart
+participant StarterSelection
+participant GameSession
+participant PokemonSpawner
+participant Database
+
+Player -> GameStart: Start New Game
+activate GameStart
+
+GameStart -> StarterSelection: DisplayStarterOptions()
+activate StarterSelection
+
+StarterSelection -> Database: SELECT starters FROM pokemon_species WHERE is_starter=true LIMIT 3
+activate Database
+Database --> StarterSelection: 3 starter Pokemon
+deactivate Database
+
+StarterSelection --> GameStart: Starter options loaded
+GameStart --> Player: Show 3 starter choices
+
+Player -> StarterSelection: SelectStarter(starterId)
+activate StarterSelection
+
+StarterSelection -> PokemonSpawner: GenerateStarter(pokemonId, level=5)
+activate PokemonSpawner
+PokemonSpawner -> Database: SELECT base_stats FROM pokemon_species WHERE id=?
+Database --> PokemonSpawner: Stats
+PokemonSpawner -> PokemonSpawner: CalculateStats(level=5)
+PokemonSpawner --> StarterSelection: Starter Pokemon object
+deactivate PokemonSpawner
+
+StarterSelection -> GameSession: AddPokemonToTeam(starterPokemon)
+activate GameSession
+GameSession -> Database: INSERT INTO user_pokemon VALUES (...)
+Database --> GameSession: Pokemon saved
+GameSession --> StarterSelection: Starter added to team
+deactivate GameSession
+
+StarterSelection -> GameSession: GiveStarterItems()
+activate GameSession
+GameSession -> GameSession: AddItem(Pokedex)
+GameSession -> GameSession: AddItem(5x Pokeballs)
+GameSession -> GameSession: AddItem(2x Potions)
+GameSession --> StarterSelection: Items given
+deactivate GameSession
+
+StarterSelection --> Player: "Game started! Go on your adventure!"
+deactivate StarterSelection
+
+GameStart -> GameSession: InitializeGameWorld()
+GameStart --> Player: Welcome to the world!
+deactivate GameStart
+@enduml

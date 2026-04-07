@@ -1,0 +1,39 @@
+@startuml UC14_ChallengeGym_UseCase
+skinparam linetype ortho
+left to right direction
+
+actor Player
+
+rectangle "Gym Challenge System" {
+  (Arrive at Gym)
+  (Talk to Gym Leader)
+  (Receive challenge)
+  (Gym Leader requirements met?)
+  (Gym Leader team ready)
+  (Battle Gym Leader)
+  (Battle won?)
+  (Defeated)
+  (Victory)
+  (Receive Badge)
+  (Receive Prize Money)
+  (Receive Blueprint/TM)
+  (GymLeader defeated)
+  (Update story progress)
+}
+
+Player --> (Arrive at Gym)
+(Arrive at Gym) --> (Talk to Gym Leader)
+(Talk to Gym Leader) --> (Receive challenge)
+(Receive challenge) --> (Gym Leader requirements met?)
+(Gym Leader requirements met?) --> (Gym Leader team ready)
+(Gym Leader team ready) --> (Battle Gym Leader)
+(Battle Gym Leader) --> (Battle won?)
+(Battle won?) --> (Victory)
+(Battle won?) --> (Defeated)
+(Victory) --> (Receive Badge)
+(Receive Badge) --> (GymLeader defeated)
+(GymLeader defeated) --> (Update story progress)
+(Update story progress) --> Player
+(Gym Leader requirements met?) --> Player : Return later with stronger team
+
+@enduml

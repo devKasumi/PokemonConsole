@@ -1,0 +1,32 @@
+@startuml UC4_UseItems_Activity
+start
+:Player accesses inventory;
+:Display all items;
+:Player selects item to use;
+
+if (Item type == Healing item?) then (yes)
+  :Display Pokemon team;
+  :Player selects target Pokemon;
+  if (Healing effect == Restore HP?) then (yes)
+    :Restore HP to selected Pokemon;
+  elseif (Healing effect == Cure status?) then (yes)
+    :Remove status condition from selected Pokemon;
+  endif
+  :Consume 1 healing item;
+
+elseif (Item type == Pokeball?) then (yes)
+  if (In battle with wild Pokemon?) then (yes)
+    :Throw Pokeball;
+    :Proceed to catch mechanics;
+  else (no)
+    :Display "Cannot use Pokeball outside battle";
+  endif
+
+else (no)
+  :Display "Item type not usable here";
+endif
+
+:Update inventory display;
+:Refresh UI;
+stop
+@enduml

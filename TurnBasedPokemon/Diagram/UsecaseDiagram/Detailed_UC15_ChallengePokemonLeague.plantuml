@@ -1,0 +1,43 @@
+@startuml UC15_ChallengePokemonLeague_UseCase
+skinparam linetype ortho
+left to right direction
+
+actor Player
+
+rectangle "Pokemon League System" {
+  (Arrive at Pokemon League)
+  (All badges collected?)
+  (Meet Elite Four Leader)
+  (Battle Elite Four member)
+  (Elite member defeated?)
+  (Advance to next member)
+  (All Elite Four beaten?)
+  (Meet Champion)
+  (Battle Champion)
+  (Champion defeated?)
+  (Won league)
+  (Hall of Fame)
+  (Champion title)
+  (Prize money)
+}
+
+Player --> (Arrive at Pokemon League)
+(Arrive at Pokemon League) --> (All badges collected?)
+(All badges collected?) --> (Meet Elite Four Leader)
+(Meet Elite Four Leader) --> (Battle Elite Four member)
+(Battle Elite Four member) --> (Elite member defeated?)
+(Elite member defeated?) --> (Advance to next member)
+(Advance to next member) --> (Meet Elite Four Leader)
+(Elite member defeated?) --> (All Elite Four beaten?)
+(All Elite Four beaten?) --> (Meet Champion)
+(Meet Champion) --> (Battle Champion)
+(Battle Champion) --> (Champion defeated?)
+(Champion defeated?) --> (Won league)
+(Champion defeated?) --> Player : Lose, return to Pokemon Center
+(Won league) --> (Hall of Fame)
+(Hall of Fame) --> (Champion title)
+(Champion title) --> (Prize money)
+(Prize money) --> Player
+(All badges collected?) --> Player : Not ready for league
+
+@enduml

@@ -1,0 +1,52 @@
+@startuml UC10_SaveLoad_UseCase
+skinparam linetype ortho
+left to right direction
+
+actor Player
+
+rectangle "Save/Load System" {
+  (Save Game)
+  (Load Game)
+  (View Save Slots)
+  (Manual Save Request)
+  (Player opens menu)
+  (Select save slot)
+  (Collect Game State)
+  (Serialize data)
+  (Save to database)
+  (Display Save confirmation)
+  (View available saves)
+  (Select save to load)
+  (Retrieve from database)
+  (Deserialize data)
+  (Restore game state)
+  (Resume gameplay)
+}
+
+Player --> (Save Game)
+Player --> (Load Game)
+Player --> (View Save Slots)
+
+(Save Game) --> (Manual Save Request)
+
+(Manual Save Request) --> (Player opens menu)
+(Player opens menu) --> (Select save slot)
+
+(Select save slot) --> (Collect Game State) : <<include>>
+
+(Collect Game State) --> (Serialize data)
+(Serialize data) --> (Save to database)
+(Save to database) --> (Display Save confirmation)
+(Display Save confirmation) --> Player
+
+(View Save Slots) --> (View available saves)
+Player --> (Load Game)
+(Load Game) --> (View available saves)
+(View available saves) --> (Select save to load)
+(Select save to load) --> (Retrieve from database)
+(Retrieve from database) --> (Deserialize data)
+(Deserialize data) --> (Restore game state)
+(Restore game state) --> (Resume gameplay)
+(Resume gameplay) --> Player
+
+@enduml

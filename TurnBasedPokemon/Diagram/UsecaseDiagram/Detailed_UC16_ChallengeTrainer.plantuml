@@ -1,0 +1,41 @@
+@startuml UC16_ChallengeTrainer_UseCase
+skinparam linetype ortho
+left to right direction
+
+actor Player
+actor Trainer
+
+rectangle "Trainer Battle System" {
+  (Encounter Trainer)
+  (Trainer initiates battle)
+  (Load trainer team)
+  (Execute battle)
+  (Battle result)
+  (Player won)
+  (Player lost)
+  (Trainer defeated)
+  (Receive reward money)
+  (Gain experience)
+  (Trainer gives item)
+  (Update trainer status)
+}
+
+Player --> (Encounter Trainer)
+Trainer --> (Trainer initiates battle)
+(Encounter Trainer) --> (Trainer initiates battle)
+
+(Trainer initiates battle) --> (Load trainer team)
+(Load trainer team) --> (Execute battle)
+(Execute battle) --> (Battle result)
+
+(Battle result) --> (Player won)
+(Battle result) --> (Player lost)
+(Player won) --> (Trainer defeated)
+(Trainer defeated) --> (Receive reward money)
+(Receive reward money) --> (Gain experience)
+(Gain experience) --> (Trainer gives item)
+(Trainer gives item) --> (Update trainer status)
+(Update trainer status) --> Player
+(Player lost) --> Player : Return to Pokemon Center
+
+@enduml

@@ -1,0 +1,85 @@
+@startuml UC2_BattleWild_Sequence
+participant Player
+participant BattleScreen
+participant WorldGenerationService
+participant BattleService
+participant DamageCalculator
+participant ExpService
+participant GameSession
+
+Player -> BattleScreen: Explore world / trigger encounter
+activate BattleScreen
+
+BattleScreen -> WorldGenerationService: GenerateWildPokemon(playerLevel)
+activate WorldGenerationService
+WorldGenerationService --> BattleScreen: Wild Pokemon object
+deactivate WorldGenerationService
+
+BattleScreen -> BattleScreen: Initialize battle UI
+BattleScreen --> Player: Display battle screen
+
+par Battle Loop
+  loop while (battle ongoing)
+    Player -> BattleScreen: Select action (Move/Switch/Run)
+    activate BattleScreen
+    
+    alt Action = Select Move
+      BattleScreen -> BattleService: ExecutePlayerTurn(moveIndex)
+      activate BattleService
+      
+      BattleService -> DamageCalculator: CalculateDamage(playerPoke, enemyPoke, move)
+      activate DamageCalculator
+      DamageCalculator --> BattleService: damage value
+      deactivate DamageCalculator
+      
+      BattleService -> BattleService: Apply damage to enemy
+      BattleService -> BattleService: Check if enemy fainted
+      BattleService --> BattleScreen: TurnResult (damage, messages)
+      
+    else Action = Switch Pokemon
+      BattleService -> GameSession: SwitchPokemon(newPokemonIndex)
+      GameSession --> BattleService: Switch confirmed
+      BattleService --> BattleScreen: PokemonSwitched result
+      
+    else Action = Run
+      BattleService -> BattleService: Calculate escape chance (50% + speed)
+      alt Escape successful
+        BattleService --> BattleScreen: EscapeSuccess
+        break
+      else Escape failed
+        BattleService --> BattleScreen: EscapeFailed - continue battle
+      end
+    end
+    
+    deactivate BattleService
+    BattleScreen -> BattleScreen: Enemy turn - SelectRandomMove
+    BattleScreen -> BattleService: ExecuteEnemyTurn()
+    activate BattleService
+    BattleService -> DamageCalculator: CalculateDamage(enemyPoke, playerPoke, move)
+    DamageCalculator --> BattleService: damage
+    BattleService -> BattleService: Apply damage to player Pokemon
+    BattleService --> BattleScreen: EnemyTurnResult
+    deactivate BattleService
+    
+    deactivate BattleScreen
+  end
+end
+
+alt Battle Won
+  BattleScreen -> ExpService: AwardExperience(playerPokemonList)
+  activate ExpService
+  ExpService --> BattleScreen: EXP awarded, level ups?
+  deactivate ExpService
+  
+  BattleScreen -> GameSession: AwardMoney(battleReward)
+  activate GameSession
+  GameSession --> BattleScreen: Money updated
+  deactivate GameSession
+  
+  BattleScreen --> Player: Show victory screen + rewards
+else Battle Lost or Escaped
+  BattleScreen --> Player: Show defeat/escape screen
+end
+
+deactivate BattleScreen
+@enduml

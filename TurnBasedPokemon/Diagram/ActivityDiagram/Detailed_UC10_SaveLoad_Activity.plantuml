@@ -1,0 +1,64 @@
+@startuml UC10_SaveLoad_Activity
+start
+:Game initialized;
+
+if (Manual save requested) then (yes)
+  :Player opens main menu;
+  :Select "Save Game" option;
+  :Show save slot options;
+  :Player selects slot;
+  
+  :Collect all game state;
+  :Serialize player data to JSON/Binary;
+  :Serialize Pokemon team;
+  :Serialize inventory;
+  :Serialize story progress;
+  :Serialize location/world state;
+  
+  :Write to database;
+  :Record save timestamp;
+  note
+    Save info stored:
+    - Player level & rank
+    - Team summary
+    - Current location
+    - Playtime
+    - Save date/time
+  end note
+  
+  :Display "Game saved!";
+  
+elseif (Player loads game) then (yes)
+  :Display saved games list;
+  note
+    Show:
+    - Save slot
+    - Player name/level
+    - Team Pokemon names
+    - Location
+    - Save date/time
+  end note
+  
+  :Player selects save to load;
+  :Retrieve data from database;
+  :Deserialize JSON;
+  
+  :Restore game state:;
+  note
+    - Player stats (level, EXP, money)
+    - Pokemon team (all stats, moves, experience)
+    - Inventory items
+    - Story progress flags
+    - Player location
+    - PC Box Pokemon
+    - Pokedex completion
+  end note
+  
+  :Initialize field/battle scenes;
+  :Restore visual player position;
+  :Resume from checkpoint;
+  
+endif
+
+stop
+@enduml

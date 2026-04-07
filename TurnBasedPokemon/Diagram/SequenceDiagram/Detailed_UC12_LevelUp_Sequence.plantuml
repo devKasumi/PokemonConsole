@@ -1,0 +1,69 @@
+@startuml UC12_LevelUp_Sequence
+participant Player
+participant BattleScreen
+participant ExpService
+participant WorldGenerationService
+participant GameSession
+participant Database
+
+BattleScreen -> ExpService: GrantExperience(pokemon, expAmount)
+activate ExpService
+
+ExpService -> ExpService: AddEXP to pokemon
+ExpService -> ExpService: CheckIfLevelUp()
+
+alt EXP >= Next Level Threshold
+  ExpService -> GameSession: LevelUpPokemon(pokemon)
+  activate GameSession
+  
+  GameSession -> GameSession: level = level + 1
+  GameSession -> GameSession: RecalculateStats()
+  note over GameSession
+    Calculate new stats based on:
+    - Base stats
+    - IV (Individual Values)
+    - EV (Effort Values)
+    - Level
+    - Nature
+  end note
+  
+  GameSession -> GameSession: CheckNewMoves()
+  GameSession -> Database: SELECT moves FROM move_learn_table WHERE pokemon_id=? AND level=?
+  activate Database
+  Database --> GameSession: Available moves
+  deactivate Database
+  
+  alt Has new moves
+    GameSession --> BattleScreen: Display move choices
+    BattleScreen --> Player: Show new moves
+    Player -> BattleScreen: Choose move
+    BattleScreen -> GameSession: AddMoveToTeam(pokemon, move)
+  end
+  
+  GameSession -> GameSession: CheckEvolutionCondition()
+  alt Can evolve
+    GameSession -> WorldGenerationService: GetEvolutionForm(pokemon)
+    activate WorldGenerationService
+    WorldGenerationService --> GameSession: Evolved Pokemon data
+    deactivate WorldGenerationService
+    
+    GameSession -> GameSession: EvolvePokemon()
+    GameSession -> Database: UPDATE pokemon SET evolution_id=?, stats=?
+    Database --> GameSession: Evolved
+  end
+  
+  GameSession -> Database: INSERT INTO pokedex_entries (if new Pokemon seen)
+  Database --> GameSession: Pokedex updated
+  
+  GameSession --> ExpService: LevelUpResult
+  
+else No level up
+  ExpService --> BattleScreen: ExperienceAdded
+end
+
+deactivate GameSession
+deactivate ExpService
+
+ExpService --> BattleScreen: ProcessExpResult
+BattleScreen --> Player: Display level up screen
+@enduml

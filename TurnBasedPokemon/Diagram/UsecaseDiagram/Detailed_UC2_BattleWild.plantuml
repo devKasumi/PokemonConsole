@@ -1,0 +1,50 @@
+@startuml UC2_BattleWild_UseCase
+skinparam linetype ortho
+left to right direction
+
+actor Player
+
+rectangle "Wild Battle System" {
+  (Enter Wild Area)
+  (Encounter Pokemon)
+  (Start Battle)
+  (Display Battle UI)
+  (Initialize turn order)
+  (Choose Action)
+  (Select Move)
+  (Switch Pokemon)
+  (Run from Battle)
+  (Calculate Damage)
+  (Apply Damage)
+  (Check if Pokemon Fainted)
+  (Battle Continues)
+  (Battle End - Victory)
+  (Battle End - Defeat)
+  (Gain EXP)
+  (Gain Money)
+}
+
+Player --> (Enter Wild Area)
+(Enter Wild Area) --> (Encounter Pokemon) : random spawn
+(Encounter Pokemon) --> (Start Battle)
+(Start Battle) --> (Display Battle UI)
+(Display Battle UI) --> (Choose Action)
+
+(Choose Action) --> (Select Move) : Move option
+(Choose Action) --> (Switch Pokemon) : Switch option
+(Choose Action) --> (Run from Battle) : Run option
+
+(Select Move) --> (Calculate Damage) : <<include>>
+(Calculate Damage) --> (Apply Damage)
+(Apply Damage) --> (Check if Pokemon Fainted)
+(Check if Pokemon Fainted) --> (Battle Continues) : still fighting
+(Check if Pokemon Fainted) --> (Battle End - Victory) : enemy defeated
+(Check if Pokemon Fainted) --> (Battle End - Defeat) : player defeated
+
+(Battle End - Victory) --> (Gain EXP)
+(Battle End - Victory) --> (Gain Money)
+(Gain EXP) --> Player
+
+(Run from Battle) --> Player : Escape
+
+@enduml

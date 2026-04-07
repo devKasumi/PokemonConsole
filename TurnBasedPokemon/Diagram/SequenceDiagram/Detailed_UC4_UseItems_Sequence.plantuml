@@ -1,0 +1,77 @@
+@startuml UC4_UseItems_Sequence
+participant Player
+participant InventoryScreen
+participant InventoryService
+participant ItemEffectService
+participant HealingService
+participant GameSession
+participant BattleService
+
+Player -> InventoryScreen: Open Inventory
+activate InventoryScreen
+
+InventoryScreen -> InventoryService: GetAllItems()
+activate InventoryService
+InventoryService -> GameSession: FetchInventory()
+GameSession --> InventoryService: Items list
+InventoryService --> InventoryScreen: Display items
+deactivate InventoryService
+
+Player -> InventoryScreen: Select item
+activate InventoryScreen
+
+InventoryScreen -> ItemEffectService: GetItemInfo(itemId)
+activate ItemEffectService
+ItemEffectService --> InventoryScreen: Item details & available actions
+deactivate ItemEffectService
+
+alt Item Type = HP Restore
+  InventoryScreen --> Player: Show Pokemon selection
+  Player -> InventoryScreen: Select Pokemon
+  
+  InventoryScreen -> HealingService: RestoreHP(pokemon, itemAmount)
+  activate HealingService
+  HealingService -> HealingService: Calculate new HP (currentHP + restore)
+  HealingService -> HealingService: Cap at maxHP
+  HealingService -> GameSession: UpdatePokemonHP(pokemon, newHP)
+  GameSession --> HealingService: HP updated
+  deactivate HealingService
+  
+  InventoryScreen -> InventoryService: ConsumeItem(itemId, 1)
+  activate InventoryService
+  InventoryService -> GameSession: RemoveItem(itemId)
+  GameSession --> InventoryService: Item removed
+  deactivate InventoryService
+  
+  InventoryScreen --> Player: Show "Pokemon HP restored!"
+
+else Item Type = Status Cure
+  InventoryScreen --> Player: Show Pokemon selection
+  Player -> InventoryScreen: Select Pokemon
+  
+  InventoryScreen -> ItemEffectService: ApplyStatusCure(pokemon, statusType)
+  activate ItemEffectService
+  ItemEffectService -> GameSession: RemoveStatus(pokemon, status)
+  GameSession --> ItemEffectService: Status removed
+  deactivate ItemEffectService
+  
+  InventoryScreen -> InventoryService: ConsumeItem(itemId, 1)
+  activate InventoryService
+  InventoryService -> GameSession: RemoveItem(itemId)
+  GameSession --> InventoryService: Item removed
+  deactivate InventoryService
+  
+  InventoryScreen --> Player: Show "Status cured!"
+
+else Item Type = Pokeball
+  alt In Battle
+    InventoryScreen -> BattleService: ThrowPokeball(ballType)
+    BattleService --> InventoryScreen: Catch attempt result
+  else Not In Battle
+    InventoryScreen --> Player: Show "Cannot use outside battle"
+  end
+
+end
+
+deactivate InventoryScreen
+@enduml

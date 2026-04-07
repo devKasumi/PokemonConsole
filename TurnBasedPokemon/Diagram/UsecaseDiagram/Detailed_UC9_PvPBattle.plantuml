@@ -1,0 +1,77 @@
+@startuml UC9_PvPBattle_UseCase
+skinparam linetype ortho
+left to right direction
+
+actor Player1
+actor Player2
+
+rectangle "PvP Battle System" {
+  (Enter PvP Battle)
+  (Initialize Battle Arena)
+  (Load both teams)
+  (Display battle UI)
+  (Player1 Turn - Submit Move)
+  (Player2 Turn - Wait)
+  (Validate move)
+  (Server receives move)
+  (Wait for both players)
+  (Both moves submitted?)
+  (Both ready)
+  (Timeout)
+  (Calculate turn order)
+  (Execute moves in order)
+  (Player attacks)
+  (Damage calc)
+  (Sync to both)
+  (Check if battle over)
+  (Someone fainted?)
+  (Battle continues)
+  (Winner determined)
+  (Use default action)
+  (Next turn)
+  (Award rewards)
+}
+
+Player1 --> (Enter PvP Battle)
+Player2 --> (Enter PvP Battle)
+
+(Enter PvP Battle) --> (Initialize Battle Arena)
+(Initialize Battle Arena) --> (Load both teams)
+(Load both teams) --> (Display battle UI)
+
+Player1 --> (Player1 Turn - Submit Move)
+Player2 --> (Player2 Turn - Wait)
+
+(Player1 Turn - Submit Move) --> (Validate move)
+(Validate move) --> (Server receives move)
+(Server receives move) --> (Wait for both players)
+(Wait for both players) --> (Both moves submitted?)
+
+(Both moves submitted?) --> (Both ready) : in time
+(Both moves submitted?) --> (Timeout) : timeout
+
+(Both ready) --> (Calculate turn order)
+(Calculate turn order) --> (Execute moves in order)
+
+(Execute moves in order) --> (Player attacks)
+(Player attacks) --> (Damage calc)
+(Damage calc) --> (Sync to both)
+
+(Timeout) --> (Use default action)
+(Use default action) --> (Execute moves in order)
+
+(Sync to both) --> (Check if battle over)
+(Check if battle over) --> (Someone fainted?)
+
+(Someone fainted?) --> (Battle continues) : still fighting
+(Someone fainted?) --> (Winner determined) : someone lost
+
+(Battle continues) --> (Next turn)
+(Next turn) --> Player1
+(Next turn) --> Player2
+
+(Winner determined) --> (Award rewards)
+(Award rewards) --> Player1
+(Award rewards) --> Player2
+
+@enduml

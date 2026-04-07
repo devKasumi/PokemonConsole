@@ -1,0 +1,73 @@
+@startuml UC15_ChallengePokemonLeague_Sequence
+participant Player
+participant LeagueScreen
+participant StoryService
+participant BattleService
+participant GameSession
+participant Database
+
+Player -> LeagueScreen: Enter Pokemon League
+activate LeagueScreen
+
+LeagueScreen -> StoryService: TryChallengePokemonLeague()
+activate StoryService
+
+StoryService -> StoryService: CheckBadges()
+alt Has all 8 badges
+  loop for each Elite Four member (1-4)
+    StoryService -> Database: SELECT elite_four_member FROM league_trainers
+    activate Database
+    Database --> StoryService: Elite member data
+    deactivate Database
+    
+    StoryService -> BattleService: ExecuteEliteFourBattle(memberTeam)
+    activate BattleService
+    BattleService -> BattleService: BattleLogic()
+    
+    alt Elite member defeated
+      BattleService --> StoryService: Victory
+      StoryService -> GameSession: Progress()
+    else Elite member won
+      BattleService --> StoryService: Defeat
+      break
+    end
+    deactivate BattleService
+  end
+  
+  StoryService -> Database: SELECT champion FROM league_champion
+  Database --> StoryService: Champion Pokemon team
+  
+  StoryService -> BattleService: ExecuteChampionBattle(championTeam)
+  activate BattleService
+  BattleService -> BattleService: FinalBattle()
+  
+  alt Champion defeated
+    BattleService --> StoryService: LeagueWon
+    
+    StoryService -> GameSession: AddToHallOfFame(playerInfo)
+    activate GameSession
+    GameSession -> Database: INSERT INTO hall_of_fame
+    Database --> GameSession: Added
+    
+    GameSession -> GameSession: AwardChampionTitle()
+    GameSession -> GameSession: AwardRewardMoney(1000000)
+    GameSession --> StoryService: Champion status granted
+    deactivate GameSession
+    
+    StoryService --> LeagueScreen: LeagueVictory
+    
+  else Champion won
+    BattleService --> StoryService: Defeat
+    StoryService --> LeagueScreen: LeagueDefeat
+    LeagueScreen -> LeagueScreen: ReturnToPokeCenter()
+  end
+  
+else Missing badges
+  StoryService --> LeagueScreen: NotReady
+  LeagueScreen --> Player: "You must earn all 8 badges"
+end
+
+deactivate BattleService
+deactivate StoryService
+deactivate LeagueScreen
+@enduml

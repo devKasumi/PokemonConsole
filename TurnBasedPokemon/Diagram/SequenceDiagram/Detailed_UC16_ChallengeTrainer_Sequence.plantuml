@@ -1,0 +1,44 @@
+@startuml UC16_ChallengeTrainer_Sequence
+participant Player
+participant GameWorld
+participant StoryService
+participant BattleService
+participant GameSession
+participant Database
+
+Player -> GameWorld: Encounter Trainer
+activate GameWorld
+
+GameWorld -> StoryService: TryChallengeTrainer(trainerId)
+activate StoryService
+
+StoryService -> Database: SELECT trainer_team FROM trainers WHERE trainer_id=?
+activate Database
+Database --> StoryService: Trainer team data
+deactivate Database
+
+StoryService -> BattleService: ExecuteTrainerBattle(trainerTeam)
+activate BattleService
+
+BattleService -> BattleService: BattleLogic()
+alt Player Won
+  BattleService --> StoryService: TrainerDefeated
+  
+  StoryService -> GameSession: AwardMoney(trainerLevel × 50)
+  activate GameSession
+  GameSession --> StoryService: Money added
+  deactivate GameSession
+  
+  StoryService -> StoryService: MarkTrainerAsDefeated()
+  StoryService -> Database: UPDATE trainers SET defeated=true WHERE trainer_id=?
+  Database --> StoryService: Marked
+  
+else Player Lost
+  BattleService --> StoryService: TrainerVictory
+  StoryService -> StoryService: PlayerBlackedOut()
+end
+
+deactivate BattleService
+deactivate StoryService
+deactivate GameWorld
+@enduml

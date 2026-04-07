@@ -1,0 +1,73 @@
+@startuml UC14_ChallengeGym_Sequence
+participant Player
+participant StoryScreen
+participant StoryService
+participant BattleService
+participant GameSession
+participant Database
+
+Player -> StoryScreen: Enter Gym
+activate StoryScreen
+
+StoryScreen -> StoryService: TryChallengeGym()
+activate StoryService
+
+StoryService -> Database: SELECT gym_leader, leader_team, requirements FROM gyms WHERE gym_id=?
+activate Database
+Database --> StoryService: Gym Leader data
+deactivate Database
+
+StoryService -> StoryService: CheckRequirements()
+alt Requirements met
+  StoryService -> StoryService: LoadGymLeaderTeam()
+  StoryService --> StoryScreen: Ready to battle
+  
+  StoryScreen --> Player: Gym Leader intro
+  
+  Player -> StoryScreen: Start battle
+  StoryScreen -> BattleService: ExecuteTrainerBattle(leaderTeam)
+  activate BattleService
+  
+  note over BattleService
+    Execute battle similar to UC_2
+    but with Gym Leader specific rules:
+    - Gym gimmick (terrain/weather)
+    - Potential Mega Evolution
+  end note
+  
+  BattleService -> BattleService: CalculateBattle()
+  alt Battle result = Player Won
+    BattleService --> StoryScreen: BattleWon
+    
+    StoryScreen -> GameSession: AwardGymBadge(gymLeader)
+    activate GameSession
+    GameSession -> Database: INSERT INTO badges WHERE user_id=?, gym_id=?, date=?
+    activate Database
+    Database --> GameSession: Badge awarded
+    deactivate Database
+    
+    GameSession --> StoryScreen: Badge
+    deactivate GameSession
+    
+    StoryScreen -> StoryService: MarkGymAsCompleted(gymId)
+    activate StoryService
+    StoryService -> Database: UPDATE gym_progress SET completed=true
+    Database --> StoryService: Marked
+    deactivate StoryService
+    
+    StoryScreen --> Player: "You received [Badge Name] Badge!"
+    
+  else Battle result = Player Lost
+    BattleService --> StoryScreen: BattleLost
+  end
+  
+  deactivate BattleService
+
+else Requirements not met
+  StoryService --> StoryScreen: RequirementsNotMet
+  StoryScreen --> Player: "Come back later with a stronger team"
+end
+
+deactivate StoryService
+deactivate StoryScreen
+@enduml

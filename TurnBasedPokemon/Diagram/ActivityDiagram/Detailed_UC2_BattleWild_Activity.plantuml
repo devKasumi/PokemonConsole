@@ -1,0 +1,61 @@
+@startuml UC2_BattleWild_Activity
+start
+:Player explores world;
+if (Random encounter?) then (yes)
+  :Display "Wild Pokemon appeared!";
+  :Generate wild Pokemon (level, stats, moves);
+else (no)
+  :Continue exploring;
+  stop
+endif
+
+:Initialize battle (both teams);
+:Determine turn order (speed stat);
+
+repeat
+  :Display player options (Move/Switch/Run);
+  :Player selects action;
+  if (Action == Use Move?) then (yes)
+    :Player selects move from active Pokemon;
+    :Calculate damage (type advantage, stats, RNG);
+    :Apply damage to enemy;
+    :Display damage message;
+  elseif (Action == Switch Pokemon?) then (yes)
+    :Player selects new Pokemon;
+    :Switch active Pokemon;
+  elseif (Action == Run?) then (yes)
+    if (Run successful? 50% + speed comparison) then (yes)
+      :Escape from battle;
+      stop
+    else (no)
+      :Run failed - continue battle;
+    endif
+  endif
+  
+  if (Enemy Pokemon fainted?) then (yes)
+    if (More enemy Pokemon?) then (yes)
+      :Send next enemy Pokemon;
+    else (no)
+      :Battle Won!;
+    endif
+  endif
+  
+  :Enemy turn - Select random move;
+  :Enemy attacks player Pokemon;
+  :Apply damage;
+  
+  if (Player Pokemon fainted?) then (yes)
+    if (More player Pokemon?) then (yes)
+      :Prompt player to send next Pokemon;
+    else (no)
+      :Battle Lost!;
+      stop
+    endif
+  endif
+repeat while (Battle ongoing?)
+
+:Award EXP to participating Pokemon;
+:Award Money to player;
+:Update game statistics;
+stop
+@enduml

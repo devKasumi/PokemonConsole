@@ -1,0 +1,175 @@
+@startuml UC7_InteractNPC_Sequence
+participant Player
+participant GameWorld
+participant NPCInteractionService
+participant DialogueService
+participant MySqlStoryService
+participant GameSession
+participant Database
+
+Player -> GameWorld: Approach NPC
+activate GameWorld
+
+GameWorld -> NPCInteractionService: InitiateNPCInteraction(npcId)
+activate NPCInteractionService
+
+NPCInteractionService -> MySqlStoryService: GetNPCData(npcId)
+activate MySqlStoryService
+MySqlStoryService -> Database: SELECT * FROM npcs WHERE npc_id=?
+Database --> MySqlStoryService: NPC record
+deactivate MySqlStoryService
+MySqlStoryService --> NPCInteractionService: NPC info
+deactivate NPCInteractionService
+
+alt NPC type == Gym Leader or Elite Four or Champion
+  GameWorld -> NPCInteractionService: ChallengeNPC(npcId)
+  activate NPCInteractionService
+  
+  NPCInteractionService -> MySqlStoryService: GetNPCTeam(npcId)
+  activate MySqlStoryService
+  MySqlStoryService -> Database: SELECT pokemon FROM npc_teams WHERE npc_id=?
+  Database --> MySqlStoryService: NPC team
+  deactivate MySqlStoryService
+  MySqlStoryService --> NPCInteractionService: Team loaded
+  deactivate NPCInteractionService
+  
+  GameWorld -> GameWorld: Trigger NPC Battle
+  note over GameWorld
+    Execute battle similar to UC_2
+    (Go to Battle sequence)
+  end note
+  
+  alt Battle Won
+    GameWorld -> GameSession: AwardBattleReward(npcReward)
+    GameSession --> GameWorld: Reward given
+    
+    NPCInteractionService -> MySqlStoryService: MarkBattleAsWon(npcId)
+    MySqlStoryService -> Database: UPDATE npc_interactions SET battled=true
+    
+  else Battle Lost
+    NPCInteractionService -> MySqlStoryService: MarkBattleAsLost(npcId)
+    MySqlStoryService -> Database: UPDATE npc_interactions SET lost=true
+  end
+  
+else Other NPC
+  GameWorld -> DialogueService: LoadDialogue(npcId, playerProgress)
+  activate DialogueService
+  DialogueService -> Database: SELECT dialogue FROM npc_dialogues WHERE npc_id=? AND stage=?
+  Database --> DialogueService: Dialogue tree
+  deactivate DialogueService
+  DialogueService --> GameWorld: Dialogue loaded
+
+  GameWorld --> Player: Display NPC + dialogue
+
+  loop while (NPC interaction)
+    Player -> GameWorld: Select dialogue option
+    
+    alt Option = Trade Pokemon
+      GameWorld -> NPCInteractionService: InitiateTrade(npcId, playerPokemon)
+      activate NPCInteractionService
+      
+      NPCInteractionService -> GameSession: CheckInventory(playerPokemon)
+      activate GameSession
+      alt Has required Pokemon
+        GameSession --> NPCInteractionService: Pokemon available
+        
+        NPCInteractionService -> GameSession: ExecuteTrade(playerPoke, npcPoke)
+        GameSession -> GameSession: Remove playerPoke
+        GameSession -> GameSession: Add npcPoke
+        GameSession -> MySqlStoryService: UpdatePokedex(both_players, pokemon)
+        MySqlStoryService -> Database: INSERT INTO pokedex_seen/caught
+        Database --> MySqlStoryService: Success
+        
+        NPCInteractionService -> MySqlStoryService: MarkTradeAsComplete(npcId)
+        MySqlStoryService -> Database: UPDATE npc_interactions SET traded=true
+        Database --> MySqlStoryService: Success
+        
+        NPCInteractionService --> GameWorld: Trade successful
+      else Not available
+        GameSession --> NPCInteractionService: Pokemon not available
+        NPCInteractionService --> GameWorld: "You don't have that Pokemon"
+      end
+      deactivate GameSession
+      deactivate NPCInteractionService
+      
+    alt Option = Accept Quest
+      GameWorld -> NPCInteractionService: GiveQuest(npcId, questId)
+      activate NPCInteractionService
+      
+      NPCInteractionService -> MySqlStoryService: RetrieveQuestDetails(questId)
+      activate MySqlStoryService
+      MySqlStoryService -> Database: SELECT * FROM quests WHERE quest_id=?
+      Database --> MySqlStoryService: Quest data
+      deactivate MySqlStoryService
+      MySqlStoryService --> NPCInteractionService: Quest object
+      deactivate NPCInteractionService
+      
+      GameWorld --> Player: Show quest details
+      
+      alt Player confirms
+        GameWorld -> GameSession: AddQuestToLog(questId)
+        activate GameSession
+        GameSession -> GameSession: Update active quests
+        GameSession --> GameWorld: Quest added
+        deactivate GameSession
+        
+        NPCInteractionService -> MySqlStoryService: MarkQuestGiven(npcId, questId)
+        MySqlStoryService -> Database: UPDATE npc_interactions SET quest_given=true
+        Database --> MySqlStoryService: Success
+      end
+      
+    alt Option = Start Battle
+      GameWorld -> NPCInteractionService: ChallengeNPC(npcId)
+      activate NPCInteractionService
+      
+      NPCInteractionService -> MySqlStoryService: GetNPCTeam(npcId)
+      activate MySqlStoryService
+      MySqlStoryService -> Database: SELECT pokemon FROM npc_teams WHERE npc_id=?
+      Database --> MySqlStoryService: NPC team
+      deactivate MySqlStoryService
+      MySqlStoryService --> NPCInteractionService: Team loaded
+      deactivate NPCInteractionService
+      
+      GameWorld -> GameWorld: Trigger NPC Battle
+      note over GameWorld
+        Execute battle similar to UC_2
+        (Go to Battle sequence)
+      end note
+      
+      alt Battle Won
+        GameWorld -> GameSession: AwardBattleReward(npcReward)
+        GameSession --> GameWorld: Reward given
+        
+        NPCInteractionService -> MySqlStoryService: MarkBattleAsWon(npcId)
+        MySqlStoryService -> Database: UPDATE npc_interactions SET battled=true
+        
+      else Battle Lost
+        NPCInteractionService -> MySqlStoryService: MarkBattleAsLost(npcId)
+        MySqlStoryService -> Database: UPDATE npc_interactions SET lost=true
+      end
+      
+    alt Option = Get Info
+      GameWorld -> DialogueService: GetInfoDialogue(npcId, topic)
+      activate DialogueService
+      DialogueService -> Database: SELECT info FROM npc_info WHERE npc_id=? AND topic=?
+      Database --> DialogueService: Info text
+      deactivate DialogueService
+      
+      GameWorld --> Player: Display information
+      GameSession -> GameSession: Unlock story hints
+      
+    alt Option = End Chat
+      break
+    end
+  end
+end
+
+NPCInteractionService -> MySqlStoryService: SaveInteractionState(npcId)
+activate MySqlStoryService
+MySqlStoryService -> Database: UPDATE npc_interactions table
+Database --> MySqlStoryService: Saved
+deactivate MySqlStoryService
+
+GameWorld --> Player: Return to game
+deactivate GameWorld
+@enduml

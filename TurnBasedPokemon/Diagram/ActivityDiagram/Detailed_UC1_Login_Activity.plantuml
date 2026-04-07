@@ -1,0 +1,26 @@
+@startuml UC1_Login_Activity
+start
+:Player launches game;
+:Display Login Screen;
+:Player enters username & password;
+:System receives input;
+if (Username exists in DB?) then (yes)
+  :Verify password hash;
+  if (Password correct?) then (yes)
+    :Load user profile from database;
+    :Load user Pokemon team;
+    :Load user inventory;
+    :Initialize GameSession;
+    :Display Main Menu;
+    stop
+  else (no)
+    :Display "Incorrect Password" error;
+    :Return to login screen;
+    stop
+  endif
+else (no)
+  :Display "User not found" error;
+  :Return to login screen;
+  stop
+endif
+@enduml

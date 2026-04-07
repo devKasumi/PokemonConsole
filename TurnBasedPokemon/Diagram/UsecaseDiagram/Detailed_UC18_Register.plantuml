@@ -1,0 +1,39 @@
+@startuml UC18_Register_UseCase
+skinparam linetype ortho
+left to right direction
+
+actor NewPlayer
+
+rectangle "Account Registration System" {
+  (Open game)
+  (Select Register)
+  (Enter username)
+  (Enter password)
+  (Validate input)
+  (Handle username taken)
+  (Handle weak password)
+  (Save to database)
+  (Create profile)
+  (Initialize starter)
+  (Account created)
+  (Show login screen)
+}
+
+NewPlayer --> (Open game)
+(Open game) --> (Select Register)
+(Select Register) --> (Enter username)
+(Enter username) --> (Enter password)
+(Enter password) --> (Validate input)
+
+(Validate input) --> (Handle username taken) : username taken
+(Validate input) --> (Handle weak password) : weak password
+(Validate input) --> (Save to database) : valid input
+(Handle username taken) --> (Enter username)
+(Handle weak password) --> (Enter password)
+(Save to database) --> (Create profile)
+(Create profile) --> (Initialize starter)
+(Initialize starter) --> (Account created)
+(Account created) --> (Show login screen)
+(Show login screen) --> NewPlayer
+
+@enduml
