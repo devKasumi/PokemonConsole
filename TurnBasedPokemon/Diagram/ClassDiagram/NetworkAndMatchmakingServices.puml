@@ -1,0 +1,40 @@
+@startuml NetworkAndMatchmakingServices
+skinparam classAttributeIconSize 0
+skinparam direction top to bottom
+skinparam class {
+  BackgroundColor #FFF9E6
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+title Application Layer - Network and Matchmaking Services
+
+class NetworkService {
+  + SendData(data: object): bool
+  + ReceiveData(): object?
+  + Disconnect()
+}
+
+class MatchmakingService {
+  + FindOpponent(player: Player): Player?
+  + CreateMatch(player1: Player, player2: Player): BattleRoom
+  + CancelSearch(player: Player)
+}
+
+class BattleRoom {
+  + Player1: Player
+  + Player2: Player
+  + IsActive: bool
+  + ExecuteTurn(playerId: int, moveIndex: int): BattleResult
+  + EndBattle(): BattleResult
+}
+
+' Relationships
+NetworkService --> BattleRoom
+MatchmakingService --> BattleRoom
+MatchmakingService --> Player
+BattleRoom --> Player
+BattleRoom --> BattleResult
+
+@enduml</content>
+<parameter name="filePath">c:\C#\PokemonConsole\TurnBasedPokemon\Diagram\ClassDiagram\NetworkAndMatchmakingServices.puml

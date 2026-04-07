@@ -1,0 +1,46 @@
+@startuml StoryServices
+skinparam classAttributeIconSize 0
+skinparam direction top to bottom
+skinparam class {
+  BackgroundColor #FFF9E6
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+title Application Layer - Story Services
+
+interface IStoryService {
+  + GetCurrentPhase(): PhaseData
+  + GetPhaseDialogue(): List<string>
+  + GetPhaseNpcTeam(): List<PokemonData>
+  + ProgressPhase(): bool
+  + IsStoryComplete(): bool
+}
+
+class StoryService {
+  - _storyData: List<PhaseData>
+  - _currentPhase: int
+  + GetCurrentPhase(): PhaseData
+  + GetPhaseDialogue(): List<string>
+  + GetPhaseNpcTeam(): List<PokemonData>
+  + ProgressPhase(): bool
+  + IsStoryComplete(): bool
+}
+
+class MySqlStoryService {
+  - _dbConnection: IDbConnection
+  + GetCurrentPhase(): PhaseData
+  + GetPhaseDialogue(): List<string>
+  + GetPhaseNpcTeam(): List<PokemonData>
+  + ProgressPhase(): bool
+  + IsStoryComplete(): bool
+}
+
+' Relationships
+StoryService ..|> IStoryService
+MySqlStoryService ..|> IStoryService
+StoryService --> PhaseData
+MySqlStoryService --> PhaseData
+
+@enduml</content>
+<parameter name="filePath">c:\C#\PokemonConsole\TurnBasedPokemon\Diagram\ClassDiagram\StoryServices.puml

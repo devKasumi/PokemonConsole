@@ -1,0 +1,100 @@
+@startuml LayerInteractionDiagram
+skinparam classAttributeIconSize 0
+skinparam direction top to bottom
+skinparam linetype ortho
+skinparam class {
+  BackgroundColor #FFF9E6
+  BorderColor #333333
+  ArrowColor #333333
+}
+skinparam arrow {
+  Color #333333
+}
+skinparam package {
+  BackgroundColor #FFFACD
+  BorderColor #333333
+}
+
+title Pokemon Game - Layer Interaction Diagram
+
+package "Presentation Layer" {
+  class LoginScreen
+  class MainMenuScreen
+  class BattleScreen
+  class StoryScreen
+  class InventoryScreen
+  class PvPScreen
+}
+
+package "Application Layer" {
+  class BattleService
+  class StoryService
+  class ExpService
+  class HealingService
+  class CatchService
+  class AuthenService
+  class FileService
+  class WorldGenerationService
+  class MatchmakingService
+}
+
+package "Domain Layer" {
+  class GameSession
+  class User
+  class Player
+  class Pokemon
+  class PokemonSpecies
+  class PokemonMove
+  class Item
+  class Inventory
+}
+
+package "Infrastructure Layer" {
+  class UserRepository
+  class PokedexRepository
+  class ItemRepository
+  class PokemonSpawner
+  class ItemSpawner
+}
+
+' Main layer interactions
+Presentation --> Application : uses services
+Application --> Domain : manipulates entities
+Application --> Infrastructure : queries data
+Domain --> Infrastructure : persists data
+
+' Key specific interactions
+LoginScreen --> AuthenService : authenticate
+AuthenService --> User : validate
+AuthenService --> UserRepository : query
+
+BattleScreen --> BattleService : execute battle
+BattleService --> Pokemon : update stats
+BattleService --> Player : update state
+
+StoryScreen --> StoryService : progress story
+StoryService --> GameSession : update progress
+
+InventoryScreen --> GameSession : manage inventory
+
+PvPScreen --> MatchmakingService : find opponents
+MatchmakingService --> Player : match players
+
+ExpService --> Pokemon : level up
+HealingService --> Pokemon : heal
+
+CatchService --> Pokemon : capture
+
+FileService --> Player : save/load
+
+WorldGenerationService --> Pokemon : generate wild
+WorldGenerationService --> Item : generate items
+WorldGenerationService --> PokemonSpawner : spawn pokemon
+WorldGenerationService --> ItemSpawner : spawn items
+
+GameSession --> UserRepository : persist user
+GameSession --> PokedexRepository : access species
+GameSession --> ItemRepository : access items
+
+@enduml</content>
+<parameter name="filePath">c:\C#\PokemonConsole\TurnBasedPokemon\Diagram\ClassDiagram\LayerInteractionDiagram.puml

@@ -1,0 +1,63 @@
+@startuml FileAndWorldGenServices
+skinparam classAttributeIconSize 0
+skinparam direction top to bottom
+skinparam class {
+  BackgroundColor #FFF9E6
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+title Application Layer - File and World Generation Services
+
+interface IFileService {
+  + SaveGame(player: Player)
+  + LoadGame(username: string): Player?
+  + ExistsGame(username: string): bool
+}
+
+class FileService {
+  - _filePath: string
+  + SaveGame(player: Player)
+  + LoadGame(username: string): Player?
+  + ExistsGame(username: string): bool
+  - SerializePlayer(player: Player): string
+  - DeserializePlayer(json: string): Player
+}
+
+interface IWorldGenerationService {
+  + GeneratePokemon(location: LocationData): Pokemon
+  + GenerateItem(location: LocationData): Item
+}
+
+class WorldGenerationService {
+  - _pokemonSpawner: PokemonSpawner
+  - _itemSpawner: ItemSpawner
+  + GeneratePokemon(location: LocationData): Pokemon
+  + GenerateItem(location: LocationData): Item
+}
+
+class PokemonSpawner {
+  - _random: Random
+  + SpawnPokemon(speciesIdList: List<int>): Pokemon
+  - DetermineLevelRange(baseLevel: int): Tuple<int, int>
+}
+
+class ItemSpawner {
+  - _random: Random
+  + SpawnItem(itemIdList: List<int>): Item
+}
+
+' Relationships
+FileService ..|> IFileService
+FileService --> Player
+
+WorldGenerationService ..|> IWorldGenerationService
+WorldGenerationService --> PokemonSpawner
+WorldGenerationService --> ItemSpawner
+WorldGenerationService --> LocationData
+
+PokemonSpawner --> Pokemon
+ItemSpawner --> Item
+
+@enduml</content>
+<parameter name="filePath">c:\C#\PokemonConsole\TurnBasedPokemon\Diagram\ClassDiagram\FileAndWorldGenServices.puml

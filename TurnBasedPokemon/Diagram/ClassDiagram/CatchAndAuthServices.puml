@@ -1,0 +1,51 @@
+@startuml CatchAndAuthServices
+skinparam classAttributeIconSize 0
+skinparam direction top to bottom
+skinparam class {
+  BackgroundColor #FFF9E6
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+title Application Layer - Catch and Authentication Services
+
+interface ICatchService {
+  + ExecuteCapture(enemy: Pokemon, item: CaptureItem): CatchResult
+}
+
+class CatchService {
+  - _randomizer: Random
+  + ExecuteCapture(enemy: Pokemon, item: CaptureItem): CatchResult
+  - CalculateCatchProbability(pokemon: Pokemon, item: CaptureItem): double
+  - GenerateCatchMessage(success: bool): string
+}
+
+class CatchResult {
+  + Success: bool
+  + Message: string
+  + CaughtPokemon: Pokemon?
+}
+
+interface IAuthenService {
+  + IsValidCredentials(username: string, password: string): bool
+  + HashPassword(password: string): string
+  + VerifyPassword(password: string, hash: string): bool
+}
+
+class AuthenService {
+  + IsValidCredentials(username: string, password: string): bool
+  + HashPassword(password: string): string
+  + VerifyPassword(password: string, hash: string): bool
+}
+
+' Relationships
+CatchService ..|> ICatchService
+CatchService --> Pokemon
+CatchService --> CaptureItem
+CatchService --> CatchResult
+
+AuthenService ..|> IAuthenService
+AuthenService --> User
+
+@enduml</content>
+<parameter name="filePath">c:\C#\PokemonConsole\TurnBasedPokemon\Diagram\ClassDiagram\CatchAndAuthServices.puml

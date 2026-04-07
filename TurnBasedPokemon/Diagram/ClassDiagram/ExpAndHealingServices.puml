@@ -1,0 +1,43 @@
+@startuml ExpAndHealingServices
+skinparam classAttributeIconSize 0
+skinparam direction top to bottom
+skinparam class {
+  BackgroundColor #FFF9E6
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+title Application Layer - Experience and Healing Services
+
+interface IExpService {
+  + GrantExperience(pokemon: Pokemon, expAmount: int): bool
+  + CalculateExpGain(defeatedLevel: int, playerLevel: int): int
+}
+
+class ExpService {
+  + GrantExperience(pokemon: Pokemon, expAmount: int): bool
+  + CalculateExpGain(defeatedLevel: int, playerLevel: int): int
+  - CheckLevelUp(pokemon: Pokemon): bool
+  - CheckEvolution(pokemon: Pokemon): bool
+}
+
+interface IHealingService {
+  + ExecuteHealing(pokemon: Pokemon, item: HealingItem): bool
+}
+
+class HealingService {
+  + ExecuteHealing(pokemon: Pokemon, item: HealingItem): bool
+  - RestoreHealPoints(pokemon: Pokemon, healAmount: int)
+  - RemoveStatus(pokemon: Pokemon, status: PokemonStatus)
+}
+
+' Relationships
+ExpService ..|> IExpService
+ExpService --> Pokemon
+
+HealingService ..|> IHealingService
+HealingService --> Pokemon
+HealingService --> HealingItem
+
+@enduml</content>
+<parameter name="filePath">c:\C#\PokemonConsole\TurnBasedPokemon\Diagram\ClassDiagram\ExpAndHealingServices.puml

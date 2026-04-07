@@ -1,0 +1,40 @@
+@startuml BattleServices
+skinparam classAttributeIconSize 0
+skinparam direction top to bottom
+skinparam class {
+  BackgroundColor #FFF9E6
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+title Application Layer - Battle Services
+
+interface IBattleService {
+  + ExecuteTurn(playerMove: int, enemyMove: int): BattleResult
+  + GetAvailableMoves(): List<PokemonMove>
+  + CalculateDamage(attacker: Pokemon, move: PokemonMove, defender: Pokemon): int
+}
+
+class BattleService {
+  + ExecuteTurn(playerMove: int, enemyMove: int): BattleResult
+  + GetAvailableMoves(): List<PokemonMove>
+  + CalculateDamage(attacker: Pokemon, move: PokemonMove, defender: Pokemon): int
+  - CheckStatusEffect(pokemon: Pokemon): bool
+  - ApplyStatusEffect(attacker: Pokemon, move: PokemonMove, defender: Pokemon)
+}
+
+class BattleResult {
+  + Winner: Player?
+  + Loser: Player?
+  + ExpGained: int
+  + Message: string
+}
+
+' Relationships
+BattleService ..|> IBattleService
+BattleService --> BattleResult
+BattleService --> Pokemon
+BattleService --> PokemonMove
+
+@enduml</content>
+<parameter name="filePath">c:\C#\PokemonConsole\TurnBasedPokemon\Diagram\ClassDiagram\BattleServices.puml
