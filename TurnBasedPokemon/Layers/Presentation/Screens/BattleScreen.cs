@@ -67,15 +67,15 @@ public class BattleScreen : IScreen
 
         if (int.TryParse(input, out int moveIndex) && moveIndex > 0 && moveIndex <= activePoke.Moves.Count)
         {
-            ExecuteBattleTurn(activePoke.Moves[moveIndex - 1]);
+            ExecuteBattleTurn(moveIndex - 1);
         }
     }
 
-    private void ExecuteBattleTurn(PokemonMove playerMove)
+    private void ExecuteBattleTurn(int moveIndex)
     {
         // --- 1. PLAYER'S TURN ---
-        var playerResult = _battleService.ExecutePlayerTurn(playerMove);
-        DisplayBattleMessage($"Player's {_gameSession.Player.CurrentPokemon.Specie.Name} used {playerMove.Name}!");
+        var playerResult = _battleService.ExecutePlayerTurn(moveIndex);
+        DisplayBattleMessage($"Player's {_gameSession.Player.CurrentPokemon.Specie.Name} used {playerResult.MoveUsed}!");
 
         if (playerResult.IsEnemyFainted)
         {

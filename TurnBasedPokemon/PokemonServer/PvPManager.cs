@@ -1,40 +1,50 @@
-// PokemonServer/Services/PvPManager.cs
-using PokemonEntity; // Shared models
 using System.Collections.Concurrent;
-
-public class PvPBattleState
-{
-    public string RoomId { get; set; }
-    public PlayerState Player1 { get; set; }
-    public PlayerState Player2 { get; set; }
-    public Dictionary<string, string> PendingMoves { get; } = new();
-
-    public class PlayerState
-    {
-        public string ConnectionId { get; set; }
-        public string Name { get; set; }
-        public Pokemon ActivePokemon { get; set; } // Current HP, Stats
-    }
-}
 
 public class PvPManager
 {
-    private readonly ConcurrentDictionary<string, PvPBattleState> _activeBattles = new();
+    // Thread-safe dictionary to hold pending moves for each battle room
+    private readonly ConcurrentDictionary<string, List<BattleActionRequest>> _pendingMoves = new();
 
-    public void CreateBattle(string roomId, PvPBattleState state) => _activeBattles[roomId] = state;
+    public void RegisterMove(BattleActionRequest request)
+    {
+        var moves = _pendingMoves.GetOrAdd(request.RoomId, _ => new List<BattleActionRequest>());
+        
+        lock (moves)
+        {
+            // Prevent players from spamming requests
+            if (!moves.Any(m => m.PlayerName == request.PlayerName))
+            {
+                moves.Add(request);
+            }
+        }
+    }
 
-    // public BattleResult ProcessTurn(string roomId)
-    // {
-    //     var battle = _activeBattles[roomId];
-    //     // 1. Authoritative Damage Calculation
-    //     // Compare Speed -> Execute Moves -> Calculate HP loss
-    //     // (Use the exact same formula from your local BattleService here)
+    public bool IsRoomReady(string roomId)
+    {
+        return _pendingMoves.TryGetValue(roomId, out var moves) && moves.Count == 2;
+    }
+
+    public BattleTurnResult ProcessTurn(string roomId)
+    {
+        _pendingMoves.TryGetValue(roomId, out var moves);
+        var result = new BattleTurnResult();
+
+        // --- AUTHORITATIVE CALCULATION HAPPENS HERE ---
+        // 1. Sort by Speed (Who attacks first?)
+        // 2. Calculate damage using Shared DamageCalculator
+        // 3. Update HP in the server's memory
+
+        // Mock data for testing the flow:
+        result.CombatLogs.Add($"[Server] {moves[0].PlayerName} used Move {moves[0].MoveIndex}!");
+        result.CombatLogs.Add($"[Server] {moves[1].PlayerName} used Move {moves[1].MoveIndex}!");
         
-    //     var result = new BattleResult {
-    //         // Fill with damage dealt, fainted status, etc.
-    //     };
-        
-    //     battle.PendingMoves.Clear();
-    //     return result;
-    // }
+        result.Player1Hp = 80; // Replace with actual calculated HP
+        result.Player2Hp = 60; // Replace with actual calculated HP
+        result.IsGameOver = false;
+
+        // Clear the buffer for the next turn
+        _pendingMoves.TryRemove(roomId, out _);
+
+        return result;
+    }
 }

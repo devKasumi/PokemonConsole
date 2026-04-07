@@ -34,8 +34,6 @@ public class Pokemon
 
     public void ReplaceMove(int index, PokemonMove newMove)
     {
-        // FIX: You were modifying Specie.MoveSet (The Template/DNA).
-        // You should modify this.Moves (The individual Pokemon's active moves).
         if (index >= 0 && index < Moves.Count)
         {
             Moves[index] = newMove;

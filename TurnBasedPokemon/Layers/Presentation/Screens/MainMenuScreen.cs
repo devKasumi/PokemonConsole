@@ -111,11 +111,12 @@ public class MainMenuScreen : IScreen
         if (!_gameSession.Player.IsChampion)
         {
             Console.WriteLine($"You can only participate in PvP after completing the game's main storyline.");
+            Console.ReadKey(true);
             return;
         }
         else
         {
-            
+            _screenManager.SwitchTo(ScreenType.PvP);
         }
     }
 

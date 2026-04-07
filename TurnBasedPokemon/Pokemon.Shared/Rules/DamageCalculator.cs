@@ -1,4 +1,3 @@
-// using Pokemon.Shared;
 using PokemonEntity;
 
 public static class DamageCalculator

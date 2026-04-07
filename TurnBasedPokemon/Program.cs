@@ -64,6 +64,7 @@ namespace Program
             screenManager.RegisterScreen(ScreenType.Story, new StoryScreen(screenManager, gameSession, mySqlStoryService));
             screenManager.RegisterScreen(ScreenType.Battle, new BattleScreen(screenManager, gameSession, battleService));
             screenManager.RegisterScreen(ScreenType.Inventory, new InventoryScreen(screenManager, gameSession, catchService, healingService));
+            screenManager.RegisterScreen(ScreenType.PvP, new PvPScreen(screenManager, new NetworkService(), gameSession)); //
 
             // 5. Run Application
             screenManager.Run();

@@ -5,10 +5,13 @@ using System.Threading.Tasks;
 public class NetworkService
 {
     private HubConnection _connection;
+    
     public event Action<string, string>? OnMatchFound;
     public event Action? OnWaiting;
-    public event Action<string>? OnTurnResultReceived;
-
+    
+    // UPDATE 1: Change from Action<string> to Action<BattleTurnResult>
+    public event Action<PvPTurnResult>? OnTurnResultReceived;
+    
     public NetworkService()
     {
         // Address of your PokemonServer
@@ -17,7 +20,7 @@ public class NetworkService
             .WithAutomaticReconnect()
             .Build();
 
-        // Listen for messages from Server
+        // Listen for match-making messages from Server
         _connection.On<string, string>("MatchFound", (roomId, opponentName) => {
             OnMatchFound?.Invoke(roomId, opponentName);
         });
@@ -26,9 +29,9 @@ public class NetworkService
             OnWaiting?.Invoke();
         });
 
-        // Listen for the calculated result from the Server
-        _connection.On<string>("ReceiveTurnResult", (resultJson) => {
-            OnTurnResultReceived?.Invoke(resultJson);
+        // UPDATE 2: Listen for the strongly-typed PvPTurnResult object
+        _connection.On<PvPTurnResult>("ReceiveTurnResult", (result) => {
+            OnTurnResultReceived?.Invoke(result);
         });
     }
 
@@ -43,9 +46,17 @@ public class NetworkService
         await _connection.InvokeAsync("FindMatch", username);
     }
 
-    // Method to send your move to the Hub
-    public async Task SendBattleMove(string roomId, string moveName)
+    // UPDATE 3: Use the BattleActionRequest packet to send the move
+    public async Task SubmitMoveAsync(string roomId, string playerName, int moveIndex)
     {
-        await _connection.InvokeAsync("SendMove", roomId, moveName);
+        var request = new BattleActionRequest 
+        { 
+            RoomId = roomId, 
+            PlayerName = playerName, 
+            MoveIndex = moveIndex 
+        };
+        
+        // Match the exact method name "SubmitMove" on the BattleHub server
+        await _connection.InvokeAsync("SubmitMove", request);
     }
 }

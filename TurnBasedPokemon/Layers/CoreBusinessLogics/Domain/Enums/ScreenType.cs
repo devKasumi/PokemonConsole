@@ -5,5 +5,6 @@ public enum ScreenType
     Story,
     WildArea,
     Battle,
-    Inventory
+    Inventory,
+    PvP
 }

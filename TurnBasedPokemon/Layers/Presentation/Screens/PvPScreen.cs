@@ -1,108 +1,129 @@
-using Screens;
 using System;
-using System.Threading.Tasks;
-using PokemonEntity;
+using System.Threading;
+using Screens;
 
 public class PvPScreen : IScreen
 {
-    private readonly ScreenManager _screenManager;
-    private readonly GameSession _session;
+    private readonly ScreenManager _sm;
     private readonly NetworkService _network;
-    private bool _isSearching = false;
+    private readonly GameSession _session;
+    
+    private string _roomId = "";
+    private bool _isWaitingForServer = false;
+    
+    // FIX TẠI ĐÂY: Dùng PvPTurnResult thay vì BattleTurnResult
+    private PvPTurnResult? _lastResult = null; 
 
-    public PvPScreen(ScreenManager sm, GameSession session, NetworkService network)
+    public PvPScreen(ScreenManager sm, NetworkService network, GameSession session)
     {
-        _screenManager = sm;
-        _session = session;
+        _sm = sm;
         _network = network;
+        _session = session;
     }
 
     public void Initialize(object? data = null)
     {
-        _isSearching = false;
+        _isWaitingForServer = false;
+        _lastResult = null; // Clear data cũ khi vào phòng mới
+        
+        // Extract room data passed from the Matchmaking Screen
+        if (data != null)
+        {
+            _roomId = data.GetType().GetProperty("RoomId")?.GetValue(data)?.ToString() ?? "";
+        }
 
-        // Subscribe to events when the screen becomes active
-        _network.OnMatchFound += HandleMatchFound;
-        _network.OnWaiting += HandleWaiting;
+        // Subscribe to server updates
+        _network.OnTurnResultReceived += HandleTurnResult;
     }
 
     public void Shutdown()
     {
-        // UNSUBSCRIBE to prevent duplicate calls and memory leaks
-        _network.OnMatchFound -= HandleMatchFound;
-        _network.OnWaiting -= HandleWaiting;
+        // Prevent memory leaks
+        _network.OnTurnResultReceived -= HandleTurnResult;
     }
 
-    private void HandleMatchFound(string roomId, string opponent)
+    private void HandleTurnResult(PvPTurnResult result)
     {
-        Console.WriteLine($"\n[!] Match Found! Opponent: {opponent}");
-        Console.WriteLine("Redirecting to Battle Arena...");
-        
-        // Pass PvP-specific data to the Battle Screen
-        _screenManager.SwitchTo(ScreenType.Battle, new { RoomId = roomId, IsPvP = true, OpponentName = opponent });
-    }
-
-    private void HandleWaiting()
-    {
-        Console.WriteLine("\n[System] Standing by... Searching for a worthy opponent.");
+        _lastResult = result;
+        _isWaitingForServer = false; // Unlock the UI
     }
 
     public void Update()
     {
-        // If we are already waiting for a match, don't redraw the menu
-        if (_isSearching) return;
-
         Console.Clear();
-        Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine("======================================");
-        Console.WriteLine("          POKEMON PVP ARENA          ");
-        Console.WriteLine("======================================");
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine($"=== GLOBAL PVP ARENA ===");
+        Console.WriteLine($"Room: {_roomId}");
         Console.ResetColor();
 
-        // Requirement: Only Champions can enter PvP
-        if (!_session.Player.IsChampion)
+        // 1. Display the results from the previous turn
+        if (_lastResult != null)
         {
-            Console.WriteLine("\n[LOCKED] This area is reserved for the Pokemon League Champion.");
-            Console.WriteLine("Come back after defeating the Elite Four!");
-            Console.WriteLine("\nPress any key to return...");
-            Console.ReadKey(true);
-            _screenManager.SwitchTo(ScreenType.MainMenu);
+            Console.WriteLine("\n--- TURN RESULTS ---");
+            foreach (var log in _lastResult.CombatLogs)
+            {
+                Console.WriteLine($"> {log}");
+            }
+            Console.WriteLine("--------------------\n");
+
+            // Kiểm tra kết thúc trận đấu (Tính năng của PvPTurnResult)
+            if (_lastResult.IsGameOver)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"\n[Match Over] Winner: {_lastResult.WinnerName}");
+                Console.ResetColor();
+                Console.WriteLine("Press any key to return to Main Menu...");
+                Console.ReadKey(true);
+                _sm.SwitchTo(ScreenType.MainMenu);
+                return;
+            }
+        }
+
+        // 2. Block UI while waiting for the opponent and server
+        if (_isWaitingForServer)
+        {
+            Console.WriteLine("\n[System] Waiting for opponent to make a move...");
+            Thread.Sleep(500); // Prevent console flickering while looping
             return;
         }
 
-        Console.WriteLine($"\nWelcome, Champion {_session.Player.Name}!");
-        Console.WriteLine("1. Find an Opponent");
-        Console.WriteLine("2. Back to Main Menu");
-        Console.Write("\nSelect an option: ");
+        // 3. Player Input Phase
+        // Get the active Pokemon (assuming it's the first one in the team for now)
+        var activePokemon = _session.Player.PokemonTeam[0];
+
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine($"\nYour Turn! Choose an action for {activePokemon.Specie.Name}:");
+        Console.ResetColor();
+
+        // Dynamically render available moves
+        for (int i = 0; i < activePokemon.Moves.Count; i++)
+        {
+            var move = activePokemon.Moves[i];
+            
+            // LƯU Ý: Đảm bảo class PokemonMove của bạn có các thuộc tính Type, CurrentPP và MaxPP
+            // Nếu không có, hãy sửa lại thành: Console.WriteLine($"{i + 1}. {move.Name}");
+            Console.WriteLine($"{i + 1}. {move.Name} (Type: {move.Type})");
+        }
+
+        Console.Write($"\nSelect move (1-{activePokemon.Moves.Count}): ");
 
         var input = Console.ReadLine();
-        if (input == "1")
+        
+        // Validate input based on the actual number of moves
+        if (int.TryParse(input, out int moveChoice) && moveChoice >= 1 && moveChoice <= activePokemon.Moves.Count)
         {
-            _isSearching = true;
-            _ = StartSearchTask(); // Run the async search in the background
+            _isWaitingForServer = true; // Lock UI immediately
+            Console.WriteLine("\n[Network] Sending move to server...");
+            
+            // Send move (Index is 0-based, so subtract 1 from user input)
+            _ = _network.SubmitMoveAsync(_roomId, _session.Player.Name, moveChoice - 1); 
         }
         else
         {
-            _screenManager.SwitchTo(ScreenType.MainMenu);
-        }
-    }
-
-    private async Task StartSearchTask()
-    {
-        try 
-        {
-            Console.WriteLine("\n[Network] Connecting to Global Battle Hub...");
-            await _network.Connect();
-            await _network.FindMatch(_session.Player.Name);
-        } 
-        catch (Exception ex) 
-        {
-            _isSearching = false;
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"\n[Error] Could not connect to server: {ex.Message}");
+            Console.WriteLine("Invalid input. Please select a valid move number.");
             Console.ResetColor();
-            Console.WriteLine("Press any key to retry...");
-            Console.ReadKey(true);
+            Thread.Sleep(1000);
         }
     }
 }
