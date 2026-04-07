@@ -1,3 +1,5 @@
+using PokemonEntity;
+
 public class ExpService : IExpService
 {
     private readonly GameSession _gameSession;

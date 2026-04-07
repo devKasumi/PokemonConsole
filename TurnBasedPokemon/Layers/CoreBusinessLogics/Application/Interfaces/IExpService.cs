@@ -1,3 +1,5 @@
+using PokemonEntity;
+
 public interface IExpService
 {
     public ProcessExpResult GrantExperience(Pokemon pokemon, int amount);

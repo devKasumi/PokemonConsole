@@ -1,3 +1,6 @@
+// using Pokemon.Shared;
+using PokemonEntity;
+
 public static class DamageCalculator
 {
     private static readonly Random _rng = new Random();

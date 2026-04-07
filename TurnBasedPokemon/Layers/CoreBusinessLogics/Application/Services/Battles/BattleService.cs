@@ -1,3 +1,5 @@
+using PokemonEntity;
+
 // Layers/CoreBusinessLogics/Application/Services/BattleService.cs
 public class BattleService : IBattleService
 {

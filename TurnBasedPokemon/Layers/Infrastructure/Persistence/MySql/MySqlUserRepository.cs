@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using MySql.Data.MySqlClient;
+using PokemonEntity;
 
 public class MySqlUserRepository : IUserRepository
 {
@@ -54,9 +55,11 @@ public class MySqlUserRepository : IUserRepository
         using var conn = new MySqlConnection(_connection); 
         conn.Open();
         
-        // 1. Fetch User and Player data using a LEFT JOIN
+        // 1. Fetch User and Player data (Added IsChampion, PvPWins, PvPLosses to SELECT)
         string sqlUser = @"
-            SELECT u.Id, u.Username, u.Password, p.Name, p.CurrentPhase, p.CurrentLocation, p.Badges, p.InventoryData 
+            SELECT u.Id, u.Username, u.Password, 
+                p.Name, p.CurrentPhase, p.CurrentLocation, p.Badges, p.InventoryData,
+                p.IsChampion, p.PvPWins, p.PvPLosses
             FROM users u 
             LEFT JOIN players p ON u.Id = p.UserId 
             WHERE u.Username = @n";
@@ -65,12 +68,11 @@ public class MySqlUserRepository : IUserRepository
         cmdUser.Parameters.AddWithValue("@n", username);
         using var rUser = cmdUser.ExecuteReader();
         
-        if (!rUser.Read()) return null; // User not found
+        if (!rUser.Read()) return null;
 
         var user = new User { Username = rUser.GetString("Username"), Password = rUser.GetString("Password"), PlayerData = new Player() };
         int userId = rUser.GetInt32("Id");
         
-        // Load PlayerData if it exists
         if (!rUser.IsDBNull(rUser.GetOrdinal("CurrentPhase"))) 
         {
             if (!rUser.IsDBNull(rUser.GetOrdinal("Name"))) user.PlayerData.Name = rUser.GetString("Name");
@@ -79,10 +81,20 @@ public class MySqlUserRepository : IUserRepository
             
             user.PlayerData.Badges = JsonSerializer.Deserialize<List<string>>(rUser.GetString("Badges"), _jsonOptions) ?? new();
             user.PlayerData.Inventory = JsonSerializer.Deserialize<Dictionary<int, Dictionary<string, List<Item>>>>(rUser.GetString("InventoryData"), _jsonOptions) ?? new();
-        }
-        rUser.Close(); // Close reader before executing the next query
 
-        // 2. Fetch the Pokemon Team
+            // --- NEW: PvP and End-game data ---
+            if (!rUser.IsDBNull(rUser.GetOrdinal("IsChampion")))
+                user.PlayerData.IsChampion = rUser.GetBoolean("IsChampion");
+                
+            if (!rUser.IsDBNull(rUser.GetOrdinal("PvPWins")))
+                user.PlayerData.PvPWins = rUser.GetInt32("PvPWins");
+                
+            if (!rUser.IsDBNull(rUser.GetOrdinal("PvPLosses")))
+                user.PlayerData.PvPLosses = rUser.GetInt32("PvPLosses");
+        }
+        rUser.Close();
+
+        // 2. Fetch the Pokemon Team (Keep this part as is)
         string sqlPkm = "SELECT * FROM pokemons WHERE PlayerId = @id";
         using var cmdPkm = new MySqlCommand(sqlPkm, conn); 
         cmdPkm.Parameters.AddWithValue("@id", userId);

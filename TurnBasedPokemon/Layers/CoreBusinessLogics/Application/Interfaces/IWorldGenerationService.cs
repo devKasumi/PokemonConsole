@@ -1,3 +1,5 @@
+using PokemonEntity;
+
 public interface IWorldGenerationService
 {
     public Pokemon SpawnPokemonByName(string name, int level);

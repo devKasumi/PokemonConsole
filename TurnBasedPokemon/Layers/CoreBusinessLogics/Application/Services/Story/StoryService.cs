@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.IO;
+using PokemonEntity;
 
 public class StoryService : IStoryService
 {

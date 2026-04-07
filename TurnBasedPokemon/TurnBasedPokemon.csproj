@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
     <PackageReference Include="Dapper" Version="2.1.72" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.5" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.5" />
     <PackageReference Include="MySql.Data" Version="9.6.0" />
@@ -26,6 +27,17 @@
     <Content Remove="PokemonServer\**" />
     <EmbeddedResource Remove="PokemonServer\**" />
     <None Remove="PokemonServer\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="PokemonServer\**;Pokemon.Shared\**" />
+    <Content Remove="PokemonServer\**;Pokemon.Shared\**" />
+    <EmbeddedResource Remove="PokemonServer\**;Pokemon.Shared\**" />
+    <None Remove="PokemonServer\**;Pokemon.Shared\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="Pokemon.Shared\Pokemon.Shared.csproj" />
   </ItemGroup>
 
 </Project>

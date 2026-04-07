@@ -1,3 +1,5 @@
+using PokemonEntity;
+
 public abstract class Trainer
 {
     public string Name { get; set; }

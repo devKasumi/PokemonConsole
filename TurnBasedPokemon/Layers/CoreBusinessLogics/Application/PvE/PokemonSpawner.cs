@@ -1,3 +1,5 @@
+using PokemonEntity;
+
 // File: Application/Services/PokemonSpawner.cs
 public class PokemonSpawner
 {

@@ -1,12 +1,15 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using PokemonServer.Services;
+using System.Collections.Concurrent;
 
 namespace PokemonServer.Hubs
 {
     public class BattleHub : Hub
     {
         private readonly MatchmakingService _matchmakingService;
+        // Dictionary to temporarily hold moves: Key = RoomId, Value = List of (ConnectionId, MoveName)
+        private static readonly ConcurrentDictionary<string, List<(string PlayerId, string Move)>> _pendingMoves = new();
 
         public BattleHub(MatchmakingService matchmakingService)
         {
@@ -39,6 +42,34 @@ namespace PokemonServer.Hubs
             {
                 // Still waiting. Tell the caller to hang tight.
                 await Clients.Caller.SendAsync("WaitingForOpponent");
+            }
+        }
+
+        public async Task SendMove(string roomId, string moveName)
+        {
+            var moves = _pendingMoves.GetOrAdd(roomId, _ => new List<(string, string)>());
+            
+            lock (moves)
+            {
+                moves.Add((Context.ConnectionId, moveName));
+            }
+
+            if (moves.Count == 2)
+            {
+                // Logic: Both players have moved! 
+                // 1. Calculate damage/speed here (Authoritative Server)
+                // 2. For now, we'll just send a "Result Packet" back to the Group
+                string resultData = $"Player {moves[0].PlayerId} used {moves[0].Move}, Player {moves[1].PlayerId} used {moves[1].Move}!";
+                
+                await Clients.Group(roomId).SendAsync("ReceiveTurnResult", resultData);
+                
+                // Clear moves for the next turn
+                _pendingMoves.TryRemove(roomId, out _);
+            }
+            else
+            {
+                // Tell the player to wait for the opponent
+                await Clients.Caller.SendAsync("WaitingForOpponentMove");
             }
         }
 

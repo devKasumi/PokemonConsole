@@ -1,5 +1,6 @@
 using System.Threading;
 using Screens;
+using PokemonEntity;
 
 public class MainMenuScreen : IScreen
 {
@@ -111,6 +112,10 @@ public class MainMenuScreen : IScreen
         {
             Console.WriteLine($"You can only participate in PvP after completing the game's main storyline.");
             return;
+        }
+        else
+        {
+            
         }
     }
 

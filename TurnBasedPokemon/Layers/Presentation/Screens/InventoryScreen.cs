@@ -1,4 +1,5 @@
 using Screens;
+using PokemonEntity;
 
 public class InventoryScreen : IScreen
 {

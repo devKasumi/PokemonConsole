@@ -1,5 +1,6 @@
 using System;
 using Screens;
+using PokemonEntity;
 
 public class LoginScreen : IScreen
 {

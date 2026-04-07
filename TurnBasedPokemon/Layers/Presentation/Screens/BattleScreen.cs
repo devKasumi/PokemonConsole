@@ -1,11 +1,14 @@
 using System.Linq.Expressions;
 using Screens;
+using PokemonEntity;
 
 public class BattleScreen : IScreen
 {
     private readonly ScreenManager _screenManager;
     private readonly GameSession _gameSession;
     private readonly IBattleService _battleService;
+    private string? _pvpRoomId;
+    private bool _isPvP = false;
 
     public BattleScreen(
         ScreenManager screenManager, 
@@ -20,6 +23,18 @@ public class BattleScreen : IScreen
     public void Initialize(object? data = null)
     {
         Console.Clear();
+        if (data != null)
+        {
+            // Use reflection or cast to a dynamic/specific type to get PvP info
+            var pvpData = data.GetType().GetProperty("IsPvP")?.GetValue(data, null);
+            _isPvP = pvpData is bool b && b;
+
+            if (_isPvP)
+            {
+                _pvpRoomId = data.GetType().GetProperty("RoomId")?.GetValue(data, null) as string;
+                Console.WriteLine($"[PvP Mode] Connected to Room: {_pvpRoomId}");
+            }
+        }
     }
 
     public void Update()
@@ -368,7 +383,7 @@ public class BattleScreen : IScreen
 
         if (int.TryParse(input, out int index) && index > 0 && index <= team.Count)
         {
-            var selectedPokemon = team[index - 1];
+            Pokemon selectedPokemon = team[index - 1];
 
             // --- 3. CALL LOGIC FROM SERVICE ---
             // Service will check isFainted and CurrentPokemon

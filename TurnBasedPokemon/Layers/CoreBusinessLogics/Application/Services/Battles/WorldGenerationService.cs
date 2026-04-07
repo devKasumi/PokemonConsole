@@ -1,3 +1,5 @@
+using PokemonEntity;
+
 public class WorldGenerationService : IWorldGenerationService
 {
     private readonly GameSession _gameSession;

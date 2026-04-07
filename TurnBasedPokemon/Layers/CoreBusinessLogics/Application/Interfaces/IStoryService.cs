@@ -1,3 +1,4 @@
+using PokemonEntity;
 using System.Collections.Generic;
 
 public interface IStoryService

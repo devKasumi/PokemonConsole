@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using MySql.Data.MySqlClient;
+using PokemonEntity;
 
 public class MySqlStoryService : IStoryService
 {

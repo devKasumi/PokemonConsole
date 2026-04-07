@@ -1,3 +1,5 @@
+using PokemonEntity;
+
 public class GameSession
 {
     // --- Core & Persistence ---

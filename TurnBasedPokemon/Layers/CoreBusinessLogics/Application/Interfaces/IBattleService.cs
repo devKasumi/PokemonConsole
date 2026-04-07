@@ -1,3 +1,5 @@
+using PokemonEntity;
+
 public interface IBattleService
 {
     public BattleTurnResult ExecutePlayerTurn(PokemonMove move);

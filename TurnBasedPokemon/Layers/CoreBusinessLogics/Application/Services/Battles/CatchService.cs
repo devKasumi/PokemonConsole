@@ -1,3 +1,5 @@
+using PokemonEntity;
+
 public class CatchService : ICatchService
 {
     private readonly GameSession _gameSession;

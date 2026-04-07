@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-public enum PokemonStatus { None, Asleep, Frozen, Paralyzed, Burned, Poisoned }
+﻿namespace PokemonEntity;
 
 public class Pokemon
 {

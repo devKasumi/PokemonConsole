@@ -1,3 +1,5 @@
+using PokemonEntity;
+
 namespace Screens
 {
     public interface IScreen

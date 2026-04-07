@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using Screens;
+using PokemonEntity;
 
 public class StoryScreen : IScreen
 {

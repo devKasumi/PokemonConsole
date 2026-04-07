@@ -1,3 +1,5 @@
+using PokemonEntity;
+
 // public record CatchResult(bool IsCaught, int Shakes);
 public static class CatchFormula
 {
