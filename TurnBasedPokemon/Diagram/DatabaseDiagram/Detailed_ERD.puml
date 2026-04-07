@@ -157,7 +157,6 @@ entity "Battle History" as BH {
   winner_id : INT
   battle_type : VARCHAR(20)
   battle_duration : INT
-  exp_gained : INT
   battle_date : TIMESTAMP
 }
 
