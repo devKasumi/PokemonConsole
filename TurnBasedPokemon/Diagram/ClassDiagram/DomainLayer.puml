@@ -1,0 +1,226 @@
+@startuml DomainLayerEntities
+skinparam classAttributeIconSize 0
+skinparam direction top to bottom
+skinparam class {
+  BackgroundColor #FFF9E6
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+title Domain Layer - Core Entities
+
+class User {
+  + UserId: int
+  + Username: string
+  + PasswordHash: string
+  + PlayerId: int?
+  + CreatedDate: DateTime
+}
+
+class Player {
+  + PlayerId: int
+  + UserId: int
+  + PlayerName: string
+  + Level: int
+  + CurrentExp: int
+  + TotalExp: int
+  + Badges: List<string>
+  + PokemonTeam: List<Pokemon>
+  + Inventory: Inventory
+  + DiscoveredLocations: List<string>
+}
+
+class Pokemon {
+  + PokemonId: int
+  + PlayerId: int
+  + SpeciesId: int
+  + Nickname: string
+  + Level: int
+  + CurrentExp: int
+  + HP: int
+  + MaxHP: int
+  + Stats: Stats
+  + CurrentMoves: List<PokemonMove>
+  + Status: PokemonStatus
+  + IsOwned: bool
+  + CatchLevel: int
+  + EvolutionStage: int
+  + InjuryCount: int
+  + ResetStats()
+  + TakeDamage(damage: int)
+  + Heal()
+  + TryEvolve()
+}
+
+class PokemonSpecies {
+  + SpeciesId: int
+  + Name: string
+  + ImageName: string
+  + ElementType: ElementType
+  + BaseStats: Stats
+  + CatchRate: int
+  + EvolutionLevel: int
+  + EvolvesInto: int?
+  + AvailableMoves: List<PokemonMove>
+  + GetMoveAt(level: int): PokemonMove?
+}
+
+class PokemonMove {
+  + MoveId: int
+  + Name: string
+  + Type: ElementType
+  + Power: int
+  + Accuracy: int
+  + CriticalChance: double
+  + Priority: int
+  + CalculateDamage(attacker: Pokemon, defender: Pokemon): int
+}
+
+class Stats {
+  + Attack: int
+  + Defense: int
+  + SpAtk: int
+  + SpDef: int
+  + Speed: int
+  + ToString()
+}
+
+enum PokemonStatus {
+  HEALTHY
+  POISONED
+  PARALYZED
+  BURNED
+  FROZEN
+  ASLEEP
+}
+
+enum ElementType {
+  NORMAL
+  FIRE
+  WATER
+  GRASS
+  ELECTRIC
+  ICE
+  FIGHTING
+  POISON
+  GROUND
+  FLYING
+  PSYCHIC
+  BUG
+  ROCK
+  GHOST
+  DRAGON
+  DARK
+  STEEL
+  FAIRY
+}
+
+class Item {
+  + ItemId: int
+  + Name: string
+  + Description: string
+  + GetItemType(): string
+}
+
+class HealingItem {
+  + HealAmount: int
+  + CuresStatus: PokemonStatus?
+}
+
+class CaptureItem {
+  + CatchMultiplier: double
+}
+
+class GeneralItem {
+  + Value: int
+}
+
+class Inventory {
+  + PlayerId: int
+  - _items: Dictionary<int, int>
+  + Items: List<Item>
+  + ItemCount: int
+  + AddItem(item: Item, quantity: int)
+  + RemoveItem(itemId: int, quantity: int)
+  + GetItemQuantity(itemId: int): int
+}
+
+class GameSession {
+  - _userRepo: IUserRepository
+  + CurrentUser: User?
+  + Player: Player?
+  + CurrentLocation: LocationData
+  + CurrentEnemyTeam: List<Pokemon>
+  + CurrentEnemyPokemon: Pokemon?
+  + IsTrainerBattle: bool
+  + Login(user: string, pass: string)
+  + StartNewGame()
+  + LoadProgress(username: string): bool
+  + SaveProgress()
+  + SetupBattle(enemies, isTrainer)
+}
+
+class PokemonData {
+  + Id: int
+  + Name: string
+  + Level: int
+  + Moves: List<PokemonMove>
+  + Stats: Stats
+}
+
+class LocationData {
+  + LocationId: int
+  + Name: string
+  + Description: string
+  + IsDiscovered: bool
+  + PossiblePokemon: List<int>
+  + PossibleItems: List<int>
+}
+
+class NpcData {
+  + NpcId: int
+  + Name: string
+  + Dialogue: string
+  + ImageName: string
+  + Team: List<PokemonData>
+}
+
+class PhaseData {
+  + Phase: int
+  + Title: string
+  + Dialogue: List<string>
+  + BattleNpc: NpcData
+}
+
+' Relationships
+User --> Player : creates
+Player --> Pokemon : owns
+Player --> Inventory : has
+Player --> LocationData : discovers
+
+Pokemon --> PokemonSpecies : base species
+Pokemon --> PokemonMove : learns
+Pokemon --> Stats : has
+Pokemon --> PokemonStatus : current status
+
+PokemonSpecies --> Stats : base stats
+PokemonSpecies --> PokemonMove : available moves
+PokemonSpecies --> ElementType : has type
+
+Item <|-- HealingItem
+Item <|-- CaptureItem
+Item <|-- GeneralItem
+
+Inventory --> Item : contains
+
+GameSession --> User : current user
+GameSession --> Player : current player
+GameSession --> Pokemon : enemy pokemon
+GameSession --> LocationData : current location
+
+PokemonData --> PokemonMove : has moves
+NpcData --> PokemonData : pokemon team
+PhaseData --> NpcData : battle npc
+LocationData --> NpcData : npcs
+
+@enduml

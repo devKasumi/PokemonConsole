@@ -1,0 +1,212 @@
+@startuml ApplicationLayerServices
+skinparam classAttributeIconSize 0
+skinparam direction top to bottom
+skinparam class {
+  BackgroundColor #FFF9E6
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+title Application Layer - Services
+
+interface IBattleService {
+  + ExecuteTurn(playerMove: int, enemyMove: int): BattleResult
+  + GetAvailableMoves(): List<PokemonMove>
+  + CalculateDamage(attacker: Pokemon, move: PokemonMove, defender: Pokemon): int
+}
+
+class BattleService {
+  + ExecuteTurn(playerMove: int, enemyMove: int): BattleResult
+  + GetAvailableMoves(): List<PokemonMove>
+  + CalculateDamage(attacker: Pokemon, move: PokemonMove, defender: Pokemon): int
+  - CheckStatusEffect(pokemon: Pokemon): bool
+  - ApplyStatusEffect(attacker: Pokemon, move: PokemonMove, defender: Pokemon)
+}
+
+class BattleResult {
+  + Winner: Player?
+  + Loser: Player?
+  + ExpGained: int
+  + Message: string
+}
+
+interface IStoryService {
+  + GetCurrentPhase(): PhaseData
+  + GetPhaseDialogue(): List<string>
+  + GetPhaseNpcTeam(): List<PokemonData>
+  + ProgressPhase(): bool
+  + IsStoryComplete(): bool
+}
+
+class StoryService {
+  - _storyData: List<PhaseData>
+  - _currentPhase: int
+  + GetCurrentPhase(): PhaseData
+  + GetPhaseDialogue(): List<string>
+  + GetPhaseNpcTeam(): List<PokemonData>
+  + ProgressPhase(): bool
+  + IsStoryComplete(): bool
+}
+
+class MySqlStoryService {
+  - _dbConnection: IDbConnection
+  + GetCurrentPhase(): PhaseData
+  + GetPhaseDialogue(): List<string>
+  + GetPhaseNpcTeam(): List<PokemonData>
+  + ProgressPhase(): bool
+  + IsStoryComplete(): bool
+}
+
+interface IExpService {
+  + GrantExperience(pokemon: Pokemon, expAmount: int): bool
+  + CalculateExpGain(defeatedLevel: int, playerLevel: int): int
+}
+
+class ExpService {
+  + GrantExperience(pokemon: Pokemon, expAmount: int): bool
+  + CalculateExpGain(defeatedLevel: int, playerLevel: int): int
+  - CheckLevelUp(pokemon: Pokemon): bool
+  - CheckEvolution(pokemon: Pokemon): bool
+}
+
+interface IHealingService {
+  + ExecuteHealing(pokemon: Pokemon, item: HealingItem): bool
+}
+
+class HealingService {
+  + ExecuteHealing(pokemon: Pokemon, item: HealingItem): bool
+  - RestoreHealPoints(pokemon: Pokemon, healAmount: int)
+  - RemoveStatus(pokemon: Pokemon, status: PokemonStatus)
+}
+
+interface ICatchService {
+  + ExecuteCapture(enemy: Pokemon, item: CaptureItem): CatchResult
+}
+
+class CatchService {
+  - _randomizer: Random
+  + ExecuteCapture(enemy: Pokemon, item: CaptureItem): CatchResult
+  - CalculateCatchProbability(pokemon: Pokemon, item: CaptureItem): double
+  - GenerateCatchMessage(success: bool): string
+}
+
+class CatchResult {
+  + Success: bool
+  + Message: string
+  + CaughtPokemon: Pokemon?
+}
+
+interface IAuthenService {
+  + IsValidCredentials(username: string, password: string): bool
+  + HashPassword(password: string): string
+  + VerifyPassword(password: string, hash: string): bool
+}
+
+class AuthenService {
+  + IsValidCredentials(username: string, password: string): bool
+  + HashPassword(password: string): string
+  + VerifyPassword(password: string, hash: string): bool
+}
+
+interface IFileService {
+  + SaveGame(player: Player)
+  + LoadGame(username: string): Player?
+  + ExistsGame(username: string): bool
+}
+
+class FileService {
+  - _filePath: string
+  + SaveGame(player: Player)
+  + LoadGame(username: string): Player?
+  + ExistsGame(username: string): bool
+  - SerializePlayer(player: Player): string
+  - DeserializePlayer(json: string): Player
+}
+
+interface IWorldGenerationService {
+  + GeneratePokemon(location: LocationData): Pokemon
+  + GenerateItem(location: LocationData): Item
+}
+
+class WorldGenerationService {
+  - _pokemonSpawner: PokemonSpawner
+  - _itemSpawner: ItemSpawner
+  + GeneratePokemon(location: LocationData): Pokemon
+  + GenerateItem(location: LocationData): Item
+}
+
+class PokemonSpawner {
+  - _random: Random
+  + SpawnPokemon(speciesIdList: List<int>): Pokemon
+  - DetermineLevelRange(baseLevel: int): Tuple<int, int>
+}
+
+class ItemSpawner {
+  - _random: Random
+  + SpawnItem(itemIdList: List<int>): Item
+}
+
+class NetworkService {
+  + SendData(data: object): bool
+  + ReceiveData(): object?
+  + Disconnect()
+}
+
+class MatchmakingService {
+  + FindOpponent(player: Player): Player?
+  + CreateMatch(player1: Player, player2: Player): BattleRoom
+  + CancelSearch(player: Player)
+}
+
+class BattleRoom {
+  + Player1: Player
+  + Player2: Player
+  + IsActive: bool
+  + ExecuteTurn(playerId: int, moveIndex: int): BattleResult
+  + EndBattle(): BattleResult
+}
+
+' Relationships
+BattleService ..|> IBattleService
+BattleService --> BattleResult
+BattleService --> Pokemon
+BattleService --> PokemonMove
+
+StoryService ..|> IStoryService
+MySqlStoryService ..|> IStoryService
+StoryService --> PhaseData
+MySqlStoryService --> PhaseData
+
+ExpService ..|> IExpService
+ExpService --> Pokemon
+
+HealingService ..|> IHealingService
+HealingService --> Pokemon
+HealingService --> HealingItem
+
+CatchService ..|> ICatchService
+CatchService --> Pokemon
+CatchService --> CaptureItem
+CatchService --> CatchResult
+
+AuthenService ..|> IAuthenService
+AuthenService --> User
+
+FileService ..|> IFileService
+FileService --> Player
+
+WorldGenerationService ..|> IWorldGenerationService
+WorldGenerationService --> PokemonSpawner
+WorldGenerationService --> ItemSpawner
+WorldGenerationService --> LocationData
+
+PokemonSpawner --> Pokemon
+ItemSpawner --> Item
+
+NetworkService --> BattleRoom
+MatchmakingService --> BattleRoom
+MatchmakingService --> Player
+BattleRoom --> Player
+BattleRoom --> BattleResult
+
+@enduml

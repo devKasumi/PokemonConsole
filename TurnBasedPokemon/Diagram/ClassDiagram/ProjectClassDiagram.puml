@@ -1,5 +1,6 @@
-@startuml PokemonGameClassDiagram
+@startuml PokemonGameArchitecture
 skinparam classAttributeIconSize 0
+skinparam direction top to bottom
 skinparam class {
   BackgroundColor #FFF9E6
   BorderColor #333333
@@ -8,524 +9,55 @@ skinparam class {
 skinparam arrow {
   Color #333333
 }
-
-package "Presentation Layer - UI Screens" {
-  interface IScreen {
-    + Render()
-    + ProcessInput()
-  }
-  
-  class LoginScreen {
-    - _authenService: AuthenService
-    + Render()
-    + ProcessInput()
-  }
-  
-  class MainMenuScreen {
-    + Render()
-    + ProcessInput()
-  }
-  
-  class BattleScreen {
-    - _battleService: IBattleService
-    - _gameSession: GameSession
-    + Render()
-    + ProcessInput()
-  }
-  
-  class StoryScreen {
-    - _storyService: IStoryService
-    + Render()
-    + ProcessInput()
-  }
-  
-  class InventoryScreen {
-    - _gameSession: GameSession
-    + Render()
-    + ProcessInput()
-  }
-  
-  class PvPScreen {
-    - _pvpManager: PvPManager
-    + Render()
-    + ProcessInput()
-  }
+skinparam package {
+  BackgroundColor #FFFACD
+  BorderColor #333333
 }
 
-package "Core State Management" {
-  class GameSession {
-    - _userRepo: IUserRepository
-    + CurrentUser: User?
-    + Player: Player?
-    + CurrentLocation: LocationData
-    + CurrentEnemyTeam: List<Pokemon>
-    + CurrentEnemyPokemon: Pokemon?
-    + IsTrainerBattle: bool
-    + Login(user: string, pass: string)
-    + StartNewGame()
-    + LoadProgress(username: string): bool
-    + SaveProgress()
-    + SetupBattle(enemies, isTrainer)
-  }
+title Pokemon Game - High Level Architecture
+
+package "Presentation Layer" {
+  class LoginScreen
+  class MainMenuScreen
+  class BattleScreen
+  class StoryScreen
+  class InventoryScreen
+  class PvPScreen
 }
 
-package "Domain Layer - Core Entities" {
-  class User {
-    + UserId: int
-    + Username: string
-    + PasswordHash: string
-    + PlayerId: int?
-    + CreatedDate: DateTime
-  }
-  
-  class Player {
-    + PlayerId: int
-    + UserId: int
-    + PlayerName: string
-    + Level: int
-    + CurrentExp: int
-    + TotalExp: int
-    + Badges: List<string>
-    + PokemonTeam: List<Pokemon>
-    + Inventory: Inventory
-    + DiscoveredLocations: List<string>
-  }
-  
-  class Pokemon {
-    + PokemonId: int
-    + PlayerId: int
-    + SpeciesId: int
-    + Nickname: string
-    + Level: int
-    + CurrentExp: int
-    + HP: int
-    + MaxHP: int
-    + Stats: Stats
-    + CurrentMoves: List<PokemonMove>
-    + Status: PokemonStatus
-    + IsOwned: bool
-    + CatchLevel: int
-    + EvolutionStage: int
-    + InjuryCount: int
-    + ResetStats()
-    + TakeDamage(damage: int)
-    + Heal()
-    + TryEvolve()
-  }
-  
-  class PokemonSpecies {
-    + SpeciesId: int
-    + Name: string
-    + ImageName: string
-    + ElementType: ElementType
-    + BaseStats: Stats
-    + CatchRate: int
-    + EvolutionLevel: int
-    + EvolvesInto: int?
-    + AvailableMoves: List<PokemonMove>
-    + GetMoveAt(level: int): PokemonMove?
-  }
-  
-  class PokemonMove {
-    + MoveId: int
-    + Name: string
-    + Type: ElementType
-    + Power: int
-    + Accuracy: int
-    + CriticalChance: double
-    + Priority: int
-    + CalculateDamage(attacker: Pokemon, defender: Pokemon): int
-  }
-  
-  class Stats {
-    + Attack: int
-    + Defense: int
-    + SpAtk: int
-    + SpDef: int
-    + Speed: int
-    + ToString()
-  }
-  
-  enum PokemonStatus {
-    HEALTHY
-    POISONED
-    PARALYZED
-    BURNED
-    FROZEN
-    ASLEEP
-  }
-  
-  class Item {
-    + ItemId: int
-    + Name: string
-    + Description: string
-    + GetItemType(): string
-  }
-  
-  class HealingItem {
-    + HealAmount: int
-    + CuresStatus: PokemonStatus?
-  }
-  
-  class CaptureItem {
-    + CatchMultiplier: double
-  }
-  
-  class GeneralItem {
-    + Value: int
-  }
-  
-  class Inventory {
-    + PlayerId: int
-    - _items: Dictionary<int, int>
-    + Items: List<Item>
-    + ItemCount: int
-    + AddItem(item: Item, quantity: int)
-    + RemoveItem(itemId: int, quantity: int)
-    + GetItemQuantity(itemId: int): int
-  }
-  
-  class PokemonData {
-    + Id: int
-    + Name: string
-    + Level: int
-    + Moves: List<PokemonMove>
-    + Stats: Stats
-  }
-  
-  class LocationData {
-    + LocationId: int
-    + Name: string
-    + Description: string
-    + IsDiscovered: bool
-    + PossiblePokemon: List<int>
-    + PossibleItems: List<int>
-  }
-  
-  class NpcData {
-    + NpcId: int
-    + Name: string
-    + Dialogue: string
-    + ImageName: string
-    + Team: List<PokemonData>
-  }
-  
-  class PhaseData {
-    + Phase: int
-    + Title: string
-    + Dialogue: List<string>
-    + BattleNpc: NpcData
-  }
+package "Application Layer" {
+  class BattleService
+  class StoryService
+  class ExpService
+  class HealingService
+  class CatchService
+  class AuthenService
+  class FileService
+  class WorldGenerationService
+  class MatchmakingService
 }
 
-package "Application Layer - Services" {
-  interface IBattleService {
-    + ExecuteTurn(playerMove: int, enemyMove: int): BattleResult
-    + GetAvailableMoves(): List<PokemonMove>
-    + CalculateDamage(attacker: Pokemon, move: PokemonMove, defender: Pokemon): int
-  }
-  
-  class BattleService {
-    + ExecuteTurn(playerMove: int, enemyMove: int): BattleResult
-    + GetAvailableMoves(): List<PokemonMove>
-    + CalculateDamage(attacker: Pokemon, move: PokemonMove, defender: Pokemon): int
-    - CheckStatusEffect(pokemon: Pokemon): bool
-    - ApplyStatusEffect(attacker: Pokemon, move: PokemonMove, defender: Pokemon)
-  }
-  
-  interface IStoryService {
-    + GetCurrentPhase(): PhaseData
-    + GetPhaseDialogue(): List<string>
-    + GetPhaseNpcTeam(): List<PokemonData>
-    + ProgressPhase(): bool
-    + IsStoryComplete(): bool
-  }
-  
-  class StoryService {
-    - _storyData: List<PhaseData>
-    - _currentPhase: int
-    + GetCurrentPhase(): PhaseData
-    + GetPhaseDialogue(): List<string>
-    + GetPhaseNpcTeam(): List<PokemonData>
-    + ProgressPhase(): bool
-    + IsStoryComplete(): bool
-  }
-  
-  class MySqlStoryService {
-    - _dbConnection: IDbConnection
-    + GetCurrentPhase(): PhaseData
-    + GetPhaseDialogue(): List<string>
-    + GetPhaseNpcTeam(): List<PokemonData>
-    + ProgressPhase(): bool
-    + IsStoryComplete(): bool
-  }
-  
-  interface IExpService {
-    + GrantExperience(pokemon: Pokemon, expAmount: int): bool
-    + CalculateExpGain(defeatedLevel: int, playerLevel: int): int
-  }
-  
-  class ExpService {
-    + GrantExperience(pokemon: Pokemon, expAmount: int): bool
-    + CalculateExpGain(defeatedLevel: int, playerLevel: int): int
-    - CheckLevelUp(pokemon: Pokemon): bool
-    - CheckEvolution(pokemon: Pokemon): bool
-  }
-  
-  interface IHealingService {
-    + ExecuteHealing(pokemon: Pokemon, item: HealingItem): bool
-  }
-  
-  class HealingService {
-    + ExecuteHealing(pokemon: Pokemon, item: HealingItem): bool
-    - RestoreHealPoints(pokemon: Pokemon, healAmount: int)
-    - RemoveStatus(pokemon: Pokemon, status: PokemonStatus)
-  }
-  
-  interface ICatchService {
-    + ExecuteCapture(enemy: Pokemon, item: CaptureItem): CatchResult
-  }
-  
-  class CatchService {
-    - _randomizer: Random
-    + ExecuteCapture(enemy: Pokemon, item: CaptureItem): CatchResult
-    - CalculateCatchProbability(pokemon: Pokemon, item: CaptureItem): double
-    - GenerateCatchMessage(success: bool): string
-  }
-  
-  class CatchResult {
-    + Success: bool
-    + Message: string
-    + CaughtPokemon: Pokemon?
-  }
-  
-  interface IAuthenService {
-    + IsValidCredentials(username: string, password: string): bool
-    + HashPassword(password: string): string
-    + VerifyPassword(password: string, hash: string): bool
-  }
-  
-  class AuthenService {
-    + IsValidCredentials(username: string, password: string): bool
-    + HashPassword(password: string): string
-    + VerifyPassword(password: string, hash: string): bool
-  }
-  
-  interface IFileService {
-    + SaveGame(player: Player)
-    + LoadGame(username: string): Player?
-    + ExistsGame(username: string): bool
-  }
-  
-  class FileService {
-    - _filePath: string
-    + SaveGame(player: Player)
-    + LoadGame(username: string): Player?
-    + ExistsGame(username: string): bool
-    - SerializePlayer(player: Player): string
-    - DeserializePlayer(json: string): Player
-  }
-  
-  interface IWorldGenerationService {
-    + GeneratePokemon(location: LocationData): Pokemon
-    + GenerateItem(location: LocationData): Item
-  }
-  
-  class WorldGenerationService {
-    - _pokemonSpawner: PokemonSpawner
-    - _itemSpawner: ItemSpawner
-    + GeneratePokemon(location: LocationData): Pokemon
-    + GenerateItem(location: LocationData): Item
-  }
-  
-  class PokemonSpawner {
-    - _random: Random
-    + SpawnPokemon(speciesIdList: List<int>): Pokemon
-    - DetermineLevelRange(baseLevel: int): Tuple<int, int>
-  }
-  
-  class ItemSpawner {
-    - _random: Random
-    + SpawnItem(itemIdList: List<int>): Item
-  }
-  
-  class NetworkService {
-    + SendData(data: object): bool
-    + ReceiveData(): object?
-    + Disconnect()
-  }
-  
-  class MatchmakingService {
-    + FindOpponent(player: Player): Player?
-    + CreateMatch(player1: Player, player2: Player): BattleRoom
-    + CancelSearch(player: Player)
-  }
-  
-  class BattleRoom {
-    + Player1: Player
-    + Player2: Player
-    + IsActive: bool
-    + ExecuteTurn(playerId: int, moveIndex: int): BattleResult
-    + EndBattle(): BattleResult
-  }
-  
-  class BattleResult {
-    + Winner: Player?
-    + Loser: Player?
-    + ExpGained: int
-    + Message: string
-  }
+package "Domain Layer" {
+  class GameSession
+  class User
+  class Player
+  class Pokemon
+  class PokemonSpecies
+  class PokemonMove
+  class Item
+  class Inventory
 }
 
-package "Infrastructure Layer - Repositories & Persistence" {
-  interface IUserRepository {
-    + GetUser(username: string): User?
-    + CreateUser(user: User): bool
-    + UpdateUser(user: User): bool
-    + DeleteUser(userId: int): bool
-  }
-  
-  class JsonUserRepository {
-    - _filePath: string
-    + GetUser(username: string): User?
-    + CreateUser(user: User): bool
-    + UpdateUser(user: User): bool
-    + DeleteUser(userId: int): bool
-  }
-  
-  class MySqlUserRepository {
-    - _connection: IDbConnection
-    + GetUser(username: string): User?
-    + CreateUser(user: User): bool
-    + UpdateUser(user: User): bool
-    + DeleteUser(userId: int): bool
-  }
-  
-  interface IPokedexRepository {
-    + GetSpecies(speciesId: int): PokemonSpecies?
-    + GetAllSpecies(): List<PokemonSpecies>
-    + GetMovesBySpecies(speciesId: int): List<PokemonMove>
-  }
-  
-  class JsonPokedexRepository {
-    - _filePath: string
-    + GetSpecies(speciesId: int): PokemonSpecies?
-    + GetAllSpecies(): List<PokemonSpecies>
-    + GetMovesBySpecies(speciesId: int): List<PokemonMove>
-  }
-  
-  class MySqlPokedexRepository {
-    - _connection: IDbConnection
-    + GetSpecies(speciesId: int): PokemonSpecies?
-    + GetAllSpecies(): List<PokemonSpecies>
-    + GetMovesBySpecies(speciesId: int): List<PokemonMove>
-  }
-  
-  interface IItemRepository {
-    + GetItem(itemId: int): Item?
-    + GetAllItems(): List<Item>
-    + GetItemsByType(itemType: string): List<Item>
-  }
-  
-  class JsonItemRepository {
-    - _filePath: string
-    + GetItem(itemId: int): Item?
-    + GetAllItems(): List<Item>
-    + GetItemsByType(itemType: string): List<Item>
-  }
-  
-  class MySqlItemRepository {
-    - _connection: IDbConnection
-    + GetItem(itemId: int): Item?
-    + GetAllItems(): List<Item>
-    + GetItemsByType(itemType: string): List<Item>
-  }
+package "Infrastructure Layer" {
+  class UserRepository
+  class PokedexRepository
+  class ItemRepository
+  class PokemonSpawner
+  class ItemSpawner
 }
 
-' Relationships
-LoginScreen ..|> IScreen
-MainMenuScreen ..|> IScreen
-BattleScreen ..|> IScreen
-StoryScreen ..|> IScreen
-InventoryScreen ..|> IScreen
-PvPScreen ..|> IScreen
-
-GameSession --> User
-GameSession --> Player
-GameSession --> LocationData
-GameSession --> IUserRepository
-
-BattleService ..|> IBattleService
-BattleService --> Pokemon
-BattleService --> PokemonMove
-BattleService --> BattleResult
-
-StoryService ..|> IStoryService
-MySqlStoryService ..|> IStoryService
-StoryService --> PhaseData
-StoryService --> NpcData
-MySqlStoryService --> PhaseData
-
-ExpService ..|> IExpService
-ExpService --> Pokemon
-
-HealingService ..|> IHealingService
-HealingService --> Pokemon
-HealingService --> HealingItem
-
-CatchService ..|> ICatchService
-CatchService --> Pokemon
-CatchService --> CaptureItem
-CatchService --> CatchResult
-
-AuthenService ..|> IAuthenService
-AuthenService --> User
-
-FileService ..|> IFileService
-FileService --> Player
-
-WorldGenerationService ..|> IWorldGenerationService
-WorldGenerationService --> PokemonSpawner
-WorldGenerationService --> ItemSpawner
-WorldGenerationService --> LocationData
-PokemonSpawner --> Pokemon
-ItemSpawner --> Item
-
-NetworkService --> BattleRoom
-MatchmakingService --> BattleRoom
-MatchmakingService --> Player
-BattleRoom --> Player
-BattleRoom --> BattleResult
-
-Player --> Pokemon
-Player --> Inventory
-Player --> ItemData
-Inventory --> Item
-
-Pokemon --> PokemonSpecies
-Pokemon --> PokemonMove
-Pokemon --> Stats
-Pokemon --> PokemonStatus
-
-PokemonSpecies --> Stats
-PokemonSpecies --> PokemonMove
-
-Item <|-- HealingItem
-Item <|-- CaptureItem
-Item <|-- GeneralItem
-
-JsonUserRepository ..|> IUserRepository
-MySqlUserRepository ..|> IUserRepository
-
-JsonPokedexRepository ..|> IPokedexRepository
-MySqlPokedexRepository ..|> IPokedexRepository
-
-JsonItemRepository ..|> IItemRepository
-MySqlItemRepository ..|> IItemRepository
-
-BattleScreen --> IBattleService
-BattleScreen --> GameSession
-StoryScreen --> IStoryService
-PvPScreen --> MatchmakingService
-
+Presentation --> Application: uses
+Application --> Domain: manipulates
+Application --> Infrastructure: queries
+Domain --> Infrastructure: persists
 @enduml

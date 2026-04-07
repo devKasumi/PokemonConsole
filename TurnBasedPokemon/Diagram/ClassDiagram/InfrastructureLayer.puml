@@ -1,0 +1,131 @@
+@startuml InfrastructureLayerRepositories
+skinparam classAttributeIconSize 0
+skinparam direction top to bottom
+skinparam class {
+  BackgroundColor #FFF9E6
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+title Infrastructure Layer - Repositories & Persistence
+
+interface IUserRepository {
+  + GetUser(username: string): User?
+  + CreateUser(user: User): bool
+  + UpdateUser(user: User): bool
+  + DeleteUser(userId: int): bool
+}
+
+class JsonUserRepository {
+  - _filePath: string
+  + GetUser(username: string): User?
+  + CreateUser(user: User): bool
+  + UpdateUser(user: User): bool
+  + DeleteUser(userId: int): bool
+  - ReadJsonFile(): List<User>
+  - WriteJsonFile(users: List<User>)
+}
+
+class MySqlUserRepository {
+  - _connection: IDbConnection
+  - _connectionString: string
+  + GetUser(username: string): User?
+  + CreateUser(user: User): bool
+  + UpdateUser(user: User): bool
+  + DeleteUser(userId: int): bool
+  - ExecuteQuery(query: string): DataTable
+}
+
+interface IPokedexRepository {
+  + GetSpecies(speciesId: int): PokemonSpecies?
+  + GetAllSpecies(): List<PokemonSpecies>
+  + GetMovesBySpecies(speciesId: int): List<PokemonMove>
+}
+
+class JsonPokedexRepository {
+  - _filePath: string
+  + GetSpecies(speciesId: int): PokemonSpecies?
+  + GetAllSpecies(): List<PokemonSpecies>
+  + GetMovesBySpecies(speciesId: int): List<PokemonMove>
+  - ReadJsonFile(): Dictionary<int, PokemonSpecies>
+}
+
+class MySqlPokedexRepository {
+  - _connection: IDbConnection
+  - _connectionString: string
+  + GetSpecies(speciesId: int): PokemonSpecies?
+  + GetAllSpecies(): List<PokemonSpecies>
+  + GetMovesBySpecies(speciesId: int): List<PokemonMove>
+  - QuerySpecies(speciesId: int): DataRow?
+}
+
+interface IItemRepository {
+  + GetItem(itemId: int): Item?
+  + GetAllItems(): List<Item>
+  + GetItemsByType(itemType: string): List<Item>
+}
+
+class JsonItemRepository {
+  - _filePath: string
+  + GetItem(itemId: int): Item?
+  + GetAllItems(): List<Item>
+  + GetItemsByType(itemType: string): List<Item>
+  - ReadJsonFile(): List<Item>
+}
+
+class MySqlItemRepository {
+  - _connection: IDbConnection
+  - _connectionString: string
+  + GetItem(itemId: int): Item?
+  + GetAllItems(): List<Item>
+  + GetItemsByType(itemType: string): List<Item>
+  - QueryItems(filter: string?): List<Item>
+}
+
+class PokemonSpawner {
+  - _random: Random
+  - _pokedexRepo: IPokedexRepository
+  + SpawnPokemon(speciesIdList: List<int>): Pokemon
+  - GenerateRandomStats(species: PokemonSpecies): Stats
+  - SelectRandomMoves(species: PokemonSpecies): List<PokemonMove>
+  - DetermineLevelRange(baseLevel: int): Tuple<int, int>
+}
+
+class ItemSpawner {
+  - _random: Random
+  - _itemRepo: IItemRepository
+  + SpawnItem(itemIdList: List<int>): Item
+  - SelectItemByWeight(items: List<Item>): Item
+}
+
+class FileService {
+  - _filePath: string
+  + SaveGame(player: Player)
+  + LoadGame(username: string): Player?
+  + ExistsGame(username: string): bool
+  - SerializePlayer(player: Player): string
+  - DeserializePlayer(json: string): Player
+  - GetGameFilePath(username: string): string
+}
+
+' Relationships
+JsonUserRepository ..|> IUserRepository
+MySqlUserRepository ..|> IUserRepository
+
+JsonPokedexRepository ..|> IPokedexRepository
+MySqlPokedexRepository ..|> IPokedexRepository
+
+JsonItemRepository ..|> IItemRepository
+MySqlItemRepository ..|> IItemRepository
+
+PokemonSpawner --> IPokedexRepository
+PokemonSpawner --> Pokemon
+PokemonSpawner --> Stats
+
+ItemSpawner --> IItemRepository
+ItemSpawner --> Item
+
+FileService --> Player
+FileService --> Inventory
+
+@enduml

@@ -1,0 +1,107 @@
+@startuml PresentationLayerScreens
+skinparam classAttributeIconSize 0
+skinparam direction top to bottom
+skinparam class {
+  BackgroundColor #FFF9E6
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+title Presentation Layer - UI Screens
+
+interface IScreen {
+  + Render()
+  + ProcessInput()
+}
+
+class LoginScreen {
+  - _authenService: AuthenService
+  - _userRepository: IUserRepository
+  + Render()
+  + ProcessInput()
+  - DisplayLoginPrompt()
+  - HandleLoginInput(username: string, password: string)
+  - ValidateCredentials(username: string, password: string): bool
+}
+
+class MainMenuScreen {
+  - _gameSession: GameSession
+  + Render()
+  + ProcessInput()
+  - DisplayMenuOptions()
+  - HandleMenuSelection(choice: int)
+}
+
+class BattleScreen {
+  - _battleService: IBattleService
+  - _gameSession: GameSession
+  - _expService: IExpService
+  + Render()
+  + ProcessInput()
+  - DisplayBattleStatus()
+  - DisplayMoveOptions()
+  - HandlePlayerMove(moveIndex: int)
+  - DisplayBattleResult(result: BattleResult)
+}
+
+class StoryScreen {
+  - _storyService: IStoryService
+  - _worldGenService: IWorldGenerationService
+  - _gameSession: GameSession
+  + Render()
+  + ProcessInput()
+  - DisplayCurrentPhase()
+  - DisplayLocationInfo()
+  - HandleExploration(command: string)
+  - HandleChallengeGym()
+}
+
+class InventoryScreen {
+  - _gameSession: GameSession
+  + Render()
+  + ProcessInput()
+  - DisplayInventory()
+  - DisplayPokemonTeam()
+  - HandleItemUsage(itemId: int)
+  - HandlePokemonSwitch(pokemonId: int)
+}
+
+class PvPScreen {
+  - _matchmakingService: MatchmakingService
+  - _battleService: IBattleService
+  - _gameSession: GameSession
+  + Render()
+  + ProcessInput()
+  - DisplayPvPMenu()
+  - HandleFindOpponent()
+  - DisplayPvPBattle()
+  - HandlePvPMove(moveIndex: int)
+}
+
+' Relationships
+LoginScreen ..|> IScreen
+MainMenuScreen ..|> IScreen
+BattleScreen ..|> IScreen
+StoryScreen ..|> IScreen
+InventoryScreen ..|> IScreen
+PvPScreen ..|> IScreen
+
+LoginScreen --> AuthenService
+LoginScreen --> IUserRepository
+
+MainMenuScreen --> GameSession
+BattleScreen --> IBattleService
+BattleScreen --> GameSession
+BattleScreen --> IExpService
+
+StoryScreen --> IStoryService
+StoryScreen --> IWorldGenerationService
+StoryScreen --> GameSession
+
+InventoryScreen --> GameSession
+
+PvPScreen --> MatchmakingService
+PvPScreen --> IBattleService
+PvPScreen --> GameSession
+
+@enduml
