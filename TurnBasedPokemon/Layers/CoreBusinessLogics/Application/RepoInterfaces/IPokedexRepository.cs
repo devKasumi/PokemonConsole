@@ -1,3 +1,5 @@
+namespace Application.RepoInterfaces;
+
 public interface IPokedexRepository
 {
     PokemonSpecies? GetSpecies(string name);

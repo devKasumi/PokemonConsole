@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using MySql.Data.MySqlClient;
+using Application.RepoInterfaces;
 
 public class MySqlItemRepository : IItemRepository
 {

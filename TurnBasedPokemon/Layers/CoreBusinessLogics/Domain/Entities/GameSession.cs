@@ -1,4 +1,5 @@
 using PokemonEntity;
+using Application.RepoInterfaces;
 
 public class GameSession
 {

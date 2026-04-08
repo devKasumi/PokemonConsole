@@ -1,4 +1,6 @@
 // File: Application/Services/ItemSpawner.cs
+using Application.RepoInterfaces;
+
 public class ItemSpawner
 {
     private readonly IItemRepository _itemRepo;

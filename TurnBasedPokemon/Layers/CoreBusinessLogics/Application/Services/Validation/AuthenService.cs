@@ -1,4 +1,5 @@
 using BCrypt.Net;
+using Application.RepoInterfaces;
 
 public record RegisterRequest(string Username, string Password);
 public record LoginRequest(string Username, string Password);

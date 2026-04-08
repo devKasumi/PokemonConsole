@@ -1,4 +1,5 @@
 using PokemonEntity;
+using Application.RepoInterfaces;
 
 // File: Application/Services/PokemonSpawner.cs
 public class PokemonSpawner

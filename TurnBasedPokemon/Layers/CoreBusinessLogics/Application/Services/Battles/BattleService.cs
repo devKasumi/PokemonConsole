@@ -1,4 +1,5 @@
 using PokemonEntity;
+using Application.RepoInterfaces;
 
 // Layers/CoreBusinessLogics/Application/Services/BattleService.cs
 public class BattleService : IBattleService

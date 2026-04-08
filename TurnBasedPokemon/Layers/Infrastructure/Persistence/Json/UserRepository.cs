@@ -1,4 +1,6 @@
 // Persistence/Repositories/UserRepository.cs
+using Application.RepoInterfaces;
+
 public class UserRepository : IUserRepository
 {
     private readonly string _filePath = "users.json";

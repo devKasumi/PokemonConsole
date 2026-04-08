@@ -1,3 +1,5 @@
+namespace Application.RepoInterfaces;
+
 public interface IUserRepository
 {
     List<User> GetAll();

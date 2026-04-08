@@ -1,4 +1,6 @@
 // Persistence/Repositories/ItemRepository.cs
+using Application.RepoInterfaces;
+
 public class ItemRepository : IItemRepository
 {
     private readonly string _filePath = "item.json";

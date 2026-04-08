@@ -1,4 +1,6 @@
 // Persistence/Repositories/PokedexRepository.cs
+using Application.RepoInterfaces;
+
 public class PokedexRepository : IPokedexRepository
 {
     private readonly string _filePath = "pokemon.json";
