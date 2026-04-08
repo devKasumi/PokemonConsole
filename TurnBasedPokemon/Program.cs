@@ -8,6 +8,7 @@ namespace Program
     {
         static void Main(string[] args)
         {   
+            FileService fileService = new FileService(); // Used to read gamesettings.json for the DB connection string
             // 1. Get the database connection string from gamesettings.json
             string dbConnection = new ConfigurationBuilder()
                                     .AddJsonFile("gamesettings.json")
@@ -16,6 +17,9 @@ namespace Program
                                     ?? throw new InvalidOperationException("Connection string 'PokemonDb' not found.");
             
             // 2. Initialize Repositories (Shared between the Seeder and the Game)
+            PokedexRepository pokedexRepository = new PokedexRepository(fileService); // Used by the seeder to read pokemon.json
+            UserRepository userRepository = new UserRepository(fileService); // Used by the seeder to create users with starter pokemon
+            ItemRepository itemRepository = new ItemRepository(fileService); // Used by the seeder
             MySqlPokedexRepository mySqlPokedexRepo = new MySqlPokedexRepository(dbConnection);
             MySqlUserRepository mySqlUserRepo = new MySqlUserRepository(mySqlPokedexRepo, dbConnection);
             MySqlItemRepository mySqlItemRepo = new MySqlItemRepository(dbConnection);
@@ -42,29 +46,40 @@ namespace Program
 
 
             // 3. Initialize the remaining Core Services to run the Game normally
-            FileService fileService = new FileService(); // Retained in case of legacy dependencies
+            // Create a single NetworkService instance for the whole app
+            var networkService = new NetworkService();
+            // GameSession gameSession = new GameSession(mySqlUserRepo);
+            GameSession gameSession = new GameSession(userRepository, networkService)
+            {
+                // Overwrite the default with the shared instance
+                // NetworkService = networkService
+            };
+            // PokemonSpawner pokemonSpawner = new PokemonSpawner(mySqlPokedexRepo);
+            PokemonSpawner pokemonSpawner = new PokemonSpawner(pokedexRepository);
+            ItemSpawner itemSpawner = new ItemSpawner(itemRepository);
+            // ItemSpawner itemSpawner = new ItemSpawner(mySqlItemRepo);
 
-            GameSession gameSession = new GameSession(mySqlUserRepo);
-            PokemonSpawner pokemonSpawner = new PokemonSpawner(mySqlPokedexRepo);
-            ItemSpawner itemSpawner = new ItemSpawner(mySqlItemRepo);
-
-            MySqlStoryService mySqlStoryService = new MySqlStoryService(gameSession, pokemonSpawner, itemSpawner, dbConnection);
+            // MySqlStoryService mySqlStoryService = new MySqlStoryService(gameSession, pokemonSpawner, itemSpawner, dbConnection);
+            StoryService storyService = new StoryService(gameSession, pokemonSpawner, itemSpawner);
 
             ScreenManager screenManager = new ScreenManager();
             WorldGenerationService worldGenerationService = new WorldGenerationService(gameSession, pokemonSpawner, itemSpawner);
-            AuthenService authenService = new AuthenService(mySqlUserRepo, gameSession);
+            // AuthenService authenService = new AuthenService(mySqlUserRepo, gameSession);
+            AuthenService authenService = new AuthenService(userRepository, gameSession);
             ExpService expService = new ExpService(gameSession, worldGenerationService);
-            BattleService battleService = new BattleService(gameSession, mySqlUserRepo, worldGenerationService, expService);
+            BattleService battleService = new BattleService(gameSession, userRepository, worldGenerationService, expService);
+            // BattleService battleService = new BattleService(gameSession, mySqlUserRepo, worldGenerationService, expService);
             CatchService catchService = new CatchService(gameSession);
             HealingService healingService = new HealingService(gameSession);
 
             // 4. Register Screens for the UI
             screenManager.RegisterScreen(ScreenType.Login, new LoginScreen(screenManager, gameSession, authenService));
             screenManager.RegisterScreen(ScreenType.MainMenu, new MainMenuScreen(screenManager, gameSession));
-            screenManager.RegisterScreen(ScreenType.Story, new StoryScreen(screenManager, gameSession, mySqlStoryService));
+            // screenManager.RegisterScreen(ScreenType.Story, new StoryScreen(screenManager, gameSession, mySqlStoryService));
+            screenManager.RegisterScreen(ScreenType.Story, new StoryScreen(screenManager, gameSession, storyService));
             screenManager.RegisterScreen(ScreenType.Battle, new BattleScreen(screenManager, gameSession, battleService));
             screenManager.RegisterScreen(ScreenType.Inventory, new InventoryScreen(screenManager, gameSession, catchService, healingService));
-            screenManager.RegisterScreen(ScreenType.PvP, new PvPScreen(screenManager, new NetworkService(), gameSession)); //
+            screenManager.RegisterScreen(ScreenType.PvP, new PvPScreen(screenManager, networkService, gameSession));
 
             // 5. Run Application
             screenManager.Run();

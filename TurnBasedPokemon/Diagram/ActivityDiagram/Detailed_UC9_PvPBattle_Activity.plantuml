@@ -1,70 +1,34 @@
 @startuml UC9_PvPBattle_Activity
 start
-:Both players loaded in battle room;
-:Initialize turn counter;
-:Display both teams on screen;
-
-:Calculate initial turn order (speed stat);
-:Notify players of battle start;
+:Both players connect to server and are matched in a battle room;
+:Server (PvPManager) initializes battle state and notifies both clients;
+:Display both teams on screen (client);
 
 repeat
-  :Display current turn Pokemon;
-  :Player 1 selects move:;
-  note
-    - Choose move from active Pokemon
-    - Time limit: 30 seconds
-  end note
-  
-  :Player 2 selects move:;
-  note
-    - Choose move from active Pokemon
-    - Time limit: 30 seconds
-  end note
-  
-  if (Both selected moves?) then (yes)
-    :Proceed with turn execution;
+  :Player 1 selects move (client);
+  :Player 2 selects move (client);
+  :Both moves sent to server;
+  if (Both moves received?) then (yes)
+    :Server (PvPManager) determines turn order (speed stat);
+    :Server applies attack damage, checks status, fainting, and updates state;
+    :Server sends updated HP, party, and logs to both clients;
+    :Clients display animations and update UI;
   else
-    note
-      One or both players timed out
-      Use default action (1st move/switch)
-    end note
+    :Server waits or uses default action if timeout;
   endif
-  
-  :Calculate turn order (speed comparison);
-  
-  :Process each turn in order;
-  :Apply attack damage;
-  :Check for status effects;
-  :Display critical hit (if applicable);
-  :Show damage animation (client-side);
-  :Sync damage to opponent client;
-  
-  :Check Pokemon fainting;
   if (Pokemon fainted?) then (yes)
     if (More Pokemon available?) then (yes)
-      :Prompt to send next Pokemon;
-      :Wait for selection;
+      :Server prompts player to select next Pokemon;
+      :Client sends selection to server;
+      :Server updates active Pokemon;
     else (no)
-      :Battle over - opponent wins;
+      :Server declares winner and ends battle;
     endif
   endif
-  
-  :Increment turn counter;
-  
 repeat while (Battle ongoing)
 
-:Determine winner & loser;
-:Award EXP to battle-participating Pokemon;
-:Calculate ELO change:;
-note
-  Winner: +ELO
-  Loser: -ELO
-  Size depends on ELO difference
-end note
-
-:Award money/items to winner;
-:Record battle statistics;
-:Sync results to database;
-
+:Server determines winner & loser;
+:Server awards EXP, calculates ELO, and records results;
+:Server syncs results to database and notifies both clients;
 stop
 @enduml

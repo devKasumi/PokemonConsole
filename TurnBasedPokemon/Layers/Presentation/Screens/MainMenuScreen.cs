@@ -107,17 +107,82 @@ public class MainMenuScreen : IScreen
 
     private void HandlePvP()
     {
-        // TODO: Implement PvP mode
-        if (!_gameSession.Player.IsChampion)
+
+        if (_gameSession.Player == null || !_gameSession.Player.IsChampion)
         {
             Console.WriteLine($"You can only participate in PvP after completing the game's main storyline.");
             Console.ReadKey(true);
             return;
         }
-        else
+
+        // Connect to server first
+        var network = _gameSession.NetworkService;
+        Console.WriteLine("[Network] Connecting to PvP server...");
+        bool connected = network.Connect().GetAwaiter().GetResult();
+        if (!connected)
         {
-            _screenManager.SwitchTo(ScreenType.PvP);
+            Console.WriteLine("Press any key to return to Main Menu...");
+            Console.ReadKey(true);
+            return;
         }
+
+        Console.WriteLine("[Network] Finding PvP match...");
+        Console.WriteLine("[System] Waiting for opponent... Press [Q] to cancel.\n");
+
+        bool matchFound = false;
+        bool wasRejected = false;
+        string? matchedRoomId = null;
+        string? matchedOpponent = null;
+
+        void OnMatchFound(string roomId, string opponentName)
+        {
+            matchedRoomId = roomId;
+            matchedOpponent = opponentName;
+            matchFound = true;
+        }
+        void OnRejected(string reason)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"\n[System] {reason}");
+            Console.ResetColor();
+            wasRejected = true;
+        }
+        network.OnMatchFound += OnMatchFound;
+        network.OnMatchmakingRejected += OnRejected;
+        network.FindMatch(_gameSession.CurrentUser.Username, _gameSession.Player.PokemonTeam).GetAwaiter().GetResult();
+
+        // Wait for match or player cancellation
+        while (!matchFound && !wasRejected)
+        {
+            if (Console.KeyAvailable)
+            {
+                var key = Console.ReadKey(true);
+                if (key.Key == ConsoleKey.Q)
+                {
+                    network.OnMatchFound -= OnMatchFound;
+                    network.CancelMatchmakingAsync().GetAwaiter().GetResult();
+                    Console.WriteLine("\n[System] PvP matchmaking cancelled. Returning to Main Menu.");
+                    Console.ReadKey(true);
+                    return;
+                }
+            }
+            Thread.Sleep(200);
+        }
+
+        network.OnMatchFound -= OnMatchFound;
+        network.OnMatchmakingRejected -= OnRejected;
+
+        if (wasRejected)
+        {
+            Console.WriteLine("Press any key to return to Main Menu...");
+            Console.ReadKey(true);
+            return;
+        }
+
+        Console.WriteLine($"\n[Network] Match found! Room: {matchedRoomId}, Opponent: {matchedOpponent}");
+        Console.WriteLine("Press any key to enter the arena...");
+        Thread.Sleep(500);
+        _screenManager.SwitchTo(ScreenType.PvP, new { RoomId = matchedRoomId });
     }
 
     private void HandleSaveGame()

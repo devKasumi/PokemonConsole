@@ -43,20 +43,6 @@ public class BattleService : IBattleService
         return BattleTurnResult.Continue(move.Name, logs);
     }
 
-    // public BattleTurnResult ExecuteEnemyTurn()
-    // {
-    //     var enemyPoke = _gameSession.CurrentEnemyPokemon;
-    //     var playerPoke = _gameSession.Player.CurrentPokemon;
-
-    //     var move = enemyPoke.Moves[new Random().Next(enemyPoke.Moves.Count)];
-    //     int damage = DamageCalculator.CalculateDamage(enemyPoke, playerPoke, move);
-    //     playerPoke.TakeDamage(damage);
-
-    //     if (playerPoke.CurrentHP <= 0) return BattleTurnResult.PlayerFainted();
-        
-    //     return BattleTurnResult.Continue(move.Name);
-    // }
-
     public BattleTurnResult ExecuteEnemyTurn()
     {
         var logs = new List<string>();

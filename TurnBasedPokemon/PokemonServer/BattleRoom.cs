@@ -10,7 +10,8 @@ namespace PokemonServer.Models
 
     public class BattleRoom
     {
-        public string RoomId { get; set; } = Guid.NewGuid().ToString();
+        private static int _roomCounter = 0;
+        public string RoomId { get; set; } = $"BATTLE-{Interlocked.Increment(ref _roomCounter):D4}";
         public WaitingPlayer Player1 { get; set; } = new WaitingPlayer();
         public WaitingPlayer Player2 { get; set; } = new WaitingPlayer();
         

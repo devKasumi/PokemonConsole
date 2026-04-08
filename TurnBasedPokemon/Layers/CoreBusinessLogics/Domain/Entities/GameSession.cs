@@ -8,8 +8,11 @@ public class GameSession
     public User? CurrentUser { get; set; }
     public Player? Player => CurrentUser?.PlayerData;
 
+    // --- Networking ---
+    public NetworkService NetworkService { get; }
+
     // --- Story/World Status ---
-    public LocationData CurrentLocation { get; set; }
+    public LocationData CurrentLocation { get; set; } = new LocationData();
     public bool HasPlayedNarrative { get; set; }
 
     // --- Battle Status ---
@@ -23,9 +26,10 @@ public class GameSession
         ? CurrentEnemyTeam[CurrentEnemyTeamIndex] 
         : null;
 
-    public GameSession(IUserRepository userRepository)
+    public GameSession(IUserRepository userRepository, NetworkService networkService)
     {
         _userRepo = userRepository;
+        NetworkService = networkService;
     }
 
     #region Battle Management

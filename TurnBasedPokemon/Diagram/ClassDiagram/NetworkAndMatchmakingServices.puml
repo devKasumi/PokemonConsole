@@ -9,32 +9,51 @@ skinparam class {
 
 title Application Layer - Network and Matchmaking Services
 
+
 class NetworkService {
-  + SendData(data: object): bool
-  + ReceiveData(): object?
-  + Disconnect()
+  + FindMatch(username: string)
+  + SubmitMoveAsync(roomId: string, playerName: string, moveIndex: int, attackerPokemon: Pokemon)
+  + OnMatchFound: event
+  + OnTurnResultReceived: event
+  + OnWaiting: event
 }
 
 class MatchmakingService {
-  + FindOpponent(player: Player): Player?
-  + CreateMatch(player1: Player, player2: Player): BattleRoom
-  + CancelSearch(player: Player)
+  + JoinQueue(connectionId: string, username: string): BattleRoom?
+  + GetRoom(roomId: string): BattleRoom?
 }
 
 class BattleRoom {
-  + Player1: Player
-  + Player2: Player
+  + RoomId: string
+  + Player1: WaitingPlayer
+  + Player2: WaitingPlayer
   + IsActive: bool
-  + ExecuteTurn(playerId: int, moveIndex: int): BattleResult
-  + EndBattle(): BattleResult
 }
 
+class PvPManager {
+  + InitializeBattle(roomId: string, player1: string, party1: List<Pokemon>, player2: string, party2: List<Pokemon>)
+  + RegisterMove(request: BattleActionRequest)
+  + IsRoomReady(roomId: string): bool
+  + ProcessTurn(roomId: string): PvPTurnResult
+  + SwapPokemon(roomId: string, playerName: string, newIndex: int)
+  + GetBattleState(roomId: string): PvPBattleState?
+}
+
+class WaitingPlayer {
+  + ConnectionId: string
+  + Username: string
+}
+
+
 ' Relationships
-NetworkService --> BattleRoom
+NetworkService ..> "SignalR" BattleHub : network
+BattleHub --> MatchmakingService
+BattleHub --> PvPManager
 MatchmakingService --> BattleRoom
-MatchmakingService --> Player
-BattleRoom --> Player
-BattleRoom --> BattleResult
+BattleRoom --> WaitingPlayer
+PvPManager --> PvPBattleState
+PvPManager --> BattleActionRequest
+PvPManager --> PvPTurnResult
 
 @enduml</content>
 <parameter name="filePath">c:\C#\PokemonConsole\TurnBasedPokemon\Diagram\ClassDiagram\NetworkAndMatchmakingServices.puml

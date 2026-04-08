@@ -47,6 +47,10 @@ public class StoryService : IStoryService
     {
         if (command == "NewGame")
         {
+            if (_gameSession.CurrentUser != null && _gameSession.CurrentUser.PlayerData == null)
+            {
+                _gameSession.CurrentUser.PlayerData = new Player();
+            }
             var p = _gameSession.Player;
             p.CurrentPhase = 1;
             p.CurrentLocation = _gameData.Phases.FirstOrDefault()?.Locations.FirstOrDefault()?.Name ?? "Pallet Town";

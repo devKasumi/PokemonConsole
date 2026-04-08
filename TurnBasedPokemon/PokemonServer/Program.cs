@@ -11,6 +11,9 @@ builder.Services.AddSignalR();
 // 2. Add Matchmaking as a Singleton (Only one instance exists on the server)
 builder.Services.AddSingleton<MatchmakingService>();
 
+// 3. Add PvP battle manager as a singleton so the hub can resolve turn results
+builder.Services.AddSingleton<PvPManager>();
+
 var app = builder.Build();
 
 // 3. Map the BattleHub to an endpoint URL

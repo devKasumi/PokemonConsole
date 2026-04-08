@@ -1,107 +1,45 @@
 @startuml UC9_PvPBattle_Sequence
 participant Player1
-participant PvPBattle1
 participant HubConnection
 participant BattleHub
+participant PvPManager
 participant DamageCalculator
-participant PvPBattle2
 participant Player2
 participant Database
 
-PvPBattle1 -> BattleHub: BattleStart(roomId, team1)
-activate BattleHub
-BattleHub -> PvPBattle2: BattleStart(roomId, team2)
-activate PvPBattle2
-
-PvPBattle1 --> Player1: Display opponent & battle UI
-PvPBattle2 --> Player2: Display opponent & battle UI
-deactivate BattleHub
-
-BattleHub -> BattleHub: CalculateTurnOrder(speed1, speed2)
-BattleHub -> PvPBattle1: TurnOrder: Player X goes first
-BattleHub -> PvPBattle2: TurnOrder: Player X goes first
+Player1 -> HubConnection: FindMatch(username)
+HubConnection -> BattleHub: FindMatch(username)
+BattleHub -> PvPManager: InitializeBattle(roomId, player1, team1, player2, team2)
+BattleHub -> Player1: MatchFound(roomId, opponent)
+BattleHub -> Player2: MatchFound(roomId, opponent)
 
 loop while (Battle active)
   activate BattleHub
   
   PvPBattle1 -> HubConnection: SubmitMove(roomId, moveIndex)
-  activate HubConnection
-  HubConnection -> BattleHub: MoveReceived(player1, move)
-  deactivate HubConnection
-  
-  par Parallel: Player2's turn
-    PvPBattle2 -> HubConnection: SubmitMove(roomId, moveIndex)
-    HubConnection -> BattleHub: MoveReceived(player2, move)
-  end
-  
-  alt Both moves received within 30s
-    BattleHub -> BattleHub: MovesReceived for both
-    
-  else Timeout (>30s)
-    note over BattleHub
-      Player not responded
-      Use default: First available move
-    end note
-    alt Missing player 1
-      BattleHub -> BattleHub: Use default move player 1
-    end
-    alt Missing player 2
-      BattleHub -> BattleHub: Use default move player 2
+
+  loop while (Battle active)
+    Player1 -> HubConnection: SubmitMove(roomId, moveIndex)
+    Player2 -> HubConnection: SubmitMove(roomId, moveIndex)
+    HubConnection -> BattleHub: SubmitMove(request)
+    HubConnection -> BattleHub: SubmitMove(request)
+    BattleHub -> PvPManager: RegisterMove(request)
+    BattleHub -> PvPManager: RegisterMove(request)
+    alt Both moves received
+      BattleHub -> PvPManager: ProcessTurn(roomId)
+      PvPManager -> DamageCalculator: CalculateDamage(attacker, defender, move)
+      DamageCalculator --> PvPManager: Damage value
+      PvPManager --> BattleHub: PvPTurnResult (HP, logs, winner)
+      BattleHub -> Player1: ReceiveTurnResult(result)
+      BattleHub -> Player2: ReceiveTurnResult(result)
+    else Waiting for moves
+      BattleHub -> Player1: WaitingForOpponentMove
+      BattleHub -> Player2: WaitingForOpponentMove
     end
   end
-  
-  BattleHub -> BattleHub: DetermineTurnOrder(move1_speed, move2_speed)
-  
-  loop for each move in turn order
-    alt Move1 first
-      BattleHub -> DamageCalculator: CalcDmg(attacker1, defender2, move1)
-      activate DamageCalculator
-      DamageCalculator --> BattleHub: Damage value
-      deactivate DamageCalculator
-      
-      BattleHub -> BattleHub: Apply damage to player2 pokemon
-      BattleHub -> PvPBattle1: ShowAttack(move1, damage)
-      BattleHub -> PvPBattle2: ShowAttack(move1, damage)
-      
-    end
-    
-    alt Move2 now
-      BattleHub -> DamageCalculator: CalcDmg(attacker2, defender1, move2)
-      DamageCalculator --> BattleHub: Damage value
-      
-      BattleHub -> BattleHub: Apply damage to player1 pokemon
-      BattleHub -> PvPBattle1: ShowAttack(move2, damage)
-      BattleHub -> PvPBattle2: ShowAttack(move2, damage)
-    end
-  end
-  
-  BattleHub -> BattleHub: CheckFainted(team1, team2)
-  
-  alt Team1 defeated
-    BattleHub -> BattleHub: DeclareWinner(player2)
-  else Team2 defeated
-    BattleHub -> BattleHub: DeclareWinner(player1)
-  else Both have Pokemon
-    BattleHub -> BattleHub: Continue battle
-  end
-  
-  deactivate BattleHub
-end
-
-BattleHub -> BattleHub: CalculateRewards(winner, loser, eloGain)
-activate BattleHub
-
-BattleHub -> PvPBattle1: BattleEnd(yourResult, eloChange, rewards)
-PvPBattle1 --> Player1: Show results screen
-
-BattleHub -> PvPBattle2: BattleEnd(yourResult, eloChange, rewards)
-PvPBattle2 --> Player2: Show results screen
-
-BattleHub -> Database: RecordMatch(roomId, winner, loser, eloChanges, timestamp)
-activate Database
-Database --> BattleHub: Match recorded
-deactivate Database
-
 deactivate PvPBattle2
-deactivate BattleHub
+BattleHub -> Database: RecordMatch(roomId, winner, loser, eloChanges, timestamp)
+Database --> BattleHub: Match recorded
+BattleHub -> Player1: BattleEnd(yourResult, eloChange, rewards)
+BattleHub -> Player2: BattleEnd(yourResult, eloChange, rewards)
 @enduml
