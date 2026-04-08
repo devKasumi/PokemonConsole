@@ -1,0 +1,26 @@
+@startuml
+title UC1 - Login - Test Cases
+
+map "TC-UC1-01: Successful Login" as TC1 {
+  Test Case Number => TC-UC1-01
+  Test Case Name => Successful Login with valid credentials
+  Description => Verify that a registered player can log in with correct username and password
+  Preconditions => 1. Application is running \n 2. Player account exists in MySQL database
+  Test Case Input => Username: "player1" \n Password: "P@ssword123"
+  Expected Output => 1. System authenticates successfully \n 2. Player data loaded into GameSession \n 3. Main Menu displayed
+  Steps => 1. Launch application \n 2. Select Login from Auth menu \n 3. Enter username "player1" \n 4. Enter password "P@ssword123" \n 5. System validates credentials against MySQL (BCrypt) \n 6. Verify Main Menu is displayed
+  Default Value Preserving => Player data matches stored record in MySQL database
+}
+
+map "TC-UC1-02: Failed Login with invalid password" as TC2 {
+  Test Case Number => TC-UC1-02
+  Test Case Name => Failed Login with incorrect password
+  Description => Verify that login fails when player enters wrong password
+  Preconditions => 1. Application is running \n 2. Player account "player1" exists in MySQL database
+  Test Case Input => Username: "player1" \n Password: "WrongPass"
+  Expected Output => 1. System displays authentication error \n 2. Player remains at Auth menu \n 3. No GameSession created
+  Steps => 1. Launch application \n 2. Select Login from Auth menu \n 3. Enter username "player1" \n 4. Enter password "WrongPass" \n 5. System rejects credentials \n 6. Verify error message displayed \n 7. Verify Auth menu still shown
+  Default Value Preserving => No changes to MySQL database or player data
+}
+
+@enduml

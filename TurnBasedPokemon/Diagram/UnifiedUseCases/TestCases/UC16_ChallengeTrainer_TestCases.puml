@@ -1,0 +1,26 @@
+@startuml
+title UC16 - Challenge Trainer - Test Cases
+
+map "TC-UC16-01: Defeat trainer NPC" as TC1 {
+  Test Case Number => TC-UC16-01
+  Test Case Name => Successfully defeat a Trainer NPC
+  Description => Verify player can defeat trainer NPC and receive EXP reward
+  Preconditions => 1. Player is exploring story \n 2. Trainer NPC encountered \n 3. Player has capable Pokemon
+  Test Case Input => Trainer: Bug Catcher (Lv.8 Caterpie, Lv.9 Weedle) \n Player: Charmander (Lv.12)
+  Expected Output => 1. Trainer battle initiated (no catch option) \n 2. All trainer Pokemon defeated \n 3. EXP awarded \n 4. Return to exploration
+  Steps => 1. Encounter Bug Catcher NPC \n 2. Trainer initiates battle \n 3. Battle starts (IsTrainerBattle = true) \n 4. Defeat Caterpie and Weedle \n 5. Verify EXP awarded \n 6. Verify reward dialogue shown \n 7. Verify return to exploration
+  Default Value Preserving => Player Pokemon EXP updated, trainer marked defeated
+}
+
+map "TC-UC16-02: Catch option disabled in trainer battle" as TC2 {
+  Test Case Number => TC-UC16-02
+  Test Case Name => Verify catch action unavailable in trainer battle
+  Description => Verify player cannot catch Pokemon during a trainer battle
+  Preconditions => 1. Player is in a trainer battle \n 2. Player has Poke Balls in inventory
+  Test Case Input => Battle type: Trainer battle \n Poke Balls: 5
+  Expected Output => 1. Catch option not shown in battle menu \n 2. Only Attack, Items, Switch available \n 3. Battle continues normally
+  Steps => 1. Enter trainer battle \n 2. View battle action menu \n 3. Verify Catch option is not available \n 4. Verify Attack, Items, Switch are available \n 5. Poke Ball count remains unchanged
+  Default Value Preserving => No Poke Balls consumed, inventory unchanged
+}
+
+@enduml

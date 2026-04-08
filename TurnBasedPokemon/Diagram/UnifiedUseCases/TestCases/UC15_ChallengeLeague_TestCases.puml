@@ -1,0 +1,26 @@
+@startuml
+title UC15 - Challenge Pokemon League - Test Cases
+
+map "TC-UC15-01: Become Pokemon Champion" as TC1 {
+  Test Case Number => TC-UC15-01
+  Test Case Name => Successfully complete Pokemon League
+  Description => Verify player can defeat Elite Four and Champion to become Champion
+  Preconditions => 1. Player has all 8 Gym badges \n 2. Player at Pokemon League \n 3. Player has strong team
+  Test Case Input => Player team: 6 Pokemon (Lv.45-50) \n Elite Four + Champion battles
+  Expected Output => 1. All 4 Elite Four defeated sequentially \n 2. Champion defeated \n 3. IsChampion = true \n 4. PvP unlocked \n 5. Status saved to MySQL
+  Steps => 1. Enter Pokemon League \n 2. Confirm challenge \n 3. Battle Elite Four 1-4 sequentially \n 4. Battle Champion \n 5. Defeat Champion \n 6. Verify IsChampion = true \n 7. Verify PvP unlocked message \n 8. Verify status saved to MySQL
+  Default Value Preserving => Player.IsChampion = true saved to MySQL database
+}
+
+map "TC-UC15-02: Fail Pokemon League challenge" as TC2 {
+  Test Case Number => TC-UC15-02
+  Test Case Name => Lose during Elite Four challenge
+  Description => Verify proper handling when player loses during League challenge
+  Preconditions => 1. Player has 8 badges \n 2. Player at Pokemon League \n 3. Player team underleveled
+  Test Case Input => Player team: 3 Pokemon (Lv.30) \n Elite Four 2 battle
+  Expected Output => 1. Player loses at Elite Four member 2 \n 2. Entire League challenge fails \n 3. IsChampion remains false \n 4. Player can retry after healing
+  Steps => 1. Begin League challenge \n 2. Defeat Elite Four 1 \n 3. Battle Elite Four 2 \n 4. All Pokemon faint \n 5. Verify League challenge failed \n 6. Verify IsChampion = false \n 7. Verify retry option available
+  Default Value Preserving => No champion status change, PvP remains locked
+}
+
+@enduml

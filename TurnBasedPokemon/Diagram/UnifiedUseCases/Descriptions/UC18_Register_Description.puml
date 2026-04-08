@@ -1,0 +1,18 @@
+@startuml
+title UC18 - Register - Use Case Description
+
+map "UC18 - Register" as UC18 {
+  Name => Register
+  ID => UC18
+  Description => New player creates an account to access the game
+  Actor => Player
+  Organizational Benefits => User acquisition and account creation for personalized game experience
+  Trigger => Player selects Register from the Auth menu
+  Preconditions => 1. Application is running and displaying Auth menu \n 2. Player does not have an existing account
+  Postconditions => 1. Account created in MySQL database \n 2. Redirect to Login (UC1)
+  Main Course => 1. Player selects Register from Auth menu \n 2. System prompts for username \n 3. Player enters username \n 4. System validates username (uniqueness, format, length) \n 5. System prompts for password \n 6. Player enters password \n 7. System validates password (minimum length, complexity) \n 8. System prompts for password confirmation \n 9. Player re-enters password \n 10. System verifies passwords match \n 11. System hashes password using BCrypt \n 12. System creates new user record in MySQL database \n 13. System displays registration success \n 14. System redirects to Login screen (UC1)
+  Alternate Courses => 1. Username already exists -> display error, prompt new username \n 2. Username invalid format -> display format requirements \n 3. Password too weak -> display password requirements \n 4. Passwords do not match -> display error, re-enter \n 5. Player cancels -> return to Auth menu
+  Exceptions => 1. MySQL database connection failure -> display error \n 2. Database write failure -> display error, offer retry \n 3. Unexpected validation error -> display generic error
+}
+
+@enduml

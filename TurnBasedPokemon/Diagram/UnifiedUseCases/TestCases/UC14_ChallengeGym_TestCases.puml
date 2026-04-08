@@ -1,0 +1,26 @@
+@startuml
+title UC14 - Challenge Gym - Test Cases
+
+map "TC-UC14-01: Defeat Gym Leader and earn badge" as TC1 {
+  Test Case Number => TC-UC14-01
+  Test Case Name => Successfully defeat Gym Leader
+  Description => Verify player can defeat Gym Leader and earn a badge
+  Preconditions => 1. Player is at a Gym location \n 2. Gym not previously defeated \n 3. Player has capable Pokemon
+  Test Case Input => Gym Leader: Brock (Rock type) \n Player Pokemon: Squirtle (Lv.12, Water type)
+  Expected Output => 1. Trainer battle initiated \n 2. Player defeats Gym Leader \n 3. Badge awarded \n 4. Badge count incremented \n 5. Progress saved
+  Steps => 1. Enter Gym and interact with Brock \n 2. Accept challenge \n 3. Battle starts (IsTrainerBattle = true) \n 4. Defeat all Gym Leader Pokemon \n 5. Verify badge awarded \n 6. Verify badge count updated \n 7. Verify progress saved
+  Default Value Preserving => Player badge count +1, Gym marked as defeated
+}
+
+map "TC-UC14-02: Lose to Gym Leader" as TC2 {
+  Test Case Number => TC-UC14-02
+  Test Case Name => Lose battle against Gym Leader
+  Description => Verify proper handling when player loses Gym battle
+  Preconditions => 1. Player is at a Gym location \n 2. Player team is underleveled
+  Test Case Input => Gym Leader: Brock (Rock type, Lv.15 Pokemon) \n Player Pokemon: Charmander (Lv.5, Fire type - disadvantaged)
+  Expected Output => 1. All player Pokemon fainted \n 2. Battle lost message displayed \n 3. No badge awarded \n 4. Option to retry available
+  Steps => 1. Accept Gym challenge \n 2. Battle proceeds \n 3. All player Pokemon faint \n 4. Verify battle lost message \n 5. Verify no badge awarded \n 6. Verify retry option presented \n 7. Verify Gym remains available for re-challenge
+  Default Value Preserving => No badge changes, Gym still available
+}
+
+@enduml

@@ -1,0 +1,96 @@
+@startuml UC_Overview
+left to right direction
+skinparam linetype polyline
+
+skinparam usecase {
+  BackgroundColor #FFF9E6
+  BorderColor #333333
+  FontSize 11
+}
+skinparam rectangle {
+  BackgroundColor #FFFACD
+  BorderColor #333333
+}
+skinparam actor {
+  BorderColor #333333
+}
+skinparam nodesep 20
+skinparam ranksep 30
+
+title Pokemon Turn-Based Game - Unified Use Case Diagram
+
+' ===== ACTORS =====
+actor "Player" as Player
+actor "PvP Server" as Server
+
+' ===== SYSTEM BOUNDARY =====
+rectangle "Pokemon Turn-Based Game System" {
+
+  ' --- Row 1: Auth ---
+  (UC1: Login) as UC1
+  (UC18: Register) as UC18
+  (UC10: Save / Load Game) as UC10
+
+  ' --- Row 2: Story ---
+  (UC17: Select Starter) as UC17
+  (UC6: Explore Story) as UC6
+  (UC7: Interact with NPC) as UC7
+
+  ' --- Row 3: Battle PvE ---
+  (UC2: Battle Wild Pokemon) as UC2
+  (UC14: Challenge Gym) as UC14
+  (UC15: Challenge Pokemon League) as UC15
+  (UC16: Challenge Trainer) as UC16
+
+  ' --- Row 4: Team ---
+  (UC3: Catch Pokemon) as UC3
+  (UC4: Use Items) as UC4
+  (UC5: Manage Pokemon Team) as UC5
+  (UC12: Level Up / Evolve) as UC12
+  (UC13: Heal Team) as UC13
+
+  ' --- Row 5: PvP ---
+  (UC8: Join Matchmaking) as UC8
+  (UC9: PvP Battle) as UC9
+  (UC11: View Match History) as UC11
+}
+
+' ===== PLAYER ASSOCIATIONS =====
+Player -- UC1
+Player -- UC18
+Player -- UC6
+Player -- UC17
+Player -- UC2
+Player -- UC14
+Player -- UC15
+Player -- UC3
+Player -- UC5
+Player -- UC8
+Player -- UC11
+
+' ===== SERVER ASSOCIATIONS =====
+Server -- UC8
+Server -- UC9
+
+' ===== INCLUDE / EXTEND =====
+UC1 ..> UC10 : <<extend>>
+UC6 ..> UC7 : <<include>>
+UC6 ..> UC2 : <<extend>>
+UC6 ..> UC14 : <<extend>>
+UC6 ..> UC15 : <<extend>>
+UC6 ..> UC13 : <<extend>>
+UC7 ..> UC16 : <<extend>>
+UC2 ..> UC3 : <<extend>>
+UC2 ..> UC4 : <<extend>>
+UC2 ..> UC12 : <<include>>
+UC14 ..> UC12 : <<include>>
+UC15 ..> UC12 : <<include>>
+UC16 ..> UC12 : <<include>>
+UC8 ..> UC9 : <<include>>
+
+' ===== NOTES =====
+note bottom of UC5 : Under Development
+note bottom of UC11 : Under Development
+note bottom of UC16 : Under Development
+
+@enduml

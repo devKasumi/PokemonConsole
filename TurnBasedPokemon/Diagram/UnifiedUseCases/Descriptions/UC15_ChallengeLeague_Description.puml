@@ -1,0 +1,18 @@
+@startuml
+title UC15 - Challenge Pokemon League - Use Case Description
+
+map "UC15 - Challenge Pokemon League" as UC15 {
+  Name => Challenge Pokemon League
+  ID => UC15
+  Description => Player challenges the Elite Four and Champion to become Pokemon Champion
+  Actor => Player
+  Organizational Benefits => End-game milestone unlocking PvP multiplayer and completing main story
+  Trigger => Player has earned all 8 Gym badges and enters Pokemon League
+  Preconditions => 1. Player has collected all 8 Gym badges (UC14) \n 2. Player has a full team capable of consecutive battles \n 3. Player is at Pokemon League location in story
+  Postconditions => 1. Player becomes Champion \n 2. PvP (UC8) unlocked
+  Main Course => 1. Player enters Pokemon League and confirms challenge \n 2. System presents Elite Four sequence (4 consecutive battles) \n 3. Player battles Elite Four member 1 \n 4. Player battles Elite Four member 2 \n 5. Player battles Elite Four member 3 \n 6. Player battles Elite Four member 4 \n 7. System presents Champion battle \n 8. Player defeats Champion \n 9. System sets Player.IsChampion = true \n 10. System saves Champion status to MySQL database \n 11. System displays congratulations and unlocks PvP
+  Alternate Courses => 1. Player declines -> return to exploration \n 2. Between battles, team not healed -> carry damage \n 3. Player loses any battle -> League challenge fails \n 4. Player can retry from beginning after healing
+  Exceptions => 1. All Pokemon fainted -> League challenge failed \n 2. Save failure after Champion status -> retry save \n 3. Elite Four data missing -> display error, return to menu
+}
+
+@enduml

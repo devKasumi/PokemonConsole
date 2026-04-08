@@ -1,0 +1,13 @@
+  ★ VICTORY! You won the match! ★
+  Record: 5W - 2L
+
+  Press any key to return to Main Menu...
+
+
+──────────────────────────────────────────────────────────
+
+
+  ✖ DEFEAT! OpponentTrainer won the match. ✖
+  Record: 5W - 3L
+
+  Press any key to return to Main Menu...

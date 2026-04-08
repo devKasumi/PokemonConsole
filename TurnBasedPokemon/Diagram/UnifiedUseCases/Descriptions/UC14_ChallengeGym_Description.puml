@@ -1,0 +1,18 @@
+@startuml
+title UC14 - Challenge Gym - Use Case Description
+
+map "UC14 - Challenge Gym" as UC14 {
+  Name => Challenge Gym
+  ID => UC14
+  Description => Player challenges a Gym Leader to earn a badge for League qualification
+  Actor => Player
+  Organizational Benefits => Major progression milestone driving story advancement toward Championship
+  Trigger => Player reaches a Gym location during story exploration (UC6)
+  Preconditions => 1. Player is at a Gym location in story \n 2. Player has at least one Pokemon capable of battling \n 3. Gym has not been previously defeated
+  Postconditions => 1. Player earns Gym badge \n 2. Progress saved
+  Main Course => 1. Player enters Gym and interacts with Gym Leader NPC \n 2. System displays Gym Leader dialogue and challenge prompt \n 3. Player accepts the Gym challenge \n 4. System sets up trainer battle (IsTrainerBattle = true) \n 5. Battle proceeds using UC2 battle mechanics \n 6. Player defeats all Gym Leader Pokemon \n 7. System awards Gym badge to player \n 8. System checks total badge count for League eligibility \n 9. System saves progress and returns to story exploration
+  Alternate Courses => 1. Player declines challenge -> return to exploration \n 2. Player loses battle -> option to retry or leave \n 3. 8 badges collected -> UC15 unlocked \n 4. Gym already defeated -> Gym Leader provides dialogue only
+  Exceptions => 1. All player Pokemon fainted -> battle lost, heal required \n 2. Gym Leader data missing -> skip gym, log error
+}
+
+@enduml

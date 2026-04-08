@@ -1,0 +1,18 @@
+@startuml
+title UC6 - Explore Story - Use Case Description
+
+map "UC6 - Explore Story" as UC6 {
+  Name => Explore Story
+  ID => UC6
+  Description => Player progresses through the game story, visiting locations and triggering events
+  Actor => Player
+  Organizational Benefits => Central narrative experience driving player engagement and progression
+  Trigger => Player selects Continue Story from Main Menu
+  Preconditions => 1. Player is logged in with an active GameSession \n 2. Player has selected a starter Pokemon (UC17) \n 3. Story data loaded from story.json
+  Postconditions => 1. Player progress updated \n 2. Story advanced to next chapter
+  Main Course => 1. System loads current story chapter based on player progress \n 2. System displays story text and available choices \n 3. Player reads story content and selects a choice \n 4. System processes choice and determines next event \n 5. Event triggers encounter (wild battle, NPC, gym, healing) \n 6. System executes the triggered sub-use-case \n 7. After sub-event completes, return to story progression \n 8. System auto-saves progress at chapter transitions
+  Alternate Courses => 1. Wild Pokemon encounter -> triggers UC2 \n 2. NPC interaction -> triggers UC7 \n 3. Healing station -> triggers UC13 \n 4. Gym challenge -> triggers UC14 \n 5. League challenge -> triggers UC15 \n 6. Player selects Exit -> return to Main Menu
+  Exceptions => 1. Story data missing or corrupted -> display error, return to menu \n 2. Save failure during auto-save -> warn player, allow manual retry
+}
+
+@enduml

@@ -1,0 +1,26 @@
+@startuml
+title UC17 - Select Starter Pokemon - Test Cases
+
+map "TC-UC17-01: Select starter Pokemon" as TC1 {
+  Test Case Number => TC-UC17-01
+  Test Case Name => Successfully select a starter Pokemon
+  Description => Verify first-time player can select a starter Pokemon
+  Preconditions => 1. Player just registered and logged in \n 2. Player has no Pokemon (empty team)
+  Test Case Input => Player: "newplayer" \n Selection: Charmander (Fire type)
+  Expected Output => 1. Three starters displayed (Fire, Water, Grass) \n 2. Charmander selected and confirmed \n 3. Charmander added to player team \n 4. Player data saved \n 5. Story exploration begins (UC6)
+  Steps => 1. System detects first-time player \n 2. Starter selection screen displayed \n 3. Review three starter options \n 4. Select Charmander \n 5. Confirm selection \n 6. Verify Charmander in team \n 7. Verify data saved \n 8. Verify transition to story (UC6)
+  Default Value Preserving => Player team has 1 Pokemon, saved to MySQL
+}
+
+map "TC-UC17-02: Skip starter for returning player" as TC2 {
+  Test Case Number => TC-UC17-02
+  Test Case Name => Returning player skips starter selection
+  Description => Verify returning player with existing team skips starter selection
+  Preconditions => 1. Player logged in \n 2. Player already has Pokemon in team
+  Test Case Input => Player: "player1" \n Team: 3 Pokemon existing
+  Expected Output => 1. Starter selection screen NOT displayed \n 2. Player goes directly to Main Menu \n 3. Existing team preserved
+  Steps => 1. Player logs in \n 2. System checks team \n 3. Team has 3 Pokemon \n 4. Verify starter selection skipped \n 5. Verify Main Menu displayed \n 6. Verify team unchanged
+  Default Value Preserving => Existing team data unchanged
+}
+
+@enduml

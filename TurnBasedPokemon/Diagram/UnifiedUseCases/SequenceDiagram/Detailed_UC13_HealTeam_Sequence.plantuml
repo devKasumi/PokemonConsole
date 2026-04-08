@@ -1,0 +1,28 @@
+@startuml UC13_HealTeam_Sequence
+participant Player
+participant StoryScreen
+participant IStoryService as StoryService
+participant GameSession
+
+Player -> StoryScreen: Select "Heal Team" option
+activate StoryScreen
+
+StoryScreen -> StoryService: HealTeamAtCenter()
+activate StoryService
+
+StoryService -> GameSession: Get Player.PokemonTeam
+activate GameSession
+GameSession --> StoryService: Pokemon team list
+deactivate GameSession
+
+loop for each Pokemon in team
+  StoryService -> StoryService: pokemon.Heal(pokemon.MaxHP)
+end
+
+StoryService --> StoryScreen: "All Pokemon healed!" message
+deactivate StoryService
+
+StoryScreen --> Player: Display "Your team has been fully healed!"
+
+deactivate StoryScreen
+@enduml

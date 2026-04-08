@@ -1,0 +1,26 @@
+@startuml
+title UC5 - Manage Team - Test Cases
+
+map "TC-UC5-01: View team roster" as TC1 {
+  Test Case Number => TC-UC5-01
+  Test Case Name => View Pokemon team roster successfully
+  Description => Verify player can view their full team with correct stats
+  Preconditions => 1. Player is logged in \n 2. Player has 3 Pokemon in team
+  Test Case Input => Team: Charmander (Lv.10), Pidgey (Lv.7), Rattata (Lv.5)
+  Expected Output => 1. All 3 Pokemon displayed with Name, Level, HP, Type, Moves \n 2. Team order matches current arrangement
+  Steps => 1. Access Team Management screen \n 2. System loads player team data \n 3. Verify 3 Pokemon displayed \n 4. Verify Charmander shows Lv.10, Fire type \n 5. Verify Pidgey shows Lv.7, Normal/Flying type \n 6. Verify Rattata shows Lv.5, Normal type \n 7. Verify correct order displayed
+  Default Value Preserving => No changes to team data (read-only operation)
+}
+
+map "TC-UC5-02: Swap Pokemon positions" as TC2 {
+  Test Case Number => TC-UC5-02
+  Test Case Name => Swap two Pokemon positions in team
+  Description => Verify player can swap the order of two Pokemon in team
+  Preconditions => 1. Player is logged in \n 2. Player has at least 2 Pokemon
+  Test Case Input => Swap: Position 1 (Charmander) with Position 3 (Rattata)
+  Expected Output => 1. Rattata moves to Position 1 \n 2. Charmander moves to Position 3 \n 3. Position 2 (Pidgey) unchanged
+  Steps => 1. Access Team Management \n 2. Select Charmander (Position 1) \n 3. Choose Swap Position action \n 4. Select Rattata (Position 3) \n 5. System swaps positions \n 6. Verify new order: Rattata, Pidgey, Charmander \n 7. Verify GameSession updated
+  Default Value Preserving => Team composition unchanged, only order modified
+}
+
+@enduml

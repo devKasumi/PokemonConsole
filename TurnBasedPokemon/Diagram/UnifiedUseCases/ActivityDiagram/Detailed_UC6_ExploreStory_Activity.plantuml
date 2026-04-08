@@ -1,0 +1,55 @@
+@startuml UC6_ExploreStory_Activity
+title UC6 - Explore Story (Activity Diagram)
+start
+:Player selects "Story" from MainMenuScreen;
+:ScreenManager switches to StoryScreen;
+:StoryService loads story data via IStoryRepository;
+:StoryService determines current chapter/location;
+
+if (Story already started?) then (yes)
+  :Resume from current chapter;
+else (no)
+  :Start from first chapter;
+endif
+
+:StoryScreen displays current location;
+:Show available actions from StoryService;
+
+repeat
+  :Display chapter narrative;
+  :Present player choices:;
+  note
+    - Explore (move to next location)
+    - Talk to NPC
+    - Challenge Gym
+    - Challenge Pokemon League
+    - Heal team at center
+    - Back to menu
+  end note
+  
+  if (Player action == Explore) then (yes)
+    :StoryService advances to next location;
+    :Check for wild encounters;
+    if (Wild encounter?) then (yes)
+      :Switch to BattleScreen (see UC2);
+    endif
+    
+  elseif (Player action == Talk to NPC) then (yes)
+    :StoryScreen.HandleTalk(npc);
+    :Display NPC dialogue;
+    :Check npc.Action for battle trigger;
+    
+  elseif (Player action == Challenge Gym) then (yes)
+    :StoryService.TryChallengeGym() (see UC14);
+    
+  elseif (Player action == Heal Team) then (yes)
+    :StoryService.HealTeamAtCenter() (see UC13);
+  endif
+  
+  if (Player wants to quit?) then (yes)
+    :Return to MainMenuScreen;
+  endif
+repeat while (In story mode)
+
+stop
+@enduml

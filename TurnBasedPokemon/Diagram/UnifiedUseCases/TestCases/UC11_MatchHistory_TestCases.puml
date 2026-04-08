@@ -1,0 +1,26 @@
+@startuml
+title UC11 - Match History - Test Cases
+
+map "TC-UC11-01: View match history" as TC1 {
+  Test Case Number => TC-UC11-01
+  Test Case Name => View PvP match history with records
+  Description => Verify player can view their PvP match history and statistics
+  Preconditions => 1. Player is logged in \n 2. Player has 5 PvP matches recorded in MySQL
+  Test Case Input => Player: "player1" \n PvP Record: 3 wins, 2 losses
+  Expected Output => 1. Summary: 3 Wins, 2 Losses, 60% Win Rate \n 2. Recent 5 matches listed \n 3. Match details visible
+  Steps => 1. Select Match History from menu \n 2. System queries MySQL for PvP records \n 3. Verify summary stats displayed (3W/2L/60%) \n 4. Verify 5 matches listed \n 5. Browse match list \n 6. Return to menu
+  Default Value Preserving => No changes to match data (read-only operation)
+}
+
+map "TC-UC11-02: View match history - no records" as TC2 {
+  Test Case Number => TC-UC11-02
+  Test Case Name => View match history with no PvP records
+  Description => Verify proper message when player has no match history
+  Preconditions => 1. Player is logged in \n 2. Player has 0 PvP matches recorded
+  Test Case Input => Player: "newchampion" \n PvP Record: 0 matches
+  Expected Output => 1. System displays "No matches played yet" \n 2. No match list shown \n 3. Player can return to menu
+  Steps => 1. Select Match History from menu \n 2. System queries MySQL \n 3. System finds 0 records \n 4. Verify "No matches played yet" message \n 5. Verify return to menu option available
+  Default Value Preserving => No changes to any data
+}
+
+@enduml

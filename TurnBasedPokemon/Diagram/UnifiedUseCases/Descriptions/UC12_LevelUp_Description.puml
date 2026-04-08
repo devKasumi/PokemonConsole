@@ -1,0 +1,18 @@
+@startuml
+title UC12 - Level Up - Use Case Description
+
+map "UC12 - Level Up" as UC12 {
+  Name => Level Up
+  ID => UC12
+  Description => Pokemon gains experience after battle victory and levels up when EXP threshold is reached
+  Actor => System (ExpService)
+  Organizational Benefits => Core progression mechanic keeping players engaged through Pokemon growth
+  Trigger => Player wins a battle (UC2, UC14, UC15, UC16) and EXP is awarded
+  Preconditions => 1. Player has won a battle \n 2. Participating Pokemon earned enough EXP to level up \n 3. Pokemon is not at maximum level
+  Postconditions => 1. Pokemon level increased \n 2. Stats recalculated \n 3. New moves or evolution checked
+  Main Course => 1. System calculates EXP reward based on defeated Pokemon level \n 2. System distributes EXP to participating Pokemon \n 3. System checks if accumulated EXP exceeds level threshold \n 4. Pokemon level increases by 1 \n 5. System recalculates all stats (HP, Attack, Defense, Speed) \n 6. System checks for new move learning at current level \n 7. System checks evolution conditions \n 8. System displays level up notification with stat changes
+  Alternate Courses => 1. New move available -> prompt to learn or skip \n 2. Move slots full (4 moves) -> prompt to replace existing \n 3. Evolution triggered -> transform Pokemon via WorldGenService \n 4. Player cancels evolution -> Pokemon stays in current form \n 5. Multiple level ups -> process each level sequentially
+  Exceptions => 1. Pokemon at max level -> display max level message \n 2. Evolution data missing -> skip evolution, log warning
+}
+
+@enduml

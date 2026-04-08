@@ -1,0 +1,5 @@
+--- CREATE NEW ADVENTURE ---
+  Choose a username: newplayer
+  Choose a password: ********
+
+  >> Registration successful! Please login to continue.

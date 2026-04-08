@@ -1,0 +1,18 @@
+@startuml
+title UC7 - Interact NPC - Use Case Description
+
+map "UC7 - Interact NPC" as UC7 {
+  Name => Interact NPC
+  ID => UC7
+  Description => Player interacts with Non-Player Characters to receive dialogue, quests or battle challenges
+  Actor => Player
+  Organizational Benefits => Story immersion, quest progression and world-building through NPC encounters
+  Trigger => Player encounters an NPC during story exploration (UC6)
+  Preconditions => 1. Player is exploring the story (UC6) \n 2. NPC is present at current story location \n 3. NPC interaction conditions are met
+  Postconditions => 1. NPC dialogue completed \n 2. Rewards or items given if applicable
+  Main Course => 1. System presents NPC with name and role description \n 2. System displays NPC dialogue text \n 3. Player reads dialogue and selects response option \n 4. System processes player choice \n 5. NPC provides additional dialogue, items or triggers event \n 6. Interaction concludes, return to story exploration
+  Alternate Courses => 1. NPC is a Trainer -> triggers battle UC16 \n 2. NPC is a Gym Leader -> triggers UC14 \n 3. NPC gives items -> add items to player inventory \n 4. NPC provides healing -> triggers UC13 \n 5. Player skips dialogue -> fast-forward to end
+  Exceptions => 1. NPC data missing from story.json -> skip interaction, log error \n 2. Invalid NPC state -> display fallback dialogue
+}
+
+@enduml

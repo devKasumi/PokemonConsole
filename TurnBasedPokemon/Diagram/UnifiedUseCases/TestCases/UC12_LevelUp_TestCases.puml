@@ -1,0 +1,26 @@
+@startuml
+title UC12 - Level Up - Test Cases
+
+map "TC-UC12-01: Pokemon levels up after battle" as TC1 {
+  Test Case Number => TC-UC12-01
+  Test Case Name => Pokemon levels up and stats increase
+  Description => Verify Pokemon levels up correctly when EXP threshold is met
+  Preconditions => 1. Player won a battle \n 2. Pokemon EXP is near level threshold
+  Test Case Input => Pokemon: Charmander (Lv.9, EXP: 95/100) \n EXP earned: 30
+  Expected Output => 1. Charmander reaches Lv.10 \n 2. All stats recalculated (HP, Atk, Def, Spd) \n 3. Level up notification displayed \n 4. Remaining EXP: 25/120 (next level)
+  Steps => 1. Battle victory awards 30 EXP \n 2. System adds EXP (95 + 30 = 125) \n 3. System detects threshold exceeded (100) \n 4. Pokemon levels up to Lv.10 \n 5. Verify stats recalculated \n 6. Verify notification displayed \n 7. Verify remaining EXP is 25
+  Default Value Preserving => Pokemon level and stats updated in GameSession
+}
+
+map "TC-UC12-02: Evolution triggers on level up" as TC2 {
+  Test Case Number => TC-UC12-02
+  Test Case Name => Pokemon evolves upon reaching evolution level
+  Description => Verify Pokemon evolves correctly when evolution conditions are met
+  Preconditions => 1. Player won a battle \n 2. Charmander at Lv.15, evolves at Lv.16
+  Test Case Input => Pokemon: Charmander (Lv.15) \n EXP earned: sufficient for Lv.16
+  Expected Output => 1. Charmander levels up to Lv.16 \n 2. Evolution triggered \n 3. Charmander transforms into Charmeleon \n 4. New stats applied
+  Steps => 1. Battle victory awards EXP \n 2. Charmander reaches Lv.16 \n 3. System checks evolution conditions \n 4. Evolution condition met \n 5. System transforms via WorldGenService \n 6. Verify Pokemon is now Charmeleon \n 7. Verify new stats applied
+  Default Value Preserving => Pokemon species, stats and moves updated
+}
+
+@enduml

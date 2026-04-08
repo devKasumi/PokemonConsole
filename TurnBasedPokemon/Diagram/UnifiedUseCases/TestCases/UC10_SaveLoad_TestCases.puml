@@ -1,0 +1,26 @@
+@startuml
+title UC10 - Save/Load Game - Test Cases
+
+map "TC-UC10-01: Save game successfully" as TC1 {
+  Test Case Number => TC-UC10-01
+  Test Case Name => Successfully save game progress
+  Description => Verify player can save game state to MySQL database
+  Preconditions => 1. Player is logged in with active GameSession \n 2. MySQL database connection is available
+  Test Case Input => Player: "player1" \n Team: 3 Pokemon \n Story progress: Chapter 5
+  Expected Output => 1. GameSession data serialized \n 2. Data written to MySQL via IUserRepository \n 3. Save success message displayed
+  Steps => 1. Select Save option from menu \n 2. System serializes GameSession data \n 3. System writes to MySQL database \n 4. Verify save confirmation displayed \n 5. Verify data persisted correctly in MySQL
+  Default Value Preserving => Player data in MySQL matches current GameSession
+}
+
+map "TC-UC10-02: Load game with corrupted data" as TC2 {
+  Test Case Number => TC-UC10-02
+  Test Case Name => Handle corrupted save data gracefully
+  Description => Verify system handles corrupted save data without crashing
+  Preconditions => 1. Player is logged in \n 2. Save data in MySQL is corrupted
+  Test Case Input => Player: "player1" \n Save data: corrupted/incomplete record
+  Expected Output => 1. System detects corruption during deserialization \n 2. Warning message displayed \n 3. Option to start new game offered \n 4. Application remains stable
+  Steps => 1. Select Load option \n 2. System queries MySQL for save data \n 3. System attempts deserialization \n 4. Deserialization fails \n 5. Verify warning message displayed \n 6. Verify new game option offered \n 7. Verify no crash occurs
+  Default Value Preserving => Corrupted data not loaded, no changes to GameSession
+}
+
+@enduml

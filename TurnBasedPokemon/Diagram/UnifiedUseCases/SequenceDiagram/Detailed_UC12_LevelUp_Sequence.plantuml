@@ -1,0 +1,76 @@
+@startuml UC12_LevelUp_Sequence
+participant Player
+participant BattleScreen
+participant IBattleService as BattleService
+participant IExpService as ExpService
+participant IWorldGenerationService as WorldGenService
+participant GameSession
+
+note over BattleScreen
+  Level up occurs as part of
+  BattleService.ProcessVictory()
+  after enemy is defeated
+end note
+
+BattleScreen -> BattleService: ProcessVictory()
+activate BattleService
+
+BattleService -> ExpService: CalculateExpGain(playerPoke, enemyPoke)
+activate ExpService
+ExpService --> BattleService: expAmount (int)
+deactivate ExpService
+
+BattleService -> ExpService: GrantExperience(pokemon, expAmount)
+activate ExpService
+
+ExpService -> ExpService: pokemon.Exp += amount
+
+alt EXP >= Level Threshold
+  ExpService -> ExpService: pokemon.LevelUp()
+
+  note over ExpService
+    LevelUp() recalculates stats:
+    - HP, Attack, Defense
+    - SpAtk, SpDef, Speed
+    based on BaseStats and new Level
+  end note
+
+  ExpService -> ExpService: Check for new moves in MoveSet
+  alt New move available at current level
+    ExpService -> ExpService: Learn new move or replace existing
+    ExpService -> ExpService: Track in NewMovesLearned list
+  end
+
+  ExpService -> ExpService: Check evolution condition
+  alt Can evolve (level >= evolution threshold)
+    ExpService -> WorldGenService: SpawnPokemonById(evolutionId, currentLevel)
+    activate WorldGenService
+    WorldGenService --> ExpService: Evolved Pokemon
+    deactivate WorldGenService
+    ExpService -> ExpService: Record OldName and EvolutionName
+  end
+
+  ExpService --> BattleService: ProcessExpResult(expGained, leveledUp=true, oldName, evolutionName, newMoves)
+
+else No level up
+  ExpService --> BattleService: ProcessExpResult(expGained, leveledUp=false, ...)
+end
+
+deactivate ExpService
+
+BattleService --> BattleScreen: ProcessExpResult
+deactivate BattleService
+
+alt LeveledUp
+  BattleScreen --> Player: Display "Level up! New stats!"
+  alt HasEvolved
+    BattleScreen -> BattleScreen: DisplayEvolutionScene(oldName, newName)
+    BattleScreen --> Player: Show evolution animation
+  end
+  alt NewMovesLearned not empty
+    BattleScreen --> Player: Show "Learned {moveName}!"
+  end
+else
+  BattleScreen --> Player: Display "+{exp} EXP"
+end
+@enduml

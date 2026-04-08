@@ -1,0 +1,26 @@
+@startuml
+title UC7 - Interact NPC - Test Cases
+
+map "TC-UC7-01: NPC dialogue interaction" as TC1 {
+  Test Case Number => TC-UC7-01
+  Test Case Name => Successfully interact with NPC and receive dialogue
+  Description => Verify player can interact with an NPC and receive dialogue text
+  Preconditions => 1. Player is exploring story (UC6) \n 2. NPC present at current location
+  Test Case Input => NPC: Professor Oak \n Location: Pallet Town
+  Expected Output => 1. NPC name and role displayed \n 2. Dialogue text shown correctly \n 3. Response options available \n 4. Return to exploration after dialogue
+  Steps => 1. Encounter Professor Oak during exploration \n 2. System displays NPC information \n 3. Read dialogue text \n 4. Select response option \n 5. NPC provides additional dialogue \n 6. Interaction concludes \n 7. Verify return to exploration
+  Default Value Preserving => No changes to player data (dialogue only)
+}
+
+map "TC-UC7-02: NPC gives items to player" as TC2 {
+  Test Case Number => TC-UC7-02
+  Test Case Name => Receive items from NPC interaction
+  Description => Verify player receives items from NPC and inventory is updated
+  Preconditions => 1. Player is exploring story \n 2. NPC has items to give \n 3. Player inventory has available space
+  Test Case Input => NPC: Nurse Joy \n Item given: Potion x3
+  Expected Output => 1. NPC dialogue displayed \n 2. Item transfer notification shown \n 3. Player inventory updated with 3 Potions \n 4. Return to exploration
+  Steps => 1. Interact with Nurse Joy NPC \n 2. Read dialogue \n 3. NPC offers Potion x3 \n 4. System adds items to inventory \n 5. Verify Potion count increased by 3 \n 6. Verify return to exploration
+  Default Value Preserving => Player inventory updated with received items
+}
+
+@enduml

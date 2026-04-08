@@ -1,0 +1,18 @@
+@startuml
+title UC10 - Save/Load Game - Use Case Description
+
+map "UC10 - Save/Load Game" as UC10 {
+  Name => Save/Load Game
+  ID => UC10
+  Description => Player saves current game progress or loads a previously saved game state
+  Actor => Player
+  Organizational Benefits => Persistent progression ensuring player data is never lost
+  Trigger => Player selects Save/Load from menu or auto-save triggers at key points
+  Preconditions => 1. Player is logged in with an active GameSession \n 2. MySQL database connection is available
+  Postconditions => 1. Game state persisted to or loaded from MySQL database \n 2. Player continues gameplay with correct state
+  Main Course => 1. Player selects Save or Load option \n 2. (Save) System serializes current GameSession data \n 3. (Save) System writes player data to MySQL via IUserRepository \n 4. (Save) System confirms save success \n 5. (Load) System queries MySQL for player save data \n 6. (Load) System deserializes saved data into GameSession \n 7. (Load) System restores team, inventory, story progress, stats \n 8. System displays appropriate menu
+  Alternate Courses => 1. Auto-save at chapter transition (UC6) \n 2. Auto-save after PvP result (UC9) \n 3. Auto-save after Champion status (UC15) \n 4. Multiple save slots -> player selects target slot
+  Exceptions => 1. Database write failure -> display error, offer retry \n 2. Corrupted save data on load -> display warning, offer new game \n 3. Database connection timeout -> retry with backoff
+}
+
+@enduml

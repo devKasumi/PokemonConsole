@@ -1,0 +1,43 @@
+@startuml UC16_ChallengeTrainer_Activity
+title UC16 - Challenge Trainer (Activity Diagram)
+note
+  **Under Development** — Trainer challenge uses
+  StoryService.TryChallengeTrainer() but no
+  dedicated Trainer screen is implemented yet.
+end note
+
+start
+:Player encounters Trainer NPC in StoryScreen;
+:StoryScreen.HandleTalk(npc) displays trainer dialogue;
+
+note right: npc.Action == "StartBattle"
+
+:StoryScreen calls StoryService.TryChallengeTrainer(npc);
+:StoryService checks Player.PokemonTeam alive;
+
+if (Team has alive Pokemon?) then (yes)
+  :PokemonSpawner generates trainer team;
+  :Set GameSession.CurrentEnemyTeam;
+  :Set GameSession.IsTrainerBattle = true;
+  :ScreenManager switches to BattleScreen;
+  
+  note right
+    Battle executes per UC2 flow.
+    BattleService handles turn logic.
+    On victory: ExpService processes rewards.
+  end note
+  
+  if (Player won?) then (yes)
+    :ExpService awards experience;
+    :Display victory message;
+  else (no)
+    :Display defeat message;
+    :Return to StoryScreen;
+  endif
+  
+else (no)
+  :Display "Heal your Pokemon first!";
+endif
+
+stop
+@enduml

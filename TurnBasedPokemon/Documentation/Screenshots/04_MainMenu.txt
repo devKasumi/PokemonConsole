@@ -1,0 +1,23 @@
+============================================================
+              CENTRAL HUB - TRAINER TERMINAL              
+============================================================
+  Welcome back, Trainer!
+============================================================
+
+  [1] ◈ START NEW JOURNEY
+      (Reset progress and start from the beginning)
+
+  [2] ◈ CONTINUE ADVENTURE
+      (Resume your journey from the last save point)
+
+  [3] ◈ ENTER BATTLE ARENA (PvP)
+      (Test your skills against other trainers)
+
+  [4] ◈ SYNC DATA (Save Game)
+      (Secure your current progress)
+
+  [5] ◈ LOGOUT
+      (Return to the title screen)
+
+============================================================
+  Select Action: _

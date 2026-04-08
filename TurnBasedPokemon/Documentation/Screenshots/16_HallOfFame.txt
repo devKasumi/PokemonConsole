@@ -1,0 +1,20 @@
+====================================================
+                HALL OF FAME                        
+====================================================
+
+Champion: PlayerName
+Your winning team has been registered:
+
+- LV.50 Charizard
+- LV.45 Blastoise
+- LV.48 Venusaur
+- LV.42 Pikachu
+- LV.40 Gengar
+- LV.38 Dragonite
+
+----------------------------------------------------
+Thank you for playing! You have completed the game.
+You can now continue to explore or start a new game.
+----------------------------------------------------
+
+Press any key to return to Main Menu...

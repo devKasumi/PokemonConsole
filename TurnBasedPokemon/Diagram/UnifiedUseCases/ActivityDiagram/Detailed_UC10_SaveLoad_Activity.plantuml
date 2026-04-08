@@ -1,0 +1,24 @@
+@startuml UC10_SaveLoad_Activity
+title UC10 - Save / Load Game (Activity Diagram)
+start
+:Game initialized;
+
+if (Save requested?) then (yes)
+  :Player selects "Save" from MainMenuScreen;
+  :MainMenuScreen calls AuthenService.SaveProgress();
+  :AuthenService serializes GameSession.Player;
+  :AuthenService writes to users.json via UserRepository;
+  :Display "Game saved!";
+  
+elseif (Load requested?) then (yes)
+  :Player selects "Load" from MainMenuScreen;
+  :MainMenuScreen calls AuthenService.LoadProgress(username);
+  :AuthenService reads from users.json via UserRepository;
+  :AuthenService sets GameSession.CurrentUser = loadedUser;
+  :GameSession provides Player, PokemonTeam, Inventory;
+  :Display "Game loaded!";
+  
+endif
+
+stop
+@enduml

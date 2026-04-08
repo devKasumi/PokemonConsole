@@ -1,0 +1,46 @@
+@startuml UC9_PvPBattle_Activity
+title UC9 - PvP Battle (Activity Diagram)
+start
+:PvPScreen initialized with IPvPService (facade);
+:PvPScreen calls PvPService.SubscribeTurnResult();
+:PvPManager (server) initializes BattleRoom state;
+:BattleHub sends StartBattle to both clients;
+:PvPScreen displays both teams;
+
+repeat
+  :Player selects move via PvPScreen;
+  :PvPScreen calls PvPService.SubmitMove(roomId, moveIndex);
+  :PvPService delegates to NetworkService -> BattleHub;
+  :BattleHub forwards to PvPManager;
+  
+  if (Both moves received?) then (yes)
+    :PvPManager determines turn order (speed);
+    :PvPManager calculates damage using DamageResult;
+    :PvPManager applies effects and updates HP;
+    :BattleHub sends TurnResult to both clients;
+    :PvPService receives callback, forwards to PvPScreen;
+    :PvPScreen updates UI with received state;
+  else
+    :PvPManager waits for timeout;
+  endif
+  
+  if (Pokemon fainted?) then (yes)
+    if (More Pokemon available?) then (yes)
+      :PvPManager requests next Pokemon selection;
+      :Client sends SwitchPokemon via PvPService;
+    else (no)
+      :PvPManager declares winner;
+      :BattleHub sends BattleEnded to both clients;
+    endif
+  endif
+repeat while (Battle ongoing)
+
+:PvPScreen receives final result via volatile field;
+:PvPScreen calls PvPService.RecordMatchResult(winnerName);
+:PvPService increments PvPWins or PvPLosses;
+:PvPService calls SaveProgress() internally;
+:Display VICTORY/DEFEAT + W/L record;
+:PvPScreen calls Shutdown() + UnsubscribeTurnResult();
+:ScreenManager returns to MainMenuScreen;
+stop
+@enduml

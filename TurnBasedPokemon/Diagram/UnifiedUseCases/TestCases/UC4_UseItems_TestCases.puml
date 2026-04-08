@@ -1,0 +1,26 @@
+@startuml
+title UC4 - Use Items - Test Cases
+
+map "TC-UC4-01: Successfully use Potion" as TC1 {
+  Test Case Number => TC-UC4-01
+  Test Case Name => Use Potion to heal Pokemon in battle
+  Description => Verify player can use a Potion to restore Pokemon HP during battle
+  Preconditions => 1. Player is in an active battle \n 2. Player has Potion (qty >= 1) \n 3. Active Pokemon has less than full HP
+  Test Case Input => Pokemon: Charmander (HP 10/35) \n Item: Potion (restores 20 HP, qty: 3)
+  Expected Output => 1. Charmander HP restored to 30/35 \n 2. Potion count reduced to 2 \n 3. Turn consumed, opponent attacks next
+  Steps => 1. Select Items action from battle menu \n 2. System displays available items \n 3. Select Potion \n 4. Select Charmander as target \n 5. System applies +20 HP (capped at max) \n 6. Verify HP is 30/35 \n 7. Verify Potion count is 2 \n 8. Verify opponent gets next turn
+  Default Value Preserving => Pokemon HP updated, item count decremented
+}
+
+map "TC-UC4-02: No items available" as TC2 {
+  Test Case Number => TC-UC4-02
+  Test Case Name => Attempt to use items with empty inventory
+  Description => Verify proper handling when player has no usable items
+  Preconditions => 1. Player is in an active battle \n 2. Player has 0 items in inventory
+  Test Case Input => Inventory: empty
+  Expected Output => 1. System displays "No items available" message \n 2. Player returns to battle action menu \n 3. No turn consumed
+  Steps => 1. Select Items action from battle menu \n 2. System checks inventory \n 3. System finds no usable items \n 4. Verify message displayed \n 5. Verify return to action menu \n 6. Verify turn not consumed
+  Default Value Preserving => No changes to inventory or battle state
+}
+
+@enduml

@@ -1,0 +1,18 @@
+@startuml
+title UC5 - Manage Team - Use Case Description
+
+map "UC5 - Manage Team" as UC5 {
+  Name => Manage Team
+  ID => UC5
+  Description => Player views and manages their Pokemon team roster
+  Actor => Player
+  Organizational Benefits => Team customization and strategic party composition
+  Trigger => Player accesses team management from Main Menu or during exploration
+  Preconditions => 1. Player is logged in with an active GameSession \n 2. Player has at least one Pokemon in their team
+  Postconditions => 1. Team changes applied and saved \n 2. Player returns to previous screen
+  Main Course => 1. Player accesses Team Management screen \n 2. System displays current team roster (up to 6 Pokemon) \n 3. System shows each Pokemon stats (Name, Level, HP, Type, Moves) \n 4. Player selects a Pokemon to manage \n 5. Player chooses action (View Details / Swap Position / Release) \n 6. System applies the selected changes \n 7. System updates team data in GameSession
+  Alternate Courses => 1. Player views detailed stats -> display full stat breakdown \n 2. Player swaps position -> select two Pokemon to swap order \n 3. Player releases Pokemon -> confirm dialog before removing \n 4. Only one Pokemon -> release option disabled
+  Exceptions => 1. Cannot release last Pokemon -> display warning, action blocked \n 2. Team data corruption -> reload from last save
+}
+
+@enduml

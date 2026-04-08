@@ -1,0 +1,26 @@
+@startuml
+title UC13 - Heal Team - Test Cases
+
+map "TC-UC13-01: Heal all Pokemon successfully" as TC1 {
+  Test Case Number => TC-UC13-01
+  Test Case Name => Successfully heal entire team at Pokemon Center
+  Description => Verify all Pokemon are restored to full HP at healing station
+  Preconditions => 1. Player is at a healing station \n 2. Team has Pokemon with reduced HP
+  Test Case Input => Team: Charmander (HP 10/35), Pidgey (HP 0/25 fainted), Rattata (HP 15/20)
+  Expected Output => 1. Charmander HP restored to 35/35 \n 2. Pidgey revived and HP restored to 25/25 \n 3. Rattata HP restored to 20/20 \n 4. Healing complete message displayed
+  Steps => 1. Interact with healing station \n 2. Confirm healing request \n 3. System heals each Pokemon via HealingService \n 4. Verify Charmander HP = 35/35 \n 5. Verify Pidgey HP = 25/25 (revived) \n 6. Verify Rattata HP = 20/20 \n 7. Verify success message displayed
+  Default Value Preserving => All Pokemon HP set to maximum, status effects cleared
+}
+
+map "TC-UC13-02: Heal when team is already healthy" as TC2 {
+  Test Case Number => TC-UC13-02
+  Test Case Name => Attempt heal when all Pokemon at full HP
+  Description => Verify proper message when healing is unnecessary
+  Preconditions => 1. Player is at a healing station \n 2. All Pokemon at full HP
+  Test Case Input => Team: Charmander (HP 35/35), Pidgey (HP 25/25)
+  Expected Output => 1. System displays "Team is already healthy" \n 2. No healing performed \n 3. Return to exploration
+  Steps => 1. Interact with healing station \n 2. System checks team HP \n 3. All Pokemon at max HP \n 4. Verify message displayed \n 5. Verify return to exploration
+  Default Value Preserving => No changes to Pokemon data
+}
+
+@enduml

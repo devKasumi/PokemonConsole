@@ -1,0 +1,10 @@
+=== POKEMON CENTER MENU ===
+1. Heal Pokemon
+2. Access PC (Manage Pokemon - Coming Soon)
+3. Goodbye (Leave Pokemon Center)
+Select: _
+
+
+──────────────────────────────────────────────────────────
+
+  [System]: All your Pokemon have been healed!

@@ -1,0 +1,18 @@
+@startuml
+title UC11 - Match History - Use Case Description
+
+map "UC11 - Match History" as UC11 {
+  Name => Match History
+  ID => UC11
+  Description => Player views their PvP battle history including wins, losses and match details
+  Actor => Player
+  Organizational Benefits => Player engagement through competitive tracking and performance review
+  Trigger => Player selects Match History from Main Menu or PvP section
+  Preconditions => 1. Player is logged in with an active GameSession \n 2. Player has participated in at least one PvP battle (UC9)
+  Postconditions => 1. Match history displayed to player \n 2. Player returns to previous menu
+  Main Course => 1. Player selects Match History option \n 2. System queries MySQL database for player PvP records \n 3. System displays summary stats (Total Wins, Total Losses, Win Rate) \n 4. System displays list of recent matches \n 5. Player browses match history \n 6. Player returns to previous menu
+  Alternate Courses => 1. No match records found -> display "No matches played yet" \n 2. Player selects a specific match -> show detailed match info \n 3. Player filters by date or result -> apply filter
+  Exceptions => 1. Database query failure -> display error, return to menu \n 2. Data format incompatible -> show partial data with warning
+}
+
+@enduml

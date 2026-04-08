@@ -1,0 +1,17 @@
+  [System]: Welcome to the Pokemon League!
+
+  [System]: Challenge: Lorelei - Elite Four!
+  [Lorelei]: You dare challenge the Elite Four? Prepare yourself!
+
+  [System]: !!! BATTLE START: Lorelei !!!
+
+
+──────────────────────────────────────────────────────────
+  (Battle proceeds for each Elite Four member...)
+──────────────────────────────────────────────────────────
+
+
+  [System]: Challenge: Lance - Champion!
+  [Lance]: So you've made it this far... Let's see your strength!
+
+  [System]: !!! BATTLE START: Lance !!!

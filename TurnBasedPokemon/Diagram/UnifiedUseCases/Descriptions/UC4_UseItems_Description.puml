@@ -1,0 +1,18 @@
+@startuml
+title UC4 - Use Items - Use Case Description
+
+map "UC4 - Use Items" as UC4 {
+  Name => Use Items
+  ID => UC4
+  Description => Player uses healing items on their Pokemon during or outside of battle
+  Actor => Player
+  Organizational Benefits => Strategic resource management and Pokemon sustain mechanics
+  Trigger => Player selects Items action from battle menu or team management
+  Preconditions => 1. Player is in an active battle (UC2) or managing team \n 2. Player has at least one usable item in inventory \n 3. Target Pokemon is eligible for the item effect
+  Postconditions => 1. Item effect applied to target Pokemon \n 2. Item consumed from inventory
+  Main Course => 1. Player selects Items action from menu \n 2. System displays available items with quantities \n 3. Player selects an item (Potion, Super Potion, etc.) \n 4. System displays eligible target Pokemon \n 5. Player selects target Pokemon \n 6. System applies item effect (restore HP) \n 7. System removes one item from inventory \n 8. In battle: turn consumed, opponent attacks next
+  Alternate Courses => 1. No items available -> display message, return to menu \n 2. Player cancels -> return to battle action menu \n 3. Pokemon at full HP -> warn player, allow confirm or cancel \n 4. Revive on fainted Pokemon -> restore with partial HP
+  Exceptions => 1. Invalid item-target combination -> display error \n 2. Inventory desync -> refresh inventory data, retry
+}
+
+@enduml

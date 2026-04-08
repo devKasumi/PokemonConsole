@@ -1,0 +1,26 @@
+============================================================
+              PROFESSOR OAK'S LABORATORY              
+============================================================
+ "Hello there! It's time to choose your very first partner.
+  Each one has its own unique strength. Choose wisely!"
+============================================================
+
+  [1] 🍃 BULBASAUR    (Grass Type)
+      "A strange seed was planted on its back at birth."
+
+  [2] 🔥 CHARMANDER   (Fire Type)
+      "The flame on its tail shows its life force."
+
+  [3] 💧 SQUIRTLE     (Water Type)
+      "Shoots water at prey from inside its shell."
+
+============================================================
+  Which Pokemon will you journey with? (1-3): _
+
+
+─────────────────────────────────────────────────────────────
+  [Oak]: Excellent choice! Take good care of your Pokemon!
+  
+  [System]: You also received 5 Poke Balls!
+  
+  [System]: Press any key to begin your adventure...

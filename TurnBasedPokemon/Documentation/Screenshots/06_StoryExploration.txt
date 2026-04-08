@@ -1,0 +1,23 @@
+============================================================
+   CURRENT LOCATION: [ PALLET TOWN ]
+   Status: Peacefully resting in the breeze.
+============================================================
+
+  --- POPULATION ---
+  [1] 🗣️  Talk to Professor Oak (Scientist)
+  [2] 🗣️  Talk to Mom (Family)
+
+  --- FACILITIES & NAVIGATION ---
+  [3] 🏥  Visit Pokemon Center
+  [4] ⬆️  Move Forward
+  [5] ⬇️  Move Backward
+
+  --- ADVENTURE & CHALLENGE ---
+  [6] 🌿  Explore Wild Area
+  [7] 🏆  Challenge Gym Leader
+
+  --- SYSTEM ---
+  [8] ⚙️   Back to Main Menu
+
+============================================================
+  What would you like to do? Select action: _

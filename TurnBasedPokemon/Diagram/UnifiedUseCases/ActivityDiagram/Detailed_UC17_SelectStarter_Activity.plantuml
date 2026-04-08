@@ -1,0 +1,27 @@
+@startuml UC17_SelectStarter_Activity
+title UC17 - Select Starter (Activity Diagram)
+start
+:New player completes registration;
+:ScreenManager switches to StoryScreen;
+:StoryScreen shows starter selection;
+
+:Display 3 starter options;
+note
+  Loaded from story data (via IStoryRepository):
+  - Pokemon Name
+  - Type
+  - Base stats
+end note
+
+:Player selects starter;
+
+:StoryScreen calls StoryService.GiveStarter(starterName);
+:PokemonSpawner creates starter Pokemon;
+:Starter added to Player.PokemonTeam;
+:Player receives initial items (5x Poke Ball);
+
+:Display "You received [Starter Name]!";
+:Story mode begins;
+
+stop
+@enduml

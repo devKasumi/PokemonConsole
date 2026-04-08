@@ -1,0 +1,18 @@
+@startuml
+title UC3 - Catch Pokemon - Use Case Description
+
+map "UC3 - Catch Pokemon" as UC3 {
+  Name => Catch Pokemon
+  ID => UC3
+  Description => Player attempts to capture a wild Pokemon using a Poke Ball during battle
+  Actor => Player
+  Organizational Benefits => Team building mechanic allowing players to collect and expand their roster
+  Trigger => Player selects Catch action during a wild Pokemon battle (UC2)
+  Preconditions => 1. Player is in an active wild Pokemon battle (UC2) \n 2. Player has at least one Poke Ball in inventory \n 3. Battle is against a wild Pokemon (not trainer battle)
+  Postconditions => 1. Wild Pokemon added to player team \n 2. Poke Ball consumed from inventory \n 3. Battle ends
+  Main Course => 1. Player selects Catch action from battle menu \n 2. System checks Poke Ball availability \n 3. System calculates catch rate (HP ratio, ball type) \n 4. System simulates ball shakes (1-3 shakes) \n 5. Catch succeeds on all shakes passing \n 6. System adds Pokemon to player team \n 7. System removes one Poke Ball from inventory \n 8. Battle ends, return to exploration
+  Alternate Courses => 1. No Poke Balls -> display message, return to battle menu \n 2. Catch fails -> Pokemon breaks free, battle continues \n 3. Team full (6 Pokemon) -> Pokemon sent to storage \n 4. Trainer battle -> catch action disabled
+  Exceptions => 1. Invalid Pokemon state -> catch attempt rejected \n 2. Inventory error -> display error, return to battle menu
+}
+
+@enduml

@@ -1,0 +1,17 @@
+  [Professor Oak]: Hello there! Welcome to the world of Pokemon!
+  (Press any key to continue...)
+
+  [Professor Oak]: My name is Oak. People call me the Pokemon Professor.
+  (Press any key to continue...)
+
+  [Mom]: Be careful out there, sweetie!
+  (Press any key to continue...)
+
+
+──────────────────────────────────────────────────────────
+
+  [Brock]: I'm Brock, the Pewter City Gym Leader!
+  [Brock]: My rock-hard willpower is evident even in my Pokemon!
+
+  [System]: Gym Leader Brock wants to battle!
+  [System]: !!! BATTLE START !!!

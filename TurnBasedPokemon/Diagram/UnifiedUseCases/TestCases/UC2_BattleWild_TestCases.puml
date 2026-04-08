@@ -1,0 +1,26 @@
+@startuml
+title UC2 - Battle Wild Pokemon - Test Cases
+
+map "TC-UC2-01: Win battle against wild Pokemon" as TC1 {
+  Test Case Number => TC-UC2-01
+  Test Case Name => Successful wild Pokemon battle victory
+  Description => Verify player can defeat a wild Pokemon and receive EXP
+  Preconditions => 1. Player is logged in and exploring story \n 2. Player has at least one Pokemon with HP > 0
+  Test Case Input => Player Pokemon: Charmander (Lv.10, HP 35) \n Wild Pokemon: Pidgey (Lv.5, HP 20) \n Action: Attack (Ember)
+  Expected Output => 1. Wild Pokemon HP reaches 0 \n 2. Battle ends with victory \n 3. EXP awarded to Charmander \n 4. Return to story exploration
+  Steps => 1. Encounter wild Pidgey during exploration \n 2. Battle screen displays both Pokemon stats \n 3. Select Attack action \n 4. Select Ember move \n 5. System calculates damage with type advantage \n 6. Wild Pokemon faints \n 7. Verify EXP awarded \n 8. Verify return to exploration
+  Default Value Preserving => Player Pokemon stats updated with EXP gain
+}
+
+map "TC-UC2-02: Lose battle - all Pokemon fainted" as TC2 {
+  Test Case Number => TC-UC2-02
+  Test Case Name => Battle loss when all player Pokemon faint
+  Description => Verify proper handling when all player Pokemon are defeated
+  Preconditions => 1. Player is in battle \n 2. Player has only one Pokemon remaining with low HP
+  Test Case Input => Player Pokemon: Charmander (Lv.5, HP 3) \n Wild Pokemon: Gyarados (Lv.20, HP 65) \n Enemy Action: Hydro Pump
+  Expected Output => 1. Player Pokemon HP reaches 0 \n 2. No more Pokemon available \n 3. Battle lost message displayed \n 4. Redirect to healing
+  Steps => 1. Wild Pokemon attacks with Hydro Pump \n 2. Player Pokemon faints \n 3. System checks for remaining Pokemon \n 4. No Pokemon available \n 5. Verify battle lost message \n 6. Verify redirect to healing option
+  Default Value Preserving => Player Pokemon remain fainted until healed
+}
+
+@enduml

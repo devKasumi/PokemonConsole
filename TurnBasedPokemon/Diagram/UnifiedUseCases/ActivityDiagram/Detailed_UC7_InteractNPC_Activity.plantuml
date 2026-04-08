@@ -1,0 +1,36 @@
+@startuml UC7_InteractNPC_Activity
+title UC7 - Interact with NPC (Activity Diagram)
+start
+:Player approaches NPC on map;
+:StoryScreen calls HandleTalk(npc);
+:Display npc.Dialogue lines;
+
+if (npc.Action == "StartBattle"?) then (yes)
+  :StoryScreen calls StoryService.TryChallengeTrainer(npc);
+  :StoryService checks Player.PokemonTeam alive;
+  
+  if (Team has alive Pokemon?) then (yes)
+    :PokemonSpawner generates enemy team;
+    :Set GameSession.CurrentEnemyTeam;
+    :Set GameSession.IsTrainerBattle = true;
+    :ScreenManager switches to BattleScreen;
+    note right
+      Battle executes per UC2 flow.
+      On victory: ExpService processes rewards.
+    end note
+  else (no)
+    :Display "Heal your Pokemon first!";
+  endif
+  
+else (no)
+  note right
+    Normal NPC with dialogue only.
+    Player reads dialogue text and
+    returns to map exploration.
+  end note
+  :Display dialogue complete;
+endif
+
+:Return to StoryScreen;
+stop
+@enduml

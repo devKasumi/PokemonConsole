@@ -1,0 +1,38 @@
+@startuml UC12_LevelUp_Activity
+title UC12 - Level Up (Activity Diagram)
+start
+:Battle won — BattleScreen calls BattleService.ProcessVictory();
+:BattleService calls ExpService.CalculateExpGain(playerPoke, enemyPoke);
+:BattleService calls ExpService.GrantExperience(pokemon, expAmount);
+
+:ExpService calls pokemon.GainExperience(amount);
+if (Pokemon leveled up?) then (yes)
+  :ExpService checks for new moves at each new level;
+  :ExpService calls pokemon.LearnNewMovesAtLevel(level);
+  
+  :Check evolution conditions;
+  if (CanEvolve and has EvolutionId?) then (yes)
+    :WorldGenService.SpawnPokemonById(evolutionId, level);
+    :pokemon.Evolve(evolvedForm);
+    :Display evolution scene;
+  endif
+  
+  :Return ProcessExpResult;
+  note
+    ProcessExpResult contains:
+    - ExpGained (int)
+    - LeveledUp (bool)
+    - OldName (string?)
+    - EvolutionName (string?)
+    - NewMovesLearned (List<string>)
+  end note
+  
+  :BattleScreen displays level up summary;
+  
+else (no)
+  :Add EXP to Pokemon;
+  :Return ProcessExpResult (no level up);
+endif
+
+stop
+@enduml

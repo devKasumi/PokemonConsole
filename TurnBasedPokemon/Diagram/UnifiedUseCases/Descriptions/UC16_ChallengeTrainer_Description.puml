@@ -1,0 +1,18 @@
+@startuml
+title UC16 - Challenge Trainer - Use Case Description
+
+map "UC16 - Challenge Trainer" as UC16 {
+  Name => Challenge Trainer
+  ID => UC16
+  Description => Player battles a Trainer NPC encountered during story exploration
+  Actor => Player
+  Organizational Benefits => Additional combat encounters providing EXP and story progression
+  Trigger => Player encounters a Trainer NPC during exploration (UC6/UC7)
+  Preconditions => 1. Player is exploring the story (UC6) \n 2. Player encounters a Trainer NPC via UC7 \n 3. Player has at least one Pokemon capable of battling
+  Postconditions => 1. Trainer defeated, EXP awarded \n 2. Story continues
+  Main Course => 1. Player encounters Trainer NPC in story area \n 2. Trainer initiates dialogue and battle challenge \n 3. System sets up trainer battle (IsTrainerBattle = true) \n 4. Battle proceeds using UC2 mechanics (no catch option) \n 5. Player defeats all Trainer Pokemon \n 6. System awards EXP, triggers UC12 if applicable \n 7. Trainer gives reward dialogue \n 8. Player returns to story exploration
+  Alternate Courses => 1. Some trainers are optional -> Player can avoid \n 2. Player loses -> heal and retry option \n 3. Trainer already defeated -> no re-challenge available
+  Exceptions => 1. All player Pokemon fainted -> redirect to healing (UC13) \n 2. Trainer data missing from story -> skip encounter, log error
+}
+
+@enduml

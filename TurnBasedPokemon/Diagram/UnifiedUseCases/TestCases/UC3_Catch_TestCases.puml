@@ -1,0 +1,26 @@
+@startuml
+title UC3 - Catch Pokemon - Test Cases
+
+map "TC-UC3-01: Successful Pokemon catch" as TC1 {
+  Test Case Number => TC-UC3-01
+  Test Case Name => Successfully catch a wild Pokemon
+  Description => Verify player can catch a wild Pokemon with a Poke Ball
+  Preconditions => 1. Player is in a wild Pokemon battle (UC2) \n 2. Player has at least 1 Poke Ball \n 3. Wild Pokemon HP is low
+  Test Case Input => Wild Pokemon: Rattata (Lv.3, HP 2/15) \n Item: Poke Ball (qty: 5)
+  Expected Output => 1. Catch rate calculation succeeds \n 2. Ball shakes 3 times \n 3. Rattata added to player team \n 4. Poke Ball count reduced to 4 \n 5. Battle ends
+  Steps => 1. Select Catch action from battle menu \n 2. System verifies Poke Ball in inventory \n 3. System calculates catch rate (low HP = high chance) \n 4. Ball shakes 3 times, all pass \n 5. Verify Rattata added to team \n 6. Verify Poke Ball count is 4 \n 7. Verify battle ends
+  Default Value Preserving => Player team size increased by 1, inventory updated
+}
+
+map "TC-UC3-02: Failed catch - no Poke Balls" as TC2 {
+  Test Case Number => TC-UC3-02
+  Test Case Name => Catch attempt with no Poke Balls
+  Description => Verify catch is blocked when player has no Poke Balls
+  Preconditions => 1. Player is in a wild Pokemon battle \n 2. Player has 0 Poke Balls in inventory
+  Test Case Input => Wild Pokemon: Pidgey (Lv.5) \n Item: Poke Ball (qty: 0)
+  Expected Output => 1. System displays "No Poke Balls available" message \n 2. Player returns to battle action menu \n 3. No items consumed
+  Steps => 1. Select Catch action from battle menu \n 2. System checks Poke Ball inventory \n 3. System finds 0 Poke Balls \n 4. Verify error message displayed \n 5. Verify return to battle menu \n 6. Verify inventory unchanged
+  Default Value Preserving => No changes to inventory or team
+}
+
+@enduml

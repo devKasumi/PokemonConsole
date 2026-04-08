@@ -1,0 +1,18 @@
+@startuml
+title UC2 - Battle Wild Pokemon - Use Case Description
+
+map "UC2 - Battle Wild Pokemon" as UC2 {
+  Name => Battle Wild Pokemon
+  ID => UC2
+  Description => Player engages in turn-based combat against a wild Pokemon encountered during exploration
+  Actor => Player
+  Organizational Benefits => Core gameplay loop providing combat experience and Pokemon encounters
+  Trigger => Player encounters a wild Pokemon during story exploration (UC6)
+  Preconditions => 1. Player is logged in and exploring the story \n 2. Player has at least one Pokemon in their team \n 3. Wild Pokemon spawned by PokemonSpawner
+  Postconditions => 1. Wild Pokemon defeated, EXP awarded \n 2. Return to exploration or Pokemon caught
+  Main Course => 1. System spawns wild Pokemon based on area level \n 2. System displays battle screen with both Pokemon stats \n 3. System determines turn order based on Speed stat \n 4. Player selects action (Attack / Catch / Items / Switch / Run) \n 5. Player selects an attack move \n 6. System calculates damage (type advantages, STAB) \n 7. System applies damage to wild Pokemon \n 8. Wild Pokemon attacks using random move \n 9. Repeat steps 3-8 until battle ends \n 10. Wild Pokemon HP reaches 0, player wins \n 11. System awards EXP and triggers UC12 (Level Up)
+  Alternate Courses => 1. Player selects Catch -> triggers UC3 \n 2. Player selects Items -> triggers UC4 \n 3. Player selects Switch -> swap active Pokemon \n 4. Player selects Run -> 50% chance to escape \n 5. Player Pokemon faints -> force switch to next available \n 6. Run fails -> wild Pokemon gets free attack turn
+  Exceptions => 1. All player Pokemon fainted -> battle lost, redirect to healing \n 2. No available moves -> use Struggle (recoil damage)
+}
+
+@enduml

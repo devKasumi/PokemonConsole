@@ -1,0 +1,18 @@
+@startuml
+title UC8 - Matchmaking - Use Case Description
+
+map "UC8 - Matchmaking" as UC8 {
+  Name => Matchmaking
+  ID => UC8
+  Description => Player searches for an online PvP opponent through the matchmaking system
+  Actor => Player, PvP Server
+  Organizational Benefits => Enables competitive multiplayer gameplay and player retention
+  Trigger => Player selects PvP Battle from Main Menu
+  Preconditions => 1. Player is logged in with an active GameSession \n 2. Player has completed Pokemon League (UC15) - Champion status \n 3. Network connection is available to PvP Server
+  Postconditions => 1. Matched with opponent \n 2. Transition to UC9 (PvP Battle)
+  Main Course => 1. Player selects PvP Battle from Main Menu \n 2. System verifies Champion status eligibility \n 3. System connects to PvP Server via SignalR (BattleHub) \n 4. System sends matchmaking request to MatchmakingService \n 5. Server places player in matchmaking queue \n 6. Server finds suitable opponent from queue \n 7. Server creates BattleRoom for both players \n 8. System notifies both players of match found \n 9. Transition to UC9 (PvP Battle)
+  Alternate Courses => 1. Not Champion -> display requirement message, return to menu \n 2. Player cancels while waiting -> remove from queue \n 3. No opponents -> continue waiting with timeout \n 4. Timeout reached -> notify player, return to menu
+  Exceptions => 1. Network connection lost -> display error, return to menu \n 2. Server unavailable -> display server status \n 3. Opponent disconnects during matching -> re-enter queue
+}
+
+@enduml

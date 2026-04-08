@@ -1,0 +1,54 @@
+@startuml UC14_ChallengeGym_Sequence
+participant Player
+participant StoryScreen
+participant IStoryService as StoryService
+participant IBattleService as BattleService
+participant GameSession
+
+Player -> StoryScreen: Select "Challenge Gym"
+activate StoryScreen
+
+StoryScreen -> StoryService: TryChallengeGym()
+activate StoryService
+
+StoryService -> GameSession: Get current location NPCs
+StoryService -> StoryService: Find Gym Leader NPC
+StoryService -> StoryService: Check RequiredBadge count
+
+alt Requirements met (enough badges)
+  StoryService -> StoryService: Spawn Gym Leader team via PokemonSpawner
+  StoryService -> GameSession: CurrentEnemyTeam = bossTeam
+  StoryService -> GameSession: IsTrainerBattle = true
+  StoryService --> StoryScreen: (true, message, gymLeader, leaderTeam)
+  deactivate StoryService
+
+  StoryScreen --> Player: Show Gym Leader intro dialogue
+  StoryScreen -> StoryScreen: SwitchTo(ScreenType.Battle)
+
+  note over BattleService
+    Battle executes via UC2 flow:
+    ExecutePlayerTurn / ExecuteEnemyTurn
+    with trainer battle rules
+  end note
+
+  alt Battle Won
+    BattleService -> BattleService: ProcessVictory()
+    BattleScreen -> StoryScreen: Return to story
+
+    StoryScreen -> GameSession: Player.AddBadge(badgeName)
+    StoryScreen -> GameSession: Player.CurrentPhase++
+    StoryScreen --> Player: "You received {Badge Name} Badge!"
+
+  else Battle Lost
+    BattleScreen -> StoryScreen: Return to story
+    StoryScreen --> Player: "Defeated... Try again when stronger"
+  end
+
+else Requirements not met
+  StoryService --> StoryScreen: (false, "Need more badges", null, null)
+  deactivate StoryService
+  StoryScreen --> Player: Show requirement message
+end
+
+deactivate StoryScreen
+@enduml

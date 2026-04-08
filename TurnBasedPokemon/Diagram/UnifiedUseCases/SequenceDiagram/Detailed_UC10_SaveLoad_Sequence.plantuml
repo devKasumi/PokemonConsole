@@ -1,0 +1,64 @@
+@startuml UC10_SaveLoad_Sequence
+participant Player
+participant MainMenuScreen
+participant IAuthenService as AuthenService
+participant IUserRepository as UserRepository
+participant GameSession
+
+alt Save Game
+
+  Player -> MainMenuScreen: Select "Save Game"
+  activate MainMenuScreen
+
+  MainMenuScreen -> AuthenService: SaveProgress()
+  activate AuthenService
+
+  AuthenService -> GameSession: get CurrentUser
+  activate GameSession
+  GameSession --> AuthenService: User object (with PlayerData)
+  deactivate GameSession
+
+  AuthenService -> UserRepository: Save(currentUser)
+  activate UserRepository
+  UserRepository -> UserRepository: Serialize User to JSON
+  UserRepository -> UserRepository: Write to users.json
+  UserRepository --> AuthenService: Save confirmed
+  deactivate UserRepository
+
+  AuthenService --> MainMenuScreen: Save complete
+  deactivate AuthenService
+  MainMenuScreen --> Player: Display "Game saved successfully"
+  deactivate MainMenuScreen
+
+else Load Game
+
+  Player -> MainMenuScreen: Select "Load Game"
+  activate MainMenuScreen
+
+  MainMenuScreen -> AuthenService: LoadProgress(username)
+  activate AuthenService
+
+  AuthenService -> UserRepository: GetByUsername(username)
+  activate UserRepository
+  UserRepository -> UserRepository: Read users.json
+  UserRepository --> AuthenService: User object
+  deactivate UserRepository
+
+  AuthenService -> GameSession: CurrentUser = user
+  activate GameSession
+  GameSession --> AuthenService: Session updated
+  deactivate GameSession
+
+  alt PlayerData exists
+    AuthenService --> MainMenuScreen: true (load success)
+    MainMenuScreen --> Player: Resume gameplay
+  else No PlayerData
+    AuthenService --> MainMenuScreen: false (no saved data)
+    MainMenuScreen --> Player: Display "No saved game found"
+  end
+
+  deactivate AuthenService
+  deactivate MainMenuScreen
+
+end
+@enduml

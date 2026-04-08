@@ -1,0 +1,16 @@
+ Gotcha! Pidgey was caught!
+
+
+──────────────────────────────────────────────────────────
+
+ Oh no! The Pokemon broke free!
+
+
+──────────────────────────────────────────────────────────
+
+ Bulbasaur recovered 15 HP!
+
+
+──────────────────────────────────────────────────────────
+
+ [!] Bulbasaur is already at full health!

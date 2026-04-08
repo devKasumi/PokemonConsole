@@ -1,0 +1,23 @@
+  [ VICTORY! ]
+  Pidgeot fainted!
+
+  >> Gained 75 EXP!
+  [====================] 150/150 EXP
+       (Ready to Level Up!)
+
+  ★ LEVEL UP!
+  Bulbasaur reached Level 6!
+
+  [!] Bulbasaur learned Razor Leaf!
+
+  (Press any key to confirm new moves)
+
+
+──────────────────────────────────────────────────────────
+
+
+  What?
+  Bulbasaur is evolving!
+
+  ⭐ CONGRATULATIONS! ⭐
+  Your Bulbasaur evolved into Ivysaur!

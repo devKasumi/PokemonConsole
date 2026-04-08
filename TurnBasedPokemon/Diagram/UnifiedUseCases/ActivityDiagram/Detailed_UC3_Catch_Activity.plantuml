@@ -1,0 +1,42 @@
+@startuml UC3_CatchPokemon_Activity
+title UC3 - Catch Pokemon (Activity Diagram)
+start
+:Player in battle with wild Pokemon;
+:BattleScreen shows "Catch" option;
+:Player selects Catch action;
+
+if (Player has CaptureItems in inventory?) then (yes)
+  :Display available ball types;
+  :Player selects CaptureItem;
+  
+  :BattleScreen calls CatchService.ExecuteCapture(item, target);
+  :CatchService calls CatchFormula.AttemptCatch();
+  
+  note
+    CatchFormula returns CatchAttemptResult(IsCaught, Shakes).
+    CatchService maps it to CatchResult with DisplayMessage.
+    Item is consumed regardless of catch result.
+  end note
+  
+  :CatchService returns CatchResult;
+  
+  if (CatchResult.IsCaught?) then (yes)
+    :Display shake animation (CatchResult.Shakes times);
+    :Pokemon caught!;
+    :Pokemon added to Player.PokemonTeam;
+    :CaptureItem consumed from inventory;
+    :Display CatchResult.DisplayMessage;
+    stop
+  else (no)
+    :Display shake animation (CatchResult.Shakes times);
+    :Display "Pokemon broke free!";
+    :CaptureItem consumed from inventory;
+    :Continue battle;
+    stop
+  endif
+else (no)
+  :Display "No Pokeballs!";
+  :Continue battle;
+  stop
+endif
+@enduml

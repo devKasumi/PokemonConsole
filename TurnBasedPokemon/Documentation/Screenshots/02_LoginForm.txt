@@ -1,0 +1,7 @@
+============================================================
+  LOGIN TO YOUR ADVENTURE
+============================================================
+  Enter Username: player1
+  Enter Password: ********
+
+  >> Login successful!

@@ -1,0 +1,27 @@
+@startuml UC4_UseItems_Activity
+title UC4 - Use Items (Activity Diagram)
+start
+:Player opens InventoryScreen;
+:Display Player.Inventory items;
+:Player selects item to use;
+
+if (Item type == HealingItem?) then (yes)
+  :InventoryScreen calls HealingService.ExecuteHealing(healingItem);
+  :HealingService heals Player.CurrentPokemon via Pokemon.Heal();
+  :HealingService removes item via Player.RemoveItem();
+
+elseif (Item type == CaptureItem?) then (yes)
+  if (In battle with wild Pokemon?) then (yes)
+    :BattleScreen calls CatchService.ExecuteCapture(item, target);
+    :Proceed to catch mechanics (see UC3);
+  else (no)
+    :Display "Cannot use Pokeball outside battle";
+  endif
+
+else (no)
+  :Display "Item not usable here";
+endif
+
+:Update inventory display;
+stop
+@enduml

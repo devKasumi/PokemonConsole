@@ -1,0 +1,18 @@
+@startuml
+title UC13 - Heal Team - Use Case Description
+
+map "UC13 - Heal Team" as UC13 {
+  Name => Heal Team
+  ID => UC13
+  Description => Player restores all Pokemon in their team to full HP at a healing station
+  Actor => Player
+  Organizational Benefits => Sustain mechanic allowing continued gameplay without returning to menu
+  Trigger => Player visits a healing station during story exploration (UC6)
+  Preconditions => 1. Player is at a healing station location in story \n 2. Player has at least one Pokemon with less than full HP
+  Postconditions => 1. All Pokemon restored to full HP \n 2. Status effects cleared
+  Main Course => 1. Player interacts with healing station (Pokemon Center) \n 2. System displays healing confirmation prompt \n 3. Player confirms healing request \n 4. System iterates through all team Pokemon via HealingService \n 5. System restores each Pokemon HP to maximum \n 6. System clears any status conditions (fainted, poisoned) \n 7. System displays healing complete message \n 8. Player returns to story exploration
+  Alternate Courses => 1. All Pokemon at full HP -> display "Team is already healthy" \n 2. Player cancels -> return to exploration without healing \n 3. Healing triggered automatically after gym battle
+  Exceptions => 1. HealingService error -> display error, offer retry \n 2. Pokemon data corruption -> skip corrupted Pokemon, heal others
+}
+
+@enduml

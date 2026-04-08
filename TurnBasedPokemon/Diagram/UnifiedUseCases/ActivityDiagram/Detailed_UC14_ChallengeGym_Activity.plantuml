@@ -1,0 +1,39 @@
+@startuml UC14_ChallengeGym_Activity
+title UC14 - Challenge Gym (Activity Diagram)
+start
+:Player selects "Challenge Gym" in StoryScreen;
+:StoryScreen calls StoryService.TryChallengeGym();
+
+:StoryService checks Player.PokemonTeam alive;
+:StoryService checks story progress for gym availability;
+
+if (Requirements met and team alive?) then (yes)
+  :StoryService finds current Gym Leader NPC;
+  :PokemonSpawner generates Gym Leader team;
+  :Set GameSession.CurrentEnemyTeam;
+  :Set GameSession.IsTrainerBattle = true;
+  :Return (true, message, leader, enemyTeam);
+  
+  :ScreenManager switches to BattleScreen;
+  note right
+    Battle executes per UC2 flow.
+    Gym Leader has themed Pokemon team.
+  end note
+  
+  if (Player won?) then (yes)
+    :Player.Badges updated (add badge);
+    :ExpService processes victory rewards;
+    :Display "Gym Badge earned!";
+    :Unlock next story area;
+  else (no)
+    :Display defeat message;
+    :Return to StoryScreen;
+  endif
+  
+else (no)
+  :Display error message;
+  :Return to StoryScreen;
+endif
+
+stop
+@enduml

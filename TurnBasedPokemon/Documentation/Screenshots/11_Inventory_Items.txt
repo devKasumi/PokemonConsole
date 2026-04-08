@@ -1,0 +1,33 @@
+=== Inventory ===
+1. Pokeballs
+2. Potions
+3. Back to Battle Menu
+Select: _
+
+════════════════════════════════════════════════════════════
+ 1. POCKET: CAPTURE
+ 2. POCKET: HEALING
+ 3. BACK TO BATTLE
+══════════════════════════════
+ Select category: _
+
+
+─── CAPTURE POCKET ─────────────────────────────────────────
+
+=== CAPTURE POCKET ===
+ 1. Pokeball (x5)
+ 2. Great Ball (x2)
+ 3. Ultra Ball (x1)
+ 0. Back
+
+ Select item to use: _
+
+
+─── HEALING POCKET ─────────────────────────────────────────
+
+=== HEALING POCKET ===
+ 1. Potion (x3)
+ 2. Super Potion (x1)
+ 0. Back
+
+ Select item to use: _

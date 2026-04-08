@@ -1,0 +1,26 @@
+@startuml
+title UC8 - Matchmaking - Test Cases
+
+map "TC-UC8-01: Successful matchmaking" as TC1 {
+  Test Case Number => TC-UC8-01
+  Test Case Name => Successfully find PvP opponent
+  Description => Verify Champion player can find an opponent through matchmaking
+  Preconditions => 1. Player is logged in with Champion status \n 2. Network connection available \n 3. Another player is in queue
+  Test Case Input => Player: "player1" (Champion) \n Server: PvP Server online
+  Expected Output => 1. Connected to PvP Server via SignalR \n 2. Placed in matchmaking queue \n 3. Opponent found \n 4. BattleRoom created \n 5. Transition to UC9
+  Steps => 1. Select PvP Battle from Main Menu \n 2. System verifies Champion status \n 3. System connects to PvP Server \n 4. System sends matchmaking request \n 5. Server finds opponent \n 6. Verify match notification \n 7. Verify transition to PvP Battle
+  Default Value Preserving => No data changes until battle begins
+}
+
+map "TC-UC8-02: Matchmaking blocked - not Champion" as TC2 {
+  Test Case Number => TC-UC8-02
+  Test Case Name => Matchmaking rejected for non-Champion player
+  Description => Verify non-Champion player cannot access PvP matchmaking
+  Preconditions => 1. Player is logged in \n 2. Player has NOT completed Pokemon League (IsChampion = false)
+  Test Case Input => Player: "newplayer" (IsChampion = false)
+  Expected Output => 1. System displays requirement message \n 2. Player returns to Main Menu \n 3. No server connection attempted
+  Steps => 1. Select PvP Battle from Main Menu \n 2. System checks Champion status \n 3. System finds IsChampion = false \n 4. Verify requirement message displayed \n 5. Verify return to Main Menu \n 6. Verify no network call made
+  Default Value Preserving => No changes to player data or server state
+}
+
+@enduml

@@ -1,0 +1,41 @@
+@startuml UC17_SelectStarter_Sequence
+participant Player
+participant StoryScreen
+participant IStoryService as StoryService
+participant PokemonSpawner
+participant GameSession
+
+Player -> StoryScreen: Arrive at starter selection location
+activate StoryScreen
+
+StoryScreen -> StoryScreen: ShowStarterMenu()
+StoryScreen --> Player: Display 3 starter choices (Bulbasaur, Charmander, Squirtle)
+
+Player -> StoryScreen: Select starter Pokemon
+
+StoryScreen -> StoryService: GiveStarter(starterName)
+activate StoryService
+
+StoryService -> PokemonSpawner: SpawnPokemon(starterName, level=5)
+activate PokemonSpawner
+PokemonSpawner -> PokemonSpawner: Lookup species from IPokedexRepository
+PokemonSpawner -> PokemonSpawner: Generate level 5 Pokemon with base moves
+PokemonSpawner --> StoryService: Starter Pokemon object
+deactivate PokemonSpawner
+
+StoryService -> GameSession: Player.PokemonTeam.Add(starter)
+StoryService -> GameSession: Player.CurrentPokemon = starter
+
+note over StoryService
+  Also gives starter items:
+  - 5x Poke Ball
+end note
+
+StoryService --> StoryScreen: (true, "You received {starterName}!")
+deactivate StoryService
+
+StoryScreen --> Player: "Your adventure begins!"
+StoryScreen -> StoryScreen: Continue story
+
+deactivate StoryScreen
+@enduml

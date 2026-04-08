@@ -1,0 +1,18 @@
+@startuml
+title UC17 - Select Starter Pokemon - Use Case Description
+
+map "UC17 - Select Starter Pokemon" as UC17 {
+  Name => Select Starter Pokemon
+  ID => UC17
+  Description => New player selects their first Pokemon from three starter options
+  Actor => Player
+  Organizational Benefits => Critical onboarding experience establishing player identity and team foundation
+  Trigger => Player logs in for the first time after registration (UC18)
+  Preconditions => 1. Player has successfully registered (UC18) and logged in (UC1) \n 2. Player has no Pokemon in their team (first-time player)
+  Postconditions => 1. Starter Pokemon added to player team \n 2. Story begins (UC6)
+  Main Course => 1. System detects first-time player (empty team) \n 2. System displays starter selection screen \n 3. System presents three starter Pokemon (Fire, Water, Grass) \n 4. System shows each starter stats, type and description \n 5. Player selects one starter Pokemon \n 6. System confirms selection with player \n 7. System creates starter Pokemon via WorldGenService \n 8. System adds starter to player team \n 9. System saves player data and transitions to UC6
+  Alternate Courses => 1. Player reviews different starters -> cycle through options \n 2. Player changes mind -> return to selection \n 3. Returning player (has Pokemon) -> skip starter selection
+  Exceptions => 1. Starter data missing from pokemon.json -> display error \n 2. Save failure after selection -> retry save
+}
+
+@enduml

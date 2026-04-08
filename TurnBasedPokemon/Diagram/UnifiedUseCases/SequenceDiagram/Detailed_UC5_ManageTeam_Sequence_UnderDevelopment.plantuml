@@ -1,0 +1,38 @@
+@startuml UC5_ManageTeam_Sequence
+title UC5 - Manage Team (Sequence Diagram)
+note over Player
+  **Under Development** — No dedicated TeamScreen exists.
+  Team management is currently handled inline:
+  - Adding Pokemon: CatchService.ExecuteCapture() adds to Player.PokemonTeam
+  - Switching in battle: BattleScreen calls IBattleService.CanSwitchPokemon()
+  - Healing: StoryService.HealTeamAtCenter() heals all team members
+  A future TeamScreen would allow reordering and box management.
+end note
+
+participant "Player" as Player
+participant "StoryScreen" as Screen
+participant "GameSession" as GS
+
+Player -> Screen: View team (future)
+activate Screen
+
+Screen -> GS: Get Player.PokemonTeam
+activate GS
+GS --> Screen: List<Pokemon> (up to 6)
+deactivate GS
+
+Screen --> Player: Display team roster with stats
+
+note over Screen
+  Planned features:
+  - Swap positions in team
+  - View detailed Pokemon stats
+  - Release Pokemon
+  - Move Pokemon to/from box
+  
+  Currently not implemented as a
+  standalone screen or service.
+end note
+
+deactivate Screen
+@enduml

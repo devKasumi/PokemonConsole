@@ -1,0 +1,18 @@
+@startuml
+title UC9 - PvP Battle - Use Case Description
+
+map "UC9 - PvP Battle" as UC9 {
+  Name => PvP Battle
+  ID => UC9
+  Description => Two players engage in real-time turn-based Pokemon battle over network
+  Actor => Player, PvP Server
+  Organizational Benefits => Competitive multiplayer experience and end-game content
+  Trigger => Matchmaking (UC8) successfully pairs two players
+  Preconditions => 1. Both players matched via UC8 (Matchmaking) \n 2. BattleRoom created on PvP Server \n 3. Both players connected via SignalR (BattleHub)
+  Postconditions => 1. Battle result recorded \n 2. PvP stats updated in MySQL database
+  Main Course => 1. Server initializes BattleRoom with both players teams \n 2. System displays opponent active Pokemon and battle UI \n 3. Both players select their action simultaneously \n 4. Server collects both actions via PvPManager \n 5. Server determines turn order based on Speed stats \n 6. Server executes actions sequentially (faster first) \n 7. Server broadcasts battle state to both clients \n 8. Repeat steps 3-7 until one side has no Pokemon \n 9. Server declares winner, updates PvPWins/PvPLosses \n 10. System saves results and returns to Main Menu
+  Alternate Courses => 1. Player selects Switch -> swap active Pokemon \n 2. Player selects Items -> use item \n 3. Player Pokemon faints -> forced switch \n 4. Player forfeits -> opponent wins by default
+  Exceptions => 1. Opponent disconnects -> Player wins by default \n 2. Network timeout -> attempt reconnection, forfeit after timeout \n 3. Server crash -> battle voided, no stats changed
+}
+
+@enduml

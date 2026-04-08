@@ -1,0 +1,18 @@
+@startuml
+title UC1 - Login - Use Case Description
+
+map "UC1 - Login" as UC1 {
+  Name => Login
+  ID => UC1
+  Description => Player authenticates with existing account to access the game system
+  Actor => Player
+  Organizational Benefits => Secure access control and personalized game experience
+  Trigger => Player launches application and selects Login from Auth menu
+  Preconditions => 1. Application is running and displaying Auth menu \n 2. Player has a registered account in MySQL database
+  Postconditions => 1. Player is authenticated and redirected to Main Menu \n 2. Player data loaded into GameSession
+  Main Course => 1. System displays Auth menu (Login / Register / Exit) \n 2. Player selects Login \n 3. System prompts for username \n 4. Player enters username \n 5. System prompts for password \n 6. Player enters password \n 7. System validates credentials against MySQL database (BCrypt hash) \n 8. System loads player data into GameSession \n 9. System displays Main Menu
+  Alternate Courses => 1. Player selects Register -> extends to UC18 \n 2. Player selects Exit -> application terminates \n 3. Invalid credentials -> display error, return to step 3
+  Exceptions => 1. Database connection failure -> display connection error \n 2. Account locked or disabled -> display account status message
+}
+
+@enduml
