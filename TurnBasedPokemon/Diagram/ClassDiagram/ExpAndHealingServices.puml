@@ -10,34 +10,43 @@ skinparam class {
 title Application Layer - Experience and Healing Services
 
 interface IExpService {
-  + GrantExperience(pokemon: Pokemon, expAmount: int): bool
-  + CalculateExpGain(defeatedLevel: int, playerLevel: int): int
+  + GrantExperience(pokemon: Pokemon, amount: int): ProcessExpResult
+  + CalculateExpGain(playerPoke: Pokemon, enemyPoke: Pokemon): int
 }
 
 class ExpService {
-  + GrantExperience(pokemon: Pokemon, expAmount: int): bool
-  + CalculateExpGain(defeatedLevel: int, playerLevel: int): int
-  - CheckLevelUp(pokemon: Pokemon): bool
-  - CheckEvolution(pokemon: Pokemon): bool
+  - _gameSession: GameSession
+  - _worldGenService: IWorldGenerationService
+  + GrantExperience(pokemon: Pokemon, amount: int): ProcessExpResult
+  + CalculateExpGain(playerPoke: Pokemon, enemyPoke: Pokemon): int
+}
+
+record ProcessExpResult {
+  + ExpGained: int
+  + LeveledUp: bool
+  + OldName: string?
+  + EvolutionName: string?
+  + NewMovesLearned: List<string>
+  + HasEvolved: bool <<computed>>
 }
 
 interface IHealingService {
-  + ExecuteHealing(pokemon: Pokemon, item: HealingItem): bool
+  + ExecuteHealing(potion: HealingItem): bool
 }
 
 class HealingService {
-  + ExecuteHealing(pokemon: Pokemon, item: HealingItem): bool
-  - RestoreHealPoints(pokemon: Pokemon, healAmount: int)
-  - RemoveStatus(pokemon: Pokemon, status: PokemonStatus)
+  - _gameSession: GameSession
+  + ExecuteHealing(potion: HealingItem): bool
 }
 
 ' Relationships
 ExpService ..|> IExpService
-ExpService --> Pokemon
+ExpService --> GameSession
+ExpService --> IWorldGenerationService
+ExpService --> ProcessExpResult
 
 HealingService ..|> IHealingService
-HealingService --> Pokemon
-HealingService --> HealingItem
+HealingService --> GameSession
 
 @enduml</content>
 <parameter name="filePath">c:\C#\PokemonConsole\TurnBasedPokemon\Diagram\ClassDiagram\ExpAndHealingServices.puml

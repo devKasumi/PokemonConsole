@@ -1,87 +1,64 @@
 @startuml UC10_SaveLoad_Sequence
 participant Player
+participant MainMenuScreen
+participant IAuthenService as AuthenService
+participant IUserRepository as UserRepository
 participant GameSession
-participant FileService
-participant UserRepository
-participant Database
 
 alt Save Game
-  
-  Player -> GameSession: Open main menu
+
+  Player -> MainMenuScreen: Select "Save Game"
+  activate MainMenuScreen
+
+  MainMenuScreen -> AuthenService: SaveProgress()
+  activate AuthenService
+
+  AuthenService -> GameSession: get CurrentUser
   activate GameSession
-  GameSession --> Player: Show menu options
-  
-  Player -> GameSession: Select "Save Game"
-  GameSession --> Player: Show save slots
-  
-  Player -> GameSession: Select slot
-  GameSession -> GameSession: CollectGameState()
-  GameSession -> GameSession: Serialize player stats
-  GameSession -> GameSession: Serialize Pokemon team
-  GameSession -> GameSession: Serialize inventory
-  GameSession -> GameSession: Serialize story progress
-  GameSession -> GameSession: Serialize world state
-  
-  GameSession -> FileService: SerializeToJSON(gameState)
-  activate FileService
-  FileService -> FileService: Convert all objects to JSON
-  FileService --> GameSession: JSON data
-  deactivate FileService
-  
-  GameSession -> UserRepository: SaveGame(userId, gameStateJSON, slotNumber)
-  activate UserRepository
-  
-  UserRepository -> Database: UPDATE game_saves SET state_data=?, timestamp=? WHERE user_id=? AND slot=?
-  activate Database
-  Database --> UserRepository: Save successful
-  deactivate Database
-  
-  UserRepository -> UserRepository: Update last_save_time
-  UserRepository --> GameSession: Save confirmed
-  deactivate UserRepository
-  
-  GameSession --> Player: Display "Game saved successfully"
+  GameSession --> AuthenService: User object (with PlayerData)
   deactivate GameSession
 
-else Load Game
-  
-  Player -> GameSession: SelectLoadFile(slotNumber)
-  activate GameSession
-  
-  GameSession -> GameSession: Display available saves
-  GameSession --> Player: Show save list
-  
-  Player -> GameSession: ConfirmLoad(slotNumber)
-  
-  GameSession -> UserRepository: LoadGame(userId, slotNumber)
+  AuthenService -> UserRepository: Save(currentUser)
   activate UserRepository
-  
-  UserRepository -> Database: SELECT state_data FROM game_saves WHERE user_id=? AND slot=?
-  activate Database
-  Database --> UserRepository: JSON data
-  deactivate Database
-  
-  UserRepository --> GameSession: Raw JSON data
+  UserRepository -> UserRepository: Serialize User to JSON
+  UserRepository -> UserRepository: Write to users.json
+  UserRepository --> AuthenService: Save confirmed
   deactivate UserRepository
-  
-  GameSession -> FileService: DeserializeFromJSON(jsonData)
-  activate FileService
-  FileService -> FileService: Parse JSON
-  FileService -> FileService: Reconstruct all objects
-  FileService --> GameSession: GameState object
-  deactivate FileService
-  
-  GameSession -> GameSession: RestorePlayerStats(gameState)
-  GameSession -> GameSession: RestorePokemonTeam(gameState)
-  GameSession -> GameSession: RestoreInventory(gameState)
-  GameSession -> GameSession: RestoreStoryProgress(gameState)
-  GameSession -> GameSession: RestoreWorldState(gameState)
-  
-  GameSession -> GameSession: ReloadScene(currentLocation)
-  GameSession -> GameSession: SetPlayerPosition(savedCoordinates)
-  
-  GameSession --> Player: Resume gameplay from saved state
+
+  AuthenService --> MainMenuScreen: Save complete
+  deactivate AuthenService
+  MainMenuScreen --> Player: Display "Game saved successfully"
+  deactivate MainMenuScreen
+
+else Load Game
+
+  Player -> MainMenuScreen: Select "Load Game"
+  activate MainMenuScreen
+
+  MainMenuScreen -> AuthenService: LoadProgress(username)
+  activate AuthenService
+
+  AuthenService -> UserRepository: GetByUsername(username)
+  activate UserRepository
+  UserRepository -> UserRepository: Read users.json
+  UserRepository --> AuthenService: User object
+  deactivate UserRepository
+
+  AuthenService -> GameSession: CurrentUser = user
+  activate GameSession
+  GameSession --> AuthenService: Session updated
   deactivate GameSession
+
+  alt PlayerData exists
+    AuthenService --> MainMenuScreen: true (load success)
+    MainMenuScreen --> Player: Resume gameplay
+  else No PlayerData
+    AuthenService --> MainMenuScreen: false (no saved data)
+    MainMenuScreen --> Player: Display "No saved game found"
+  end
+
+  deactivate AuthenService
+  deactivate MainMenuScreen
 
 end
 @enduml

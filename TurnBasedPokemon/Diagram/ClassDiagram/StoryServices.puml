@@ -10,37 +10,52 @@ skinparam class {
 title Application Layer - Story Services
 
 interface IStoryService {
-  + GetCurrentPhase(): PhaseData
-  + GetPhaseDialogue(): List<string>
-  + GetPhaseNpcTeam(): List<PokemonData>
-  + ProgressPhase(): bool
-  + IsStoryComplete(): bool
+  + InitializeStory(command: string)
+  + GetCurrentLocation(): LocationData
+  + ShouldPlayNarrative(): bool
+  + MarkNarrativeAsPlayed()
+  + Move(forward: bool): string
+  + HealTeamAtCenter(): string
+  + ExploreWildArea(): (bool, string, Pokemon?, Item?)
+  + TryChallengeGym(): (bool, string, NpcData?, List<Pokemon>?)
+  + TryChallengePokemonLeague(boss: NpcData): (bool, string, List<Pokemon>?)
+  + TryChallengeTrainer(trainer: NpcData): (bool, string, List<Pokemon>?)
+  + GiveStarter(starterName: string): (bool, string)
 }
 
-class StoryService {
-  - _storyData: List<PhaseData>
-  - _currentPhase: int
-  + GetCurrentPhase(): PhaseData
-  + GetPhaseDialogue(): List<string>
-  + GetPhaseNpcTeam(): List<PokemonData>
-  + ProgressPhase(): bool
-  + IsStoryComplete(): bool
+class StoryService <<Application>> {
+  - _gameSession: GameSession
+  - _pokemonSpawner: PokemonSpawner
+  - _itemSpawner: ItemSpawner
+  - _gameData: GameData
+  + InitializeStory(command: string)
+  + GetCurrentLocation(): LocationData
+  + ShouldPlayNarrative(): bool
+  + MarkNarrativeAsPlayed()
+  + Move(forward: bool): string
+  + HealTeamAtCenter(): string
+  + ExploreWildArea(): (bool, string, Pokemon?, Item?)
+  + TryChallengeGym(): (bool, string, NpcData?, List<Pokemon>?)
+  + TryChallengePokemonLeague(boss: NpcData): (bool, string, List<Pokemon>?)
+  + TryChallengeTrainer(trainer: NpcData): (bool, string, List<Pokemon>?)
+  + GiveStarter(starterName: string): (bool, string)
 }
 
-class MySqlStoryService {
-  - _dbConnection: IDbConnection
-  + GetCurrentPhase(): PhaseData
-  + GetPhaseDialogue(): List<string>
-  + GetPhaseNpcTeam(): List<PokemonData>
-  + ProgressPhase(): bool
-  + IsStoryComplete(): bool
+class MySqlStoryService <<Infrastructure>> {
+  - _gameSession: GameSession
+  - _pokemonSpawner: PokemonSpawner
+  - _itemSpawner: ItemSpawner
+  - _dbConnection: string
+  ' Same methods as StoryService (implements IStoryService)
 }
 
 ' Relationships
 StoryService ..|> IStoryService
 MySqlStoryService ..|> IStoryService
-StoryService --> PhaseData
-MySqlStoryService --> PhaseData
+StoryService --> GameSession
+StoryService --> PokemonSpawner
+StoryService --> ItemSpawner
+MySqlStoryService --> GameSession
 
 @enduml</content>
 <parameter name="filePath">c:\C#\PokemonConsole\TurnBasedPokemon\Diagram\ClassDiagram\StoryServices.puml

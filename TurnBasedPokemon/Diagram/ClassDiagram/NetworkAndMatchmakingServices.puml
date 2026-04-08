@@ -7,30 +7,75 @@ skinparam class {
   ArrowColor #333333
 }
 
-title Application Layer - Network and Matchmaking Services
+title Network, PvP & Matchmaking Services
 
-
-class NetworkService {
-  + FindMatch(username: string)
-  + SubmitMoveAsync(roomId: string, playerName: string, moveIndex: int, attackerPokemon: Pokemon)
-  + OnMatchFound: event
-  + OnTurnResultReceived: event
-  + OnWaiting: event
+' ===== Application Layer Interfaces =====
+interface INetworkService <<Application>> {
+  + OnMatchFound: event Action<string, string>
+  + OnWaiting: event Action
+  + OnMatchmakingRejected: event Action<string>
+  + OnTurnResultReceived: event Action<PvPTurnResult>
+  + LastTurnResult: PvPTurnResult?
+  + Connect(): Task<bool>
+  + FindMatch(username: string, party: List<Pokemon>): Task
+  + SubmitMoveAsync(roomId: string, playerName: string, moveIndex: int, attackerPokemon: Pokemon): Task
+  + CancelMatchmakingAsync(): Task
 }
 
-class MatchmakingService {
-  + JoinQueue(connectionId: string, username: string): BattleRoom?
+interface IPvPService <<Application>> {
+  + CanAccessPvP(): bool
+  + Connect(): bool
+  + FindMatch()
+  + CancelMatchmaking()
+  + OnMatchFound: event Action<string, string>
+  + OnMatchmakingRejected: event Action<string>
+}
+
+class PvPService <<Application>> {
+  - _gameSession: GameSession
+  - _networkService: INetworkService
+  + CanAccessPvP(): bool
+  + Connect(): bool
+  + FindMatch()
+  + CancelMatchmaking()
+  + OnMatchFound: event Action<string, string>
+  + OnMatchmakingRejected: event Action<string>
+}
+
+' ===== Infrastructure Layer =====
+class NetworkService <<Infrastructure>> {
+  - _connection: HubConnection
+  + OnMatchFound: event Action<string, string>
+  + OnWaiting: event Action
+  + OnMatchmakingRejected: event Action<string>
+  + OnTurnResultReceived: event Action<PvPTurnResult>
+  + LastTurnResult: PvPTurnResult?
+  + Connect(): Task<bool>
+  + FindMatch(username: string, party: List<Pokemon>): Task
+  + SubmitMoveAsync(roomId: string, playerName: string, moveIndex: int, attackerPokemon: Pokemon): Task
+  + CancelMatchmakingAsync(): Task
+}
+
+' ===== Server Side (PokemonServer) =====
+class BattleHub <<Server>> {
+  + FindMatch(username: string, serializedParty: string)
+  + SubmitMove(request: BattleActionRequest)
+}
+
+class MatchmakingService <<Server>> {
+  - _waitingPlayers: List<WaitingPlayer>
+  + JoinQueue(connectionId: string, username: string, party: List<Pokemon>): BattleRoom?
   + GetRoom(roomId: string): BattleRoom?
 }
 
-class BattleRoom {
+class BattleRoom <<Server>> {
   + RoomId: string
   + Player1: WaitingPlayer
   + Player2: WaitingPlayer
   + IsActive: bool
 }
 
-class PvPManager {
+class PvPManager <<Server>> {
   + InitializeBattle(roomId: string, player1: string, party1: List<Pokemon>, player2: string, party2: List<Pokemon>)
   + RegisterMove(request: BattleActionRequest)
   + IsRoomReady(roomId: string): bool
@@ -39,21 +84,49 @@ class PvPManager {
   + GetBattleState(roomId: string): PvPBattleState?
 }
 
-class WaitingPlayer {
+class WaitingPlayer <<Server>> {
   + ConnectionId: string
   + Username: string
+  + Party: List<Pokemon>
 }
 
+' ===== Shared DTOs (Pokemon.Shared) =====
+class PvPTurnResult <<Shared>> {
+  + PlayerState: PvPMonState
+  + OpponentState: PvPMonState
+  + Logs: List<string>
+  + Winner: string?
+}
 
-' Relationships
-NetworkService ..> "SignalR" BattleHub : network
+class PvPMonState <<Shared>> {
+  + Name: string
+  + CurrentHp: int
+  + MaxHp: int
+  + Level: int
+  + Moves: List<PokemonMove>
+}
+
+class BattleActionRequest <<Shared>> {
+  + RoomId: string
+  + PlayerName: string
+  + MoveIndex: int
+  + AttackerPokemon: Pokemon
+}
+
+' ===== Relationships =====
+PvPService ..|> IPvPService
+PvPService --> INetworkService
+PvPService --> GameSession
+
+NetworkService ..|> INetworkService
+NetworkService ..> BattleHub : SignalR
+
 BattleHub --> MatchmakingService
 BattleHub --> PvPManager
 MatchmakingService --> BattleRoom
 BattleRoom --> WaitingPlayer
-PvPManager --> PvPBattleState
-PvPManager --> BattleActionRequest
 PvPManager --> PvPTurnResult
+PvPManager --> BattleActionRequest
 
 @enduml</content>
 <parameter name="filePath">c:\C#\PokemonConsole\TurnBasedPokemon\Diagram\ClassDiagram\NetworkAndMatchmakingServices.puml

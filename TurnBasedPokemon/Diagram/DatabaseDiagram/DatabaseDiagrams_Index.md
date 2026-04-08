@@ -1,7 +1,9 @@
 # Pokemon Game Database Diagrams Index
 
 **Created:** April 7, 2026  
-**Last Updated:** April 7, 2026  
+**Last Updated:** June 2025  
+
+> **Note:** The current implementation uses JSON file-based persistence (users.json, pokemon.json, item.json, story.json) via `UserRepository`, `PokedexRepository`, `ItemRepository`, and `FileService`. These diagrams describe the **logical data model** and may serve as reference for a future database migration.
 
 ---
 

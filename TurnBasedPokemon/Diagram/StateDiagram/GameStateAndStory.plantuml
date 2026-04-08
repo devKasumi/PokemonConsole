@@ -1,15 +1,28 @@
 @startuml
-[*] --> MainMenu
+title Game State Diagram
+
+[*] --> LoginScreen
+
+state LoginScreen {
+  [*] --> WaitingForInput
+  WaitingForInput --> Authenticating : Submit credentials
+  Authenticating --> WaitingForInput : Login failed
+}
+
+LoginScreen --> MainMenu : Login successful
 
 state MainMenu {
   [*] --> Idle
-  Idle --> StoryScreen : Select "New Game"
+  Idle --> StoryScreen : Select "Story"
+  Idle --> PvPMatchmaking : Select "PvP"
+  Idle --> Idle : Save / Load
 }
 
 state StoryScreen {
-  [*] --> Wandering
-  Wandering --> BattleScreen : Random Encounter (Wild)
-  Wandering --> BattleScreen : Interact with NPC (Gym)
+  [*] --> Exploring
+  Exploring --> BattleScreen : Wild encounter
+  Exploring --> BattleScreen : Challenge Gym / Trainer / League
+  Exploring --> Exploring : Heal team / Talk NPC
 }
 
 state BattleScreen {
@@ -20,6 +33,19 @@ state BattleScreen {
 }
 
 Victory --> StoryScreen : Gain EXP / Unlock Badge
-Defeat --> StoryScreen : Return to Safety (Pokemon Center)
+Defeat --> StoryScreen : Return to safety
 
-@endum
+state PvPMatchmaking {
+  [*] --> SearchingOpponent
+  SearchingOpponent --> PvPScreen : Match found
+  SearchingOpponent --> MainMenu : Cancel
+}
+
+state PvPScreen {
+  [*] --> PvPCombat
+  PvPCombat --> PvPResult : Battle ended
+}
+
+PvPResult --> MainMenu : Return to menu
+
+@enduml

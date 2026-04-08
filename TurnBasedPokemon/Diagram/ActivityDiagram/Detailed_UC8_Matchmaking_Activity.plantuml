@@ -1,64 +1,36 @@
 @startuml UC8_Matchmaking_Activity
+title UC8 - Matchmaking (Activity Diagram)
 start
-:Player selects PvP mode;
-:Choose team configuration;
-if (Use current team or custom?) then (current)
-  :Use active team;
-else (custom)
-  :Select specific Pokemon;
-endif
+:Player selects "PvP" from MainMenuScreen;
+:MainMenuScreen calls PvPService.StartMatchmaking();
+:PvPService calls NetworkService.ConnectAsync();
 
-:Connect to server;
-:Send join matchmaking request;
-:Display "Searching for opponent...";
-
-:Server adds player to queue;
-:Server records:;
-note
-  - Player ID & name
-  - Team composition
-  - ELO rating
-  - Connection info
-end note
-
-repeat
-  :Server checks queue every 500ms;
+if (Connection to BattleHub successful?) then (yes)
+  :NetworkService sends JoinMatchmaking(player data);
+  :BattleHub adds player to MatchmakingService queue;
+  :Display "Searching for opponent...";
   
-  if (Found player with similar rank?) then (yes)
-    :Create match ID;
-    :Create battle room;
-    :Load both player teams;
-    :Load both player stats;
-    :Notify both players;
-  else
-    if (Searching > 60 seconds?) then (yes)
-      :Expand rank search range;
-      if (Searching > 120 seconds?) then (yes)
-        :Suggest cancel or keep waiting;
-      endif
+  repeat
+    :MatchmakingService checks queue;
+    
+    if (Two players in queue?) then (yes)
+      :MatchmakingService creates BattleRoom;
+      :BattleHub notifies both clients: MatchFound;
+      :PvPService receives opponent info;
+      :ScreenManager switches to PvPScreen;
     endif
-  endif
+    
+    if (Player cancelled?) then (yes)
+      :NetworkService sends LeaveMatchmaking;
+      :Return to MainMenuScreen;
+      stop
+    endif
+  repeat while (Searching for opponent)
   
-  if (Player cancelled?) then (yes)
-    :Remove from queue;
-    :Return to main menu;
-    stop
-  endif
-repeat while (Searching for opponent)
-
-:Display opponent info:;
-note
-  - Player name & level
-  - Team preview (Pokemon names)
-  - Player rank/ELO
-end note
-
-:Player accepts or declines;
-if (Player accepted?) then (yes)
-  :Send confirmation to server;
-  :Proceed to battle;
 else (no)
-  :Return to queue search;
+  :Display "Cannot connect to server";
+  :Return to MainMenuScreen;
+  stop
 endif
 
 stop

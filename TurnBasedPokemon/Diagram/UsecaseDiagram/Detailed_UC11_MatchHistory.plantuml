@@ -1,49 +1,31 @@
 @startuml UC11_MatchHistory_UseCase
+title UC11 - View Match History (Use Case Diagram)
+note "**Under Development**\nOnly Player.PvPWins / PvPLosses\ncounters exist. Detailed per-match\nrecording is not yet implemented." as N1
 skinparam linetype ortho
 left to right direction
 
 actor Player
-actor Admin <<right>>
 
 rectangle "Match History System" {
-  (View Personal Match History)
-  (View All Matches)
-  (Fetch match records)
-  (Filter by player)
-  (Sort by recent)
-  (Display match list)
-  (Match entry)
-  (Select specific match)
-  (Show detailed stats)
-  (View full battle log)
-  (Filter options)
-  (By player/Date/Result)
-  (Generate statistics)
-  (Export/Report)
+  (View PvP stats)
+  (Read Player.PvPWins)
+  (Read Player.PvPLosses)
+  (Display basic win/loss)
 }
 
-Player --> (View Personal Match History)
-Admin --> (View All Matches)
+Player --> (View PvP stats)
+(View PvP stats) --> (Read Player.PvPWins) : <<include>>
+(View PvP stats) --> (Read Player.PvPLosses) : <<include>>
+(Read Player.PvPWins) --> (Display basic win/loss)
+(Read Player.PvPLosses) --> (Display basic win/loss)
+(Display basic win/loss) --> Player
 
-(View Personal Match History) --> (Fetch match records)
-(Fetch match records) --> (Filter by player) : <<include>>
-
-(Filter by player) --> (Sort by recent)
-(Sort by recent) --> (Display match list)
-(Display match list) --> (Match entry)
-
-(Match entry) --> Player
-
-(Player) --> (Select specific match)
-(Select specific match) --> (Show detailed stats)
-(Show detailed stats) --> (View full battle log)
-(View full battle log) --> Player
-
-(View All Matches) --> (Fetch match records) : <<include>>
-(Fetch match records) --> (Filter options)
-(Filter options) --> (By player/Date/Result)
-(By player/Date/Result) --> (Generate statistics)
-(Generate statistics) --> (Export/Report)
-(Export/Report) --> Admin
+note right of (Display basic win/loss)
+  Planned features:
+  - Detailed match history
+  - Turn-by-turn replay
+  - ELO tracking
+  - Opponent info
+end note
 
 @enduml

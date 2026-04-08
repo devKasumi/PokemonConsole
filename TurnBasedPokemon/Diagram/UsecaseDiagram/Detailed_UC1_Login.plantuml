@@ -1,31 +1,35 @@
 @startuml UC1_Login_UseCase
+title UC1 - Login / Authentication (Use Case Diagram)
 skinparam linetype ortho
 left to right direction
 
 actor Player
-actor System <<right>>
 
 rectangle "Login System" {
-  (Enter Username/Password)
-  (Validate Credentials)
-  (Check User Exists)
-  (Verify Password)
-  (Load User Profile)
+  (Launch Game)
+  (Display LoginScreen)
+  (Enter Username & Password)
+  (AuthenService validates credentials)
+  (Check user in UserRepository)
+  (Verify password)
+  (Load Player profile)
   (Initialize GameSession)
-  (Success - Enter Main Menu)
-  (Fail - Show Error)
+  (Switch to MainMenuScreen)
+  (Display error message)
 }
 
-Player --> (Enter Username/Password)
-(Enter Username/Password) --> (Validate Credentials)
-(Validate Credentials) --> (Check User Exists) : <<include>>
-(Validate Credentials) --> (Verify Password) : <<include>>
-(Check User Exists) --> (Load User Profile)
-(Verify Password) --> (Load User Profile)
-(Load User Profile) --> (Initialize GameSession)
-(Initialize GameSession) --> (Success - Enter Main Menu)
-(Success - Enter Main Menu) --> Player
-(Validate Credentials) --> (Fail - Show Error) : <<extend>>
-(Fail - Show Error) --> Player
+Player --> (Launch Game)
+(Launch Game) --> (Display LoginScreen)
+(Display LoginScreen) --> (Enter Username & Password)
+(Enter Username & Password) --> (AuthenService validates credentials)
+(AuthenService validates credentials) --> (Check user in UserRepository) : <<include>>
+(AuthenService validates credentials) --> (Verify password) : <<include>>
+(Check user in UserRepository) --> (Load Player profile)
+(Verify password) --> (Load Player profile)
+(Load Player profile) --> (Initialize GameSession)
+(Initialize GameSession) --> (Switch to MainMenuScreen)
+(Switch to MainMenuScreen) --> Player
+(AuthenService validates credentials) --> (Display error message) : <<extend>>
+(Display error message) --> Player
 
 @enduml

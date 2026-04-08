@@ -1,46 +1,42 @@
 @startuml UC16_ChallengeTrainer_Activity
+title UC16 - Challenge Trainer (Activity Diagram)
+note
+  **Under Development** — Trainer challenge uses
+  StoryService.TryChallengeTrainer() but no
+  dedicated Trainer screen is implemented yet.
+end note
+
 start
-:Player encounters Trainer;
-:Trainer blocks path / initiates battle;
-:Trainer dialogue: "You! Let's battle!";
+:Player encounters Trainer NPC in StoryScreen;
+:StoryScreen.HandleTalk(npc) displays trainer dialogue;
 
-:Load trainer Pokemon team;
-:Display trainer sprite;
-:Display trainer team (Pokemon names/levels);
+note right: npc.Action == "StartBattle"
 
-:Player ready?;
-if (Player accepts?) then (yes)
-  :Start battle;
-  :Trainer vs Player;
+:StoryScreen calls StoryService.TryChallengeTrainer(npc);
+:StoryService checks Player.PokemonTeam alive;
+
+if (Team has alive Pokemon?) then (yes)
+  :PokemonSpawner generates trainer team;
+  :Set GameSession.CurrentEnemyTeam;
+  :Set GameSession.IsTrainerBattle = true;
+  :ScreenManager switches to BattleScreen;
+  
   note right
-    Execute standard battle mechanics
-    Turn-based combat with trainer AI
+    Battle executes per UC2 flow.
+    BattleService handles turn logic.
+    On victory: ExpService processes rewards.
   end note
   
   if (Player won?) then (yes)
-    :Victory music;
-    :Trainer defeated dialogue;
-    :Trainer gives money;
-    note
-      Money = 50 × Trainer Level
-    end note
-    
-    :Award experience to team;
-    if (Trainer gives item?) then (yes)
-      :Receive gift item;
-    endif
-    
-    :Mark trainer as beaten;
-    :Trainer moves aside / disappears;
-    
+    :ExpService awards experience;
+    :Display victory message;
   else (no)
-    :Defeat screenit;
-    :Trainer gives taunting statement;
-    :Return to Pokemon Center;
+    :Display defeat message;
+    :Return to StoryScreen;
   endif
   
 else (no)
-  :Trainer says "Maybe next time!";
+  :Display "Heal your Pokemon first!";
 endif
 
 stop

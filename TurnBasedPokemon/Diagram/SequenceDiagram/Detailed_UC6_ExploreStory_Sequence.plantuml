@@ -1,123 +1,92 @@
 @startuml UC6_ExploreStory_Sequence
 participant Player
 participant StoryScreen
-participant StoryService
-participant MySqlStoryService
-participant WorldGenerationService
+participant IStoryService as StoryService
+participant IAuthenService as AuthenService
 participant GameSession
-participant Database
 
 Player -> StoryScreen: Enter Story Mode
 activate StoryScreen
 
-StoryScreen -> StoryService: LoadCurrentChapter()
+StoryScreen -> StoryService: InitializeStory(command)
 activate StoryService
-StoryService -> MySqlStoryService: GetPlayerStoryProgress(userId)
-activate MySqlStoryService
-MySqlStoryService -> Database: SELECT * FROM story_progress WHERE userId=?
-Database --> MySqlStoryService: Progress data
-deactivate MySqlStoryService
-MySqlStoryService --> StoryService: Chapter info
-StoryService -> StoryService: Determine current location
-StoryService --> StoryScreen: Chapter loaded
+StoryService -> GameSession: Get Player.CurrentPhase
+StoryService -> StoryService: LoadData() from story.json
+StoryService -> GameSession: Set CurrentLocation
+StoryService --> StoryScreen: Story initialized
 deactivate StoryService
 
-StoryScreen --> Player: Display story narrative screen
+alt ShouldPlayNarrative()
+  StoryScreen -> StoryScreen: DisplayNarrative()
+  StoryScreen -> StoryService: MarkNarrativeAsPlayed()
+end
+
+StoryScreen --> Player: Display story location screen
 
 loop while (In story)
   Player -> StoryScreen: Select action
-  
-  alt Action = Read Narrative
-    StoryScreen -> StoryScreen: Display story text
-    StoryScreen -> StoryService: MarkNarrativeAsPlayed()
+
+  alt Action = Move Forward/Back
+    StoryScreen -> StoryService: Move(forward: bool)
     activate StoryService
-    StoryService -> GameSession: Mark narrative in session
+    StoryService -> GameSession: Update CurrentLocation
+    StoryService --> StoryScreen: Location description message
     deactivate StoryService
-    
-  alt Action = Explore Location
-    StoryScreen -> WorldGenerationService: GenerateStoryLocation(locationId)
-    activate WorldGenerationService
-    WorldGenerationService --> StoryScreen: Location with items/Pokemon
-    deactivate WorldGenerationService
-    
-    alt Random encounter with Pokemon
-      StoryScreen -> StoryScreen: Trigger wild battle
-      note over StoryScreen
-        Go to Battle mechanics
-        (UC_2: Battle Wild Pokemon)
-      end note
-    else Find items/chest
-      StoryScreen -> GameSession: AddItemToInventory(item)
-      activate GameSession
-      GameSession --> StoryScreen: Item added
-      deactivate GameSession
-    end
-    
-  alt Action = Talk to NPC
-    StoryScreen -> StoryService: GetNPCDialogue(npcId, progressLevel)
+    StoryScreen --> Player: Display new location
+
+  else Action = Explore Wild Area
+    StoryScreen -> StoryService: ExploreWildArea()
     activate StoryService
-    StoryService -> MySqlStoryService: FetchNPCScript(npcId, chapter)
-    activate MySqlStoryService
-    MySqlStoryService -> Database: SELECT dialogue FROM npc_scripts
-    Database --> MySqlStoryService: Dialogue text
-    deactivate MySqlStoryService
-    MySqlStoryService --> StoryService: NPC dialogue
-    StoryService --> StoryScreen: Dialogue + options
-    deactivate StoryService
-    
-    StoryScreen --> Player: Show dialogue with choices
-    Player -> StoryScreen: Select dialogue choice
-    
-    alt NPC triggers quest
-      StoryScreen -> GameSession: AddQuest(questId)
-      GameSession --> StoryScreen: Quest added
-      
-    alt NPC gives reward
-      StoryScreen -> GameSession: AddReward(items/money)
-      GameSession --> StoryScreen: Reward given
-    end
-    
-  alt Action = Battle Trainer
-    StoryScreen -> StoryService: GetTrainerBattle(trainerId, chapterId)
-    activate StoryService
-    StoryService -> MySqlStoryService: FetchTrainerData(trainerId)
-    MySqlStoryService -> Database: SELECT trainer_pokemon, rewards FROM trainers
-    Database --> MySqlStoryService: Trainer data
-    MySqlStoryService --> StoryService: Trainer loaded
-    StoryService --> StoryScreen: Battle initialized
-    deactivate StoryService
-    
-    note over StoryScreen
-      Execute story battle
-      (Similar to UC_2 but with trainer)
-    end note
-    
-    alt Battle Won
-      StoryScreen -> StoryService: ProgressStory(milestone)
-      activate StoryService
-      StoryService -> MySqlStoryService: UpdateStoryProgression(userId, newMilestone)
-      MySqlStoryService -> Database: UPDATE story_progress
-      Database --> MySqlStoryService: Success
-      MySqlStoryService --> StoryService: Updated
-      StoryService -> StoryService: Check if next chapter unlocks
-      StoryService --> StoryScreen: Milestone reached
+    alt Wild Pokemon encounter
+      StoryService --> StoryScreen: (true, message, wildPokemon, null)
       deactivate StoryService
+      StoryScreen -> StoryScreen: SetupBattle + SwitchTo(Battle)
+      note over StoryScreen: Go to UC2: Battle Wild Pokemon
+    else Found Item
+      StoryService --> StoryScreen: (true, message, null, foundItem)
+      StoryScreen --> Player: Display "Found {item}!"
+    else Nothing found
+      StoryService --> StoryScreen: (false, message, null, null)
+      StoryScreen --> Player: Display exploration message
     end
-  end
-  
-  opt Player exits story
-    StoryScreen -> StoryScreen: Exit story
+
+  else Action = Talk to NPC
+    StoryScreen -> StoryScreen: HandleTalk(npc)
+    StoryScreen --> Player: Show NPC dialogue
+    alt NPC is Gym Leader
+      StoryScreen -> StoryScreen: HandleGymBattle()
+      note over StoryScreen: Go to UC14: Challenge Gym
+    else NPC is Elite Four / Champion
+      StoryScreen -> StoryScreen: HandlePokemonLeagueBattle()
+      note over StoryScreen: Go to UC15: Challenge Pokemon League
+    else NPC is Trainer
+      note over StoryScreen: Go to UC16: Challenge Trainer
+    end
+
+  else Action = Heal Team
+    StoryScreen -> StoryService: HealTeamAtCenter()
+    activate StoryService
+    StoryService -> GameSession: Restore all Pokemon HP
+    StoryService --> StoryScreen: Heal result message
+    deactivate StoryService
+    StoryScreen --> Player: Display "Team healed!"
+
+  else Action = Give Starter
+    StoryScreen -> StoryService: GiveStarter(starterName)
+    activate StoryService
+    StoryService -> GameSession: Add starter to team
+    StoryService --> StoryScreen: (success, message)
+    deactivate StoryService
+    StoryScreen --> Player: Display starter received
+
+  else Action = Save (via Champion)
+    StoryScreen -> AuthenService: SetChampion()
+    activate AuthenService
+    AuthenService -> GameSession: Player.IsChampion = true
+    AuthenService --> StoryScreen: Champion set
+    deactivate AuthenService
   end
 end
 
-StoryScreen -> StoryService: SaveProgress()
-activate StoryService
-StoryService -> MySqlStoryService: PersistStoryState(userId)
-MySqlStoryService -> Database: UPDATE story tables
-Database --> MySqlStoryService: Saved
-StoryService --> StoryScreen: Progress saved
-deactivate StoryService
-
-StoryScreen --> Player: Return to main menu
 deactivate StoryScreen
 @enduml

@@ -1,45 +1,35 @@
 @startuml UC1_Login_Sequence
 participant Player
 participant LoginScreen
-participant AuthenService
-participant UserRepository
-participant Database
+participant IAuthenService as AuthenService
+participant IUserRepository as UserRepository
+participant GameSession
 
 Player -> LoginScreen: Enter username & password
 activate LoginScreen
-LoginScreen -> AuthenService: ValidateCredentials(username, password)
+
+LoginScreen -> AuthenService: Login(LoginRequest(username, password))
 activate AuthenService
 
-AuthenService -> UserRepository: GetUserByUsername(username)
+AuthenService -> UserRepository: GetByUsername(username)
 activate UserRepository
-UserRepository -> Database: SELECT * FROM Users WHERE Username = ?
-activate Database
-Database --> UserRepository: User record
-deactivate Database
+UserRepository --> AuthenService: User? object
 deactivate UserRepository
-UserRepository --> AuthenService: User object
 
 alt User exists
-  AuthenService -> AuthenService: ComparePasswordHash(inputPassword, storedHash)
+  AuthenService -> AuthenService: Compare password
   alt Password matches
-    AuthenService -> UserRepository: GetUserWithTeamAndInventory(userId)
-    activate UserRepository
-    UserRepository -> Database: SELECT * from Users + Pokemon + Items
-    Database --> UserRepository: Complete user data
-    deactivate UserRepository
-    UserRepository --> AuthenService: UserProfileData
-    
-    AuthenService -> AuthenService: CreateGameSession(userProfile)
-    AuthenService --> LoginScreen: Success + GameSession
+    AuthenService -> GameSession: CurrentUser = user
+    AuthenService --> LoginScreen: true (success)
     deactivate AuthenService
-    LoginScreen --> Player: Show Main Menu
+    LoginScreen --> Player: Switch to Main Menu
   else Password incorrect
-    AuthenService --> LoginScreen: AuthenticationFailed
+    AuthenService --> LoginScreen: false (failed)
     deactivate AuthenService
     LoginScreen --> Player: Show error "Incorrect Password"
   end
 else User not found
-  AuthenService --> LoginScreen: AuthenticationFailed
+  AuthenService --> LoginScreen: false (failed)
   deactivate AuthenService
   LoginScreen --> Player: Show error "User not found"
 end

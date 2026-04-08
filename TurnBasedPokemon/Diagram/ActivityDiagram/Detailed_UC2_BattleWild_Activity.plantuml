@@ -1,30 +1,33 @@
 @startuml UC2_BattleWild_Activity
+title UC2 - Battle Wild Pokemon (Activity Diagram)
 start
-:Player explores world;
-if (Random encounter?) then (yes)
-  :Display "Wild Pokemon appeared!";
-  :Generate wild Pokemon (level, stats, moves);
+:Player explores world in StoryScreen;
+if (Random encounter triggered?) then (yes)
+  :WorldGenService spawns wild Pokemon;
+  :Set GameSession.CurrentEnemyTeam;
+  :ScreenManager switches to BattleScreen;
 else (no)
   :Continue exploring;
   stop
 endif
 
-:Initialize battle (both teams);
+:BattleService initializes battle state;
 :Determine turn order (speed stat);
 
 repeat
-  :Display player options (Move/Switch/Run);
+  :BattleScreen displays options (Move/Switch/Catch/Run);
   :Player selects action;
   if (Action == Use Move?) then (yes)
-    :Player selects move from active Pokemon;
-    :Calculate damage (type advantage, stats, RNG);
+    :Player selects move;
+    :BattleService.ExecuteTurn() calculates DamageResult;
     :Apply damage to enemy;
-    :Display damage message;
+    :Display BattleTurnResult;
   elseif (Action == Switch Pokemon?) then (yes)
-    :Player selects new Pokemon;
+    :BattleService.CanSwitchPokemon(target);
     :Switch active Pokemon;
   elseif (Action == Run?) then (yes)
-    if (Run successful? 50% + speed comparison) then (yes)
+    :BattleService checks run chance;
+    if (Run successful?) then (yes)
       :Escape from battle;
       stop
     else (no)
@@ -33,6 +36,7 @@ repeat
   endif
   
   if (Enemy Pokemon fainted?) then (yes)
+    :BattleService.CheckNextOpponent();
     if (More enemy Pokemon?) then (yes)
       :Send next enemy Pokemon;
     else (no)
@@ -40,13 +44,12 @@ repeat
     endif
   endif
   
-  :Enemy turn - Select random move;
-  :Enemy attacks player Pokemon;
-  :Apply damage;
+  :Enemy turn - BattleService selects AI move;
+  :Apply DamageResult to player Pokemon;
   
   if (Player Pokemon fainted?) then (yes)
     if (More player Pokemon?) then (yes)
-      :Prompt player to send next Pokemon;
+      :Prompt player to switch;
     else (no)
       :Battle Lost!;
       stop
@@ -54,8 +57,7 @@ repeat
   endif
 repeat while (Battle ongoing?)
 
-:Award EXP to participating Pokemon;
-:Award Money to player;
-:Update game statistics;
+:ExpService.ProcessVictory() awards EXP;
+:Display ProcessExpResult;
 stop
 @enduml

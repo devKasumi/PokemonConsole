@@ -1,52 +1,38 @@
 @startuml UC14_ChallengeGym_Activity
+title UC14 - Challenge Gym (Activity Diagram)
 start
-:Player enters Gym;
-:Gym Leader intro dialogue;
+:Player selects "Challenge Gym" in StoryScreen;
+:StoryScreen calls StoryService.TryChallengeGym();
 
-:Check requirements:;
-note
-  - Player level >= Min level
-  - Player has required Pokemon
-  - Player not just beat this gym
-  - Story milestone reached
-end note
+:StoryService checks Player.PokemonTeam alive;
+:StoryService checks story progress for gym availability;
 
-if (Requirements met?) then (yes)
-  :Load Gym Leader team from database;
-  :Display trainer battle UI;
-  :Player vs Gym Leader Battle;
+if (Requirements met and team alive?) then (yes)
+  :StoryService finds current Gym Leader NPC;
+  :PokemonSpawner generates Gym Leader team;
+  :Set GameSession.CurrentEnemyTeam;
+  :Set GameSession.IsTrainerBattle = true;
+  :Return (true, message, leader, enemyTeam);
+  
+  :ScreenManager switches to BattleScreen;
   note right
-    Execute UC_2 variant: Battle Story Trainer
-    Gym Leader battles have:
-    - Gimmick (weather, terrain)
-    - Themed Pokemon
-    - Mega Evolution possible
+    Battle executes per UC2 flow.
+    Gym Leader has themed Pokemon team.
   end note
   
   if (Player won?) then (yes)
-    :Play victory music;
-    :Display "You defeated [Gym Leader]!";
-    :Receive Badge;
-    note
-      - Badge sprite
-      - Badge name
-      - Badge data stored
-    end note
-    
-    :Deduct from Gym Leader pool;
-    :Receive TM or held item;
-    
-    :Update story progress;
-    :Mark gym as completed;
-    :Unlock next gym location;
-    
+    :Player.GymBadges incremented;
+    :ExpService processes victory rewards;
+    :Display "Gym Badge earned!";
+    :Unlock next story area;
   else (no)
-    :Play defeat music;
+    :Display defeat message;
+    :Return to StoryScreen;
   endif
   
 else (no)
-  :Gym Leader says "Come back stronger";
-  :Return to story;
+  :Display error message;
+  :Return to StoryScreen;
 endif
 
 stop

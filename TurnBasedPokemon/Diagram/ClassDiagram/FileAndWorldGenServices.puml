@@ -7,57 +7,61 @@ skinparam class {
   ArrowColor #333333
 }
 
-title Application Layer - File and World Generation Services
+title Application & Infrastructure - File and World Generation Services
 
-interface IFileService {
-  + SaveGame(player: Player)
-  + LoadGame(username: string): Player?
-  + ExistsGame(username: string): bool
+interface IFileService <<Application>> {
+  + Save<T>(fileName: string, data: T)
+  + Load<T>(fileName: string): T?
+  + Exists(fileName: string): bool
+  + Delete(fileName: string)
 }
 
-class FileService {
-  - _filePath: string
-  + SaveGame(player: Player)
-  + LoadGame(username: string): Player?
-  + ExistsGame(username: string): bool
-  - SerializePlayer(player: Player): string
-  - DeserializePlayer(json: string): Player
+class FileService <<Infrastructure>> {
+  - _options: JsonSerializerOptions
+  + Save<T>(fileName: string, data: T)
+  + Load<T>(fileName: string): T?
+  + Exists(fileName: string): bool
+  + Delete(fileName: string)
 }
 
-interface IWorldGenerationService {
-  + GeneratePokemon(location: LocationData): Pokemon
-  + GenerateItem(location: LocationData): Item
+interface IWorldGenerationService <<Application>> {
+  + SpawnPokemonByName(name: string, level: int): Pokemon
+  + SpawnPokemonById(evolutionId: int, currentLevel: int): Pokemon
+  + SpawnItemByName(name: string): Item
 }
 
-class WorldGenerationService {
+class WorldGenerationService <<Application>> {
+  - _gameSession: GameSession
   - _pokemonSpawner: PokemonSpawner
   - _itemSpawner: ItemSpawner
-  + GeneratePokemon(location: LocationData): Pokemon
-  + GenerateItem(location: LocationData): Item
+  + SpawnPokemonByName(name: string, level: int): Pokemon
+  + SpawnPokemonById(evolutionId: int, currentLevel: int): Pokemon
+  + SpawnItemByName(name: string): Item
 }
 
-class PokemonSpawner {
-  - _random: Random
-  + SpawnPokemon(speciesIdList: List<int>): Pokemon
-  - DetermineLevelRange(baseLevel: int): Tuple<int, int>
+class PokemonSpawner <<Application>> {
+  - _pokedexRepo: IPokedexRepository
+  + SpawnPokemon(name: string, level: int): Pokemon
+  + SpawnPokemonById(evolutionId: int, currentLevel: int): Pokemon
 }
 
-class ItemSpawner {
+class ItemSpawner <<Application>> {
+  - _itemRepo: IItemRepository
   - _random: Random
-  + SpawnItem(itemIdList: List<int>): Item
+  + SpawnItem(name: string): Item
+  + RollForRandomItem(): Item?
 }
 
 ' Relationships
 FileService ..|> IFileService
-FileService --> Player
 
 WorldGenerationService ..|> IWorldGenerationService
+WorldGenerationService --> GameSession
 WorldGenerationService --> PokemonSpawner
 WorldGenerationService --> ItemSpawner
-WorldGenerationService --> LocationData
 
-PokemonSpawner --> Pokemon
-ItemSpawner --> Item
+PokemonSpawner --> IPokedexRepository
+ItemSpawner --> IItemRepository
 
 @enduml</content>
 <parameter name="filePath">c:\C#\PokemonConsole\TurnBasedPokemon\Diagram\ClassDiagram\FileAndWorldGenServices.puml

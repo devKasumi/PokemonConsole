@@ -1,64 +1,55 @@
 @startuml UC6_ExploreStory_UseCase
+title UC6 - Explore Story (Use Case Diagram)
 skinparam linetype ortho
 left to right direction
 
 actor Player
 
 rectangle "Story Mode System" {
-  (Enter Story Mode)
-  (Load Chapter/Location)
-  (Display Story Narrative)
-  (Narration Screen)
-  (Choose Story Action)
-  (Read Narrative)
-  (Explore Location)
+  (Select Story from MainMenu)
+  (Switch to StoryScreen)
+  (StoryService loads story.json)
+  (Display current location)
+  (Choose action)
+  (Explore next location)
   (Talk to NPC)
-  (Battle Trainer)
-  (Story Progression)
-  (Discover Items/Pokemon)
-  (Encounter Battles)
-  (NPC Interaction)
-  (Receive Quest/Info)
-  (Special rules/rewards)
-  (Update Story State)
-  (Mark Milestone Reached)
-  (Unlock Next Chapter?)
-  (Advance)
-  (Unlock new areas/events)
-  (Continue Current)
+  (Challenge Gym)
+  (Challenge Pokemon League)
+  (Heal team at center)
+  (Wild encounter)
+  (Switch to BattleScreen)
+  (NPC dialogue via HandleTalk)
+  (StoryService.TryChallengeGym)
+  (StoryService.TryChallengePokemonLeague)
+  (StoryService.HealTeamAtCenter)
+  (Return to MainMenu)
 }
 
-Player --> (Enter Story Mode)
-(Enter Story Mode) --> (Load Chapter/Location)
-(Load Chapter/Location) --> (Display Story Narrative)
-(Display Story Narrative) --> (Narration Screen)
-(Narration Screen) --> (Choose Story Action)
+Player --> (Select Story from MainMenu)
+(Select Story from MainMenu) --> (Switch to StoryScreen)
+(Switch to StoryScreen) --> (StoryService loads story.json)
+(StoryService loads story.json) --> (Display current location)
+(Display current location) --> (Choose action)
 
-(Choose Story Action) --> (Read Narrative)
-(Choose Story Action) --> (Explore Location)
-(Choose Story Action) --> (Talk to NPC)
-(Choose Story Action) --> (Battle Trainer)
+(Choose action) --> (Explore next location)
+(Choose action) --> (Talk to NPC)
+(Choose action) --> (Challenge Gym)
+(Choose action) --> (Challenge Pokemon League)
+(Choose action) --> (Heal team at center)
+(Choose action) --> (Return to MainMenu)
 
-(Read Narrative) --> (Story Progression) : <<include>>
-(Explore Location) --> (Discover Items/Pokemon) : <<extend>>
-(Explore Location) --> (Encounter Battles) : <<extend>>
-(Talk to NPC) --> (NPC Interaction)
-(NPC Interaction) --> (Receive Quest/Info)
-(Battle Trainer) --> (Special rules/rewards)
+(Explore next location) --> (Wild encounter) : <<extend>>
+(Wild encounter) --> (Switch to BattleScreen)
+(Talk to NPC) --> (NPC dialogue via HandleTalk) : <<include>>
+(Challenge Gym) --> (StoryService.TryChallengeGym) : <<include>>
+(Challenge Pokemon League) --> (StoryService.TryChallengePokemonLeague) : <<include>>
+(Heal team at center) --> (StoryService.HealTeamAtCenter) : <<include>>
 
-(Story Progression) --> (Update Story State) : <<invoke>>
-(Discover Items/Pokemon) --> (Update Story State) : <<invoke>>
-(Receive Quest/Info) --> (Update Story State) : <<invoke>>
-(Special rules/rewards) --> (Update Story State) : <<invoke>>
-
-(Update Story State) --> (Mark Milestone Reached)
-(Mark Milestone Reached) --> (Unlock Next Chapter?)
-
-(Unlock Next Chapter?) --> (Advance) : Yes
-(Unlock Next Chapter?) --> (Continue Current) : No
-
-(Advance) --> (Unlock new areas/events)
-(Unlock new areas/events) --> Player
-(Continue Current) --> Player
+(Switch to BattleScreen) --> Player
+(NPC dialogue via HandleTalk) --> Player
+(StoryService.TryChallengeGym) --> Player
+(StoryService.TryChallengePokemonLeague) --> Player
+(StoryService.HealTeamAtCenter) --> Player
+(Return to MainMenu) --> Player
 
 @enduml

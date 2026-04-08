@@ -1,38 +1,35 @@
 @startuml UC12_LevelUp_UseCase
+title UC12 - Level Up / Evolve Pokemon (Use Case Diagram)
 skinparam linetype ortho
 left to right direction
 
 actor Player
 
 rectangle "Level Up & Evolution System" {
-  (Pokemon gains experience)
-  (Check EXP threshold)
-  (Enough EXP to level up?)
+  (Battle won)
+  (ExpService.ProcessVictory)
+  (Calculate EXP gained)
+  (Check level threshold)
   (Level up Pokemon)
-  (Increase stats)
-  (Learn new moves?)
-  (Add new move)
+  (Recalculate stats)
   (Check evolution condition)
-  (Can evolve?)
-  (Trigger evolution)
-  (Update Pokedex)
-  (Evolution complete)
-  (Display level up screen)
+  (WorldGenService evolves Pokemon)
+  (Return ProcessExpResult)
+  (BattleScreen displays summary)
 }
 
-Player --> (Pokemon gains experience)
-(Pokemon gains experience) --> (Check EXP threshold)
-(Check EXP threshold) --> (Enough EXP to level up?)
-(Enough EXP to level up?) --> (Level up Pokemon)
-(Level up Pokemon) --> (Increase stats)
-(Increase stats) --> (Learn new moves?)
-(Learn new moves?) --> (Add new move)
-(Add new move) --> (Check evolution condition)
-(Check evolution condition) --> (Can evolve?)
-(Can evolve?) --> (Trigger evolution)
-(Trigger evolution) --> (Update Pokedex)
-(Update Pokedex) --> (Evolution complete)
-(Evolution complete) --> (Display level up screen)
-(Display level up screen) --> Player
+Player --> (Battle won)
+(Battle won) --> (ExpService.ProcessVictory)
+(ExpService.ProcessVictory) --> (Calculate EXP gained)
+(Calculate EXP gained) --> (Check level threshold)
+(Check level threshold) --> (Level up Pokemon) : EXP >= threshold
+(Level up Pokemon) --> (Recalculate stats)
+(Recalculate stats) --> (Check evolution condition)
+(Check evolution condition) --> (WorldGenService evolves Pokemon) : meets evolution level
+(WorldGenService evolves Pokemon) --> (Return ProcessExpResult)
+(Check evolution condition) --> (Return ProcessExpResult) : no evolution
+(Check level threshold) --> (Return ProcessExpResult) : not enough EXP
+(Return ProcessExpResult) --> (BattleScreen displays summary)
+(BattleScreen displays summary) --> Player
 
 @enduml

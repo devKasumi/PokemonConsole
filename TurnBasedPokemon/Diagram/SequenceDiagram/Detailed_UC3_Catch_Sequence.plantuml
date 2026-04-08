@@ -1,80 +1,52 @@
 @startuml UC3_CatchPokemon_Sequence
 participant Player
-participant BattleScreen
-participant InventoryService
-participant CatchService
-participant CatchRateCalculator
+participant InventoryScreen
+participant ICatchService as CatchService
+participant CatchFormula
 participant GameSession
-participant PokedexService
-participant Database
 
-Player -> BattleScreen: Select "Catch" during battle
-activate BattleScreen
+Player -> InventoryScreen: Select Capture item during battle
+activate InventoryScreen
 
-BattleScreen -> InventoryService: GetAvailablePokeballs()
-activate InventoryService
-InventoryService -> GameSession: GetInventory()
-GameSession --> InventoryService: Inventory object
-InventoryService --> BattleScreen: Available balls list
-deactivate InventoryService
+InventoryScreen -> InventoryScreen: OpenPocket(ItemCategory.Capture)
 
 alt Has Pokeballs
-  BattleScreen --> Player: Show ball selection menu
-  Player -> BattleScreen: Select Pokeball type
-  
-  BattleScreen -> CatchService: AttemptCatch(wildPokemon, ballType)
+  InventoryScreen --> Player: Show ball selection
+  Player -> InventoryScreen: Select Pokeball type
+
+  InventoryScreen -> CatchService: ExecuteCapture(captureItem, wildPokemon)
   activate CatchService
-  
-  CatchService -> CatchRateCalculator: CalculateCatchRate(pokemon, ballType)
-  activate CatchRateCalculator
-  
-  note over CatchRateCalculator
+
+  CatchService -> CatchFormula: AttemptCatch(target, ball)
+  activate CatchFormula
+
+  note over CatchFormula
     Calculate based on:
-    - Pokemon species base catch rate
-    - Current HP vs Max HP ratio
-    - Pokemon status (paralyzed, etc)
-    - Ball type modifier
+    - Pokemon HP ratio (currentHP / maxHP)
+    - Ball CatchRateMultiplier
+    - Master Ball = instant catch
+    - Random shake checks (1-3)
   end note
-  
-  CatchRateCalculator --> CatchService: catch rate value
-  deactivate CatchRateCalculator
-  
-  CatchService -> CatchService: Generate random number (0-255)
-  CatchService -> CatchService: Compare random vs catch rate
-  
-  alt Catch Successful
-    CatchService -> GameSession: AddPokemonToTeam(pokemon)
-    activate GameSession
-    GameSession --> CatchService: Pokemon added
-    deactivate GameSession
-    
-    CatchService -> PokedexService: UpdatePokedexEntry(pokemon)
-    activate PokedexService
-    PokedexService -> Database: UPDATE pokedex_seen, pokedex_caught
-    Database --> PokedexService: Success
-    deactivate PokedexService
-    
-    CatchService -> GameSession: AwardCatchBonus(bonusEXP)
-    InventoryService -> GameSession: ConsumePokeball(ballType, 1)
-    
-    CatchService --> BattleScreen: CatchResult(success)
-    
-  else Catch Failed
-    InventoryService -> GameSession: ConsumePokeball(ballType, 1)
-    CatchService --> BattleScreen: CatchResult(failed)
+
+  CatchFormula --> CatchService: CatchResult(IsCaught, Shakes, DisplayMessage)
+  deactivate CatchFormula
+
+  alt IsCaught = true
+    CatchService -> GameSession: Player.PokemonTeam.Add(pokemon)
+    CatchService --> InventoryScreen: CatchResult.Success
+    deactivate CatchService
+    InventoryScreen --> Player: Show shake animation + "Pokemon caught!"
+
+  else IsCaught = false
+    CatchService -> GameSession: Player.RemoveItem(ball)
+    CatchService --> InventoryScreen: CatchResult.Failure
+    deactivate CatchService
+    InventoryScreen --> Player: Show shakes + "Pokemon broke free!"
   end
-  
-  deactivate CatchService
-  
-  alt Success
-    BattleScreen --> Player: Show "Pokemon caught!" message
-  else Failed
-    BattleScreen --> Player: Show "Pokemon broke free!" message
-    Player -> BattleScreen: Continue battle
-  end
+
 else No Pokeballs
-  BattleScreen --> Player: Show "Out of Pokeballs" message
+  InventoryScreen --> Player: "No capture items available"
 end
 
-deactivate BattleScreen
+deactivate InventoryScreen
 @enduml

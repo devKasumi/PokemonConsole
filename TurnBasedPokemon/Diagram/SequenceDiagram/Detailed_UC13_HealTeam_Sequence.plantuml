@@ -1,60 +1,28 @@
 @startuml UC13_HealTeam_Sequence
 participant Player
 participant StoryScreen
-participant HealingService
+participant IStoryService as StoryService
 participant GameSession
-participant Database
 
-Player -> StoryScreen: Talk to Nurse at Pokemon Center
+Player -> StoryScreen: Select "Heal Team" option
 activate StoryScreen
 
-StoryScreen -> StoryScreen: Display dialogue
-StoryScreen --> Player: "Your Pokemon need healing"
+StoryScreen -> StoryService: HealTeamAtCenter()
+activate StoryService
 
-Player -> StoryScreen: Confirm healing
-activate StoryScreen
-
-StoryScreen -> HealingService: HealTeamAtCenter()
-activate HealingService
-
-HealingService ->> HealingService: Play animation
-note over HealingService
-  Show pink healing light
-  Play healing sound
-  Duration: 2-3 seconds
-end note
+StoryService -> GameSession: Get Player.PokemonTeam
+activate GameSession
+GameSession --> StoryService: Pokemon team list
+deactivate GameSession
 
 loop for each Pokemon in team
-  HealingService -> GameSession: GetPokemonTeam()
-  activate GameSession
-  GameSession --> HealingService: Pokemon list
-  deactivate GameSession
-  
-  HealingService -> GameSession: RestoreHP(pokemon, maxHP)
-  activate GameSession
-  GameSession -> GameSession: pokemon.HP = pokemon.MaxHP
-  GameSession --> HealingService: HP restored
-  deactivate GameSession
-  
-  HealingService -> GameSession: RemoveAllStatus(pokemon)
-  activate GameSession
-  GameSession -> GameSession: Remove Poison, Burn, Paralysis, etc
-  GameSession -> Database: UPDATE pokemon SET status = 'Healthy'
-  activate Database
-  Database --> GameSession: Status updated
-  deactivate Database
-  GameSession --> HealingService: Status cleared
-  deactivate GameSession
+  StoryService -> StoryService: pokemon.CurrentHp = pokemon.MaxHp
 end
 
-HealingService -> Database: UPDATE team_health WHERE user_id=?
-Database --> HealingService: All Pokemon healed
-deactivate Database
+StoryService --> StoryScreen: "All Pokemon healed!" message
+deactivate StoryService
 
-HealingService --> StoryScreen: HealingComplete
-deactivate HealingService
+StoryScreen --> Player: Display "Your team has been fully healed!"
 
-StoryScreen --> Player: "All Pokemon fully healed!"
-StoryScreen -> StoryScreen: Update team display UI
 deactivate StoryScreen
 @enduml

@@ -1,74 +1,29 @@
 @startuml UC11_MatchHistory_Activity
-start
-:Player selects "View Match History";
-:Fetch player's PvP matches from database;
-:Sort by date (most recent first);
-
-:Display match list:;
+title UC11 - Match History (Activity Diagram)
 note
-  For each match show:
-  - #Num
-  - Opponent name
-  - W/L result
-  - ELO change (±X)
-  - Date/Time
-  - Duration (in turns)
+  **Under Development** — Only basic Player.PvPWins
+  and Player.PvPLosses counters exist.
+  Detailed per-match recording and display
+  is not yet implemented.
 end note
 
-if (List empty?) then (yes)
-  :Display "No matches played yet";
-else (no)
-  repeat
-    :Show match summary;
-    if (Player selects match?) then (yes)
-      :Load detailed match data;
-      :Fetch turn-by-turn log;
-      :Parse all actions:;
-      note
-        - Turn number
-        - Active Pokemon
-        - Move selected
-        - Damage dealt
-        - Status effect applied
-        - Pokemon fainted? (if yes)
-      end note
-      
-      :Display detailed breakdown;
-      :Show match statistics;
-      note
-        - Your Pokemon performance
-        - Opponent team strength
-        - Critical hits landed
-        - Status effect usage
-        - ELO before/after
-      end note
-      
-      if (Player wants replay) then (yes)
-        :Simulate replay mode;
-        :Show battle frame-by-frame;
-      else (no)
-        :Back to history list;
-      endif
-      
-    elseif (Player filters?) then (yes)
-      :Show filter options;
-      note
-        - By opponent
-        - By date range
-        - By result (W/L)
-        - By Pokemon used
-      end note
-      
-      :Apply filter;
-      :Display filtered list;
-      
-    elseif (Player exports?) then (yes)
-      :Generate CSV/PDF report;
-      :Include statistics;
-      :Download file;
-    endif
-  repeat while (Player browsing history)
-endif
+start
+:Player views PvP stats (planned feature);
+:Read Player.PvPWins and Player.PvPLosses from GameSession;
+:Display basic win/loss stats;
+
+note
+  Planned future features:
+  - Detailed match history per game
+  - Turn-by-turn replay
+  - ELO rating tracking
+  - Opponent info display
+  
+  Requires:
+  - Match history data model
+  - Repository persistence for match records
+  - Dedicated MatchHistoryScreen
+end note
 
 stop
 @enduml

@@ -1,44 +1,57 @@
 @startuml UC16_ChallengeTrainer_Sequence
-participant Player
-participant GameWorld
-participant StoryService
-participant BattleService
-participant GameSession
-participant Database
+title UC16 - Challenge Trainer (Sequence Diagram)
+note over Player
+  **Under Development** — Trainer challenge logic
+  exists via StoryService.TryChallengeTrainer(),
+  but dedicated Trainer screen is not yet implemented.
+end note
 
-Player -> GameWorld: Encounter Trainer
-activate GameWorld
+participant "Player" as Player
+participant "StoryScreen" as Screen
+participant "IStoryService\n(StoryService)" as StoryService
+participant "PokemonSpawner" as Spawner
+participant "GameSession" as GS
+participant "ScreenManager" as SM
 
-GameWorld -> StoryService: TryChallengeTrainer(trainerId)
+Player -> Screen: Encounter Trainer NPC
+activate Screen
+
+Screen -> Screen: HandleTalk(npc)
+Screen --> Player: Display trainer dialogue
+
+note over Screen: npc.Action == "StartBattle"
+
+Screen -> StoryService: TryChallengeTrainer(npc)
 activate StoryService
 
-StoryService -> Database: SELECT trainer_team FROM trainers WHERE trainer_id=?
-activate Database
-Database --> StoryService: Trainer team data
-deactivate Database
+StoryService -> GS: Check Player.PokemonTeam alive
+activate GS
+GS --> StoryService: team status
+deactivate GS
 
-StoryService -> BattleService: ExecuteTrainerBattle(trainerTeam)
-activate BattleService
-
-BattleService -> BattleService: BattleLogic()
-alt Player Won
-  BattleService --> StoryService: TrainerDefeated
+alt Team has alive Pokemon
+  StoryService -> Spawner: SpawnPokemon(trainer pokemon config)
+  activate Spawner
+  Spawner --> StoryService: List<Pokemon> enemyTeam
+  deactivate Spawner
   
-  StoryService -> GameSession: AwardMoney(trainerLevel × 50)
-  activate GameSession
-  GameSession --> StoryService: Money added
-  deactivate GameSession
+  StoryService -> GS: Set CurrentEnemyTeam = enemyTeam
+  StoryService -> GS: Set IsTrainerBattle = true
+  StoryService --> Screen: (true, "Trainer battle!", enemyTeam)
+  deactivate StoryService
   
-  StoryService -> StoryService: MarkTrainerAsDefeated()
-  StoryService -> Database: UPDATE trainers SET defeated=true WHERE trainer_id=?
-  Database --> StoryService: Marked
+  Screen -> SM: SwitchScreen(ScreenType.BATTLE)
+  note over SM
+    Battle executes per UC2 flow.
+    BattleService handles turn logic.
+    On victory: ExpService processes exp/level up.
+  end note
   
-else Player Lost
-  BattleService --> StoryService: TrainerVictory
-  StoryService -> StoryService: PlayerBlackedOut()
+else All Pokemon fainted
+  StoryService --> Screen: (false, "No alive Pokemon", null)
+  deactivate StoryService
+  Screen --> Player: "Heal your Pokemon first!"
 end
 
-deactivate BattleService
-deactivate StoryService
-deactivate GameWorld
+deactivate Screen
 @enduml

@@ -1,55 +1,42 @@
 @startuml UC17_SelectStarter_Sequence
 participant Player
-participant GameStart
-participant StarterSelection
-participant GameSession
+participant StoryScreen
+participant IStoryService as StoryService
 participant PokemonSpawner
-participant Database
+participant GameSession
 
-Player -> GameStart: Start New Game
-activate GameStart
+Player -> StoryScreen: Arrive at starter selection location
+activate StoryScreen
 
-GameStart -> StarterSelection: DisplayStarterOptions()
-activate StarterSelection
+StoryScreen -> StoryScreen: ShowStarterMenu()
+StoryScreen --> Player: Display 3 starter choices (Bulbasaur, Charmander, Squirtle)
 
-StarterSelection -> Database: SELECT starters FROM pokemon_species WHERE is_starter=true LIMIT 3
-activate Database
-Database --> StarterSelection: 3 starter Pokemon
-deactivate Database
+Player -> StoryScreen: Select starter Pokemon
 
-StarterSelection --> GameStart: Starter options loaded
-GameStart --> Player: Show 3 starter choices
+StoryScreen -> StoryService: GiveStarter(starterName)
+activate StoryService
 
-Player -> StarterSelection: SelectStarter(starterId)
-activate StarterSelection
-
-StarterSelection -> PokemonSpawner: GenerateStarter(pokemonId, level=5)
+StoryService -> PokemonSpawner: SpawnPokemon(starterName, level=5)
 activate PokemonSpawner
-PokemonSpawner -> Database: SELECT base_stats FROM pokemon_species WHERE id=?
-Database --> PokemonSpawner: Stats
-PokemonSpawner -> PokemonSpawner: CalculateStats(level=5)
-PokemonSpawner --> StarterSelection: Starter Pokemon object
+PokemonSpawner -> PokemonSpawner: Lookup species from IPokedexRepository
+PokemonSpawner -> PokemonSpawner: Generate level 5 Pokemon with base moves
+PokemonSpawner --> StoryService: Starter Pokemon object
 deactivate PokemonSpawner
 
-StarterSelection -> GameSession: AddPokemonToTeam(starterPokemon)
-activate GameSession
-GameSession -> Database: INSERT INTO user_pokemon VALUES (...)
-Database --> GameSession: Pokemon saved
-GameSession --> StarterSelection: Starter added to team
-deactivate GameSession
+StoryService -> GameSession: Player.PokemonTeam.Add(starter)
+StoryService -> GameSession: Player.CurrentPokemon = starter
 
-StarterSelection -> GameSession: GiveStarterItems()
-activate GameSession
-GameSession -> GameSession: AddItem(Pokedex)
-GameSession -> GameSession: AddItem(5x Pokeballs)
-GameSession -> GameSession: AddItem(2x Potions)
-GameSession --> StarterSelection: Items given
-deactivate GameSession
+note over StoryService
+  Also gives starter items:
+  - 5x Pokeball
+  - 2x Potion
+end note
 
-StarterSelection --> Player: "Game started! Go on your adventure!"
-deactivate StarterSelection
+StoryService --> StoryScreen: (true, "You received {starterName}!")
+deactivate StoryService
 
-GameStart -> GameSession: InitializeGameWorld()
-GameStart --> Player: Welcome to the world!
-deactivate GameStart
+StoryScreen --> Player: "Your adventure begins!"
+StoryScreen -> StoryScreen: Continue story
+
+deactivate StoryScreen
 @enduml

@@ -1,63 +1,55 @@
 @startuml UC6_ExploreStory_Activity
+title UC6 - Explore Story (Activity Diagram)
 start
-:Player selects Story Mode;
-:Load current story chapter;
-:Determine player progress;
+:Player selects "Story" from MainMenuScreen;
+:ScreenManager switches to StoryScreen;
+:StoryService loads story.json data;
+:StoryService determines current chapter/location;
 
 if (Story already started?) then (yes)
-  :Resume from last checkpoint;
+  :Resume from current chapter;
 else (no)
-  :Start new story from beginning;
+  :Start from first chapter;
 endif
 
-:Display current location;
-:Show available actions;
+:StoryScreen displays current location;
+:Show available actions from StoryService;
 
 repeat
-  :Display chapter narrative & visuals;
+  :Display chapter narrative;
   :Present player choices:;
   note
-    - Read narrative
-    - Explore area
-    - Talk to NPCs
-    - Battle trainer
-    - Check inventory
-    - Save game
+    - Explore (move to next location)
+    - Talk to NPC
+    - Challenge Gym
+    - Challenge Pokemon League
+    - Heal team at center
+    - Back to menu
   end note
   
-  if (Player action == Read Narrative) then (yes)
-    :Play narration audio (if available);
-    :Scroll through story text;
-    :Mark chapter as read;
-    
-  elseif (Player action == Explore) then (yes)
-    :Move to next location;
-    :Spawn items/Pokemon;
-    :Handle encounters;
+  if (Player action == Explore) then (yes)
+    :StoryService advances to next location;
+    :Check for wild encounters;
+    if (Wild encounter?) then (yes)
+      :Switch to BattleScreen (see UC2);
+    endif
     
   elseif (Player action == Talk to NPC) then (yes)
-    :Play NPC dialogue;
-    :Show dialogue options;
-    :Run NPC narrative branches;
+    :StoryScreen.HandleTalk(npc);
+    :Display NPC dialogue;
+    :Check npc.Action for battle trigger;
     
-  elseif (Player action == Battle) then (yes)
-    :Start story battle;
-    :Apply special rules;
-    :Gain battle rewards;
-    if (Battle triggers milestone?) then (yes)
-      :Mark milestone as complete;
-      :Check next chapter unlock;
-    endif
+  elseif (Player action == Challenge Gym) then (yes)
+    :StoryService.TryChallengeGym() (see UC14);
+    
+  elseif (Player action == Heal Team) then (yes)
+    :StoryService.HealTeamAtCenter() (see UC13);
   endif
   
-  :Update story progression state;
-  :Check for story branching;
-  
   if (Player wants to quit?) then (yes)
-    :Exit story mode;
+    :Return to MainMenuScreen;
   endif
 repeat while (In story mode)
 
-:Auto-save story progress;
 stop
 @enduml

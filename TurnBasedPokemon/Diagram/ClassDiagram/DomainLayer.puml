@@ -10,91 +10,65 @@ skinparam class {
 title Domain Layer - Core Entities
 
 class User {
-  + UserId: int
   + Username: string
-  + PasswordHash: string
-  + PlayerId: int?
-  + CreatedDate: DateTime
+  + Password: string
+  + PlayerData: Player?
 }
 
 class Player {
-  + PlayerId: int
-  + UserId: int
-  + PlayerName: string
-  + Level: int
-  + CurrentExp: int
-  + TotalExp: int
+  + Name: string
+  + CurrentPhase: int = 1
+  + CurrentLocation: string = "Pallet Town"
   + Badges: List<string>
   + PokemonTeam: List<Pokemon>
-  + Inventory: Inventory
-  + DiscoveredLocations: List<string>
+  + Inventory: Dictionary<int, Dictionary<string, List<Item>>>
+  + CurrentPokemon: Pokemon
+  + IsChampion: bool = false
+  + PvPWins: int = 0
+  + PvPLosses: int = 0
+  + AddBadge(badgeName: string)
+  + AddItem(item: Item)
+  + RemoveItem(item: Item)
 }
 
-class Pokemon {
-  + PokemonId: int
-  + PlayerId: int
-  + SpeciesId: int
-  + Nickname: string
+class Pokemon <<Pokemon.Shared>> {
+  + Specie: PokemonSpecies
   + Level: int
-  + CurrentExp: int
-  + HP: int
-  + MaxHP: int
-  + Stats: Stats
-  + CurrentMoves: List<PokemonMove>
-  + Status: PokemonStatus
-  + IsOwned: bool
-  + CatchLevel: int
-  + EvolutionStage: int
-  + InjuryCount: int
-  + ResetStats()
+  + Exp: int
+  + CurrentHp: int
+  + MaxHp: int
+  + Moves: List<PokemonMove>
   + TakeDamage(damage: int)
-  + Heal()
-  + TryEvolve()
+  + LevelUp()
+  + ReplaceMove(oldMove: PokemonMove, newMove: PokemonMove)
 }
 
-class PokemonSpecies {
-  + SpeciesId: int
+class PokemonSpecies <<Pokemon.Shared>> {
+  + Id: int
   + Name: string
-  + ImageName: string
-  + ElementType: ElementType
+  + Types: List<ElementType>
   + BaseStats: Stats
-  + CatchRate: int
-  + EvolutionLevel: int
-  + EvolvesInto: int?
-  + AvailableMoves: List<PokemonMove>
-  + GetMoveAt(level: int): PokemonMove?
+  + MoveSet: List<PokemonMove>
 }
 
-class PokemonMove {
-  + MoveId: int
+class PokemonMove <<Pokemon.Shared>> {
   + Name: string
   + Type: ElementType
   + Power: int
   + Accuracy: int
   + CriticalChance: double
   + Priority: int
-  + CalculateDamage(attacker: Pokemon, defender: Pokemon): int
 }
 
-class Stats {
+class Stats <<Pokemon.Shared>> {
   + Attack: int
   + Defense: int
   + SpAtk: int
   + SpDef: int
   + Speed: int
-  + ToString()
 }
 
-enum PokemonStatus {
-  HEALTHY
-  POISONED
-  PARALYZED
-  BURNED
-  FROZEN
-  ASLEEP
-}
-
-enum ElementType {
+enum ElementType <<Pokemon.Shared>> {
   NORMAL
   FIRE
   WATER
@@ -115,93 +89,87 @@ enum ElementType {
   FAIRY
 }
 
-class Item {
-  + ItemId: int
+enum ItemCategory {
+  Healing
+  Capture
+  General
+  Utility
+}
+
+abstract class Item {
+  + Id: int
   + Name: string
   + Description: string
-  + GetItemType(): string
+  + Category: ItemCategory
+  + Price: int
 }
 
 class HealingItem {
   + HealAmount: int
-  + CuresStatus: PokemonStatus?
 }
 
 class CaptureItem {
-  + CatchMultiplier: double
+  + CatchRateMultiplier: double
 }
 
 class GeneralItem {
-  + Value: int
+  + SoldRate: double
 }
 
 class Inventory {
-  + PlayerId: int
-  - _items: Dictionary<int, int>
-  + Items: List<Item>
-  + ItemCount: int
-  + AddItem(item: Item, quantity: int)
-  + RemoveItem(itemId: int, quantity: int)
-  + GetItemQuantity(itemId: int): int
+  + Items: Dictionary<Item, int>
+  + AddItem(item: Item, amount: int)
+  + RemoveItem(item: Item): bool
 }
 
 class GameSession {
-  - _userRepo: IUserRepository
   + CurrentUser: User?
-  + Player: Player?
+  + Player: Player? <<computed>>
   + CurrentLocation: LocationData
+  + HasPlayedNarrative: bool
   + CurrentEnemyTeam: List<Pokemon>
-  + CurrentEnemyPokemon: Pokemon?
+  + CurrentEnemyTeamIndex: int
   + IsTrainerBattle: bool
-  + Login(user: string, pass: string)
-  + StartNewGame()
-  + LoadProgress(username: string): bool
-  + SaveProgress()
-  + SetupBattle(enemies, isTrainer)
+  + CurrentEnemyPokemon: Pokemon? <<computed>>
+  + SetupBattle(enemies: List<Pokemon>, isTrainer: bool)
+  + HasMoreEnemies(): bool
+  + MoveToNextEnemy()
+  + ClearBattle()
 }
 
-class PokemonData {
-  + Id: int
+abstract class Trainer {
   + Name: string
-  + Level: int
-  + Moves: List<PokemonMove>
-  + Stats: Stats
+  + Team: List<Pokemon>
+  + IsDefeated: bool
 }
 
-class LocationData {
-  + LocationId: int
-  + Name: string
-  + Description: string
-  + IsDiscovered: bool
-  + PossiblePokemon: List<int>
-  + PossibleItems: List<int>
+class NPC {
+  + Role: NPCRole
+  + ChallengeQuote: string
+  + DefeatQuote: string
+  + RequiredBadge: int
 }
 
-class NpcData {
-  + NpcId: int
-  + Name: string
-  + Dialogue: string
-  + ImageName: string
-  + Team: List<PokemonData>
+enum NPCRole {
+  GymLeader
+  EliteFour
+  Champion
+  Rival
+  Other
 }
 
-class PhaseData {
-  + Phase: int
-  + Title: string
-  + Dialogue: List<string>
-  + BattleNpc: NpcData
+class CatchFormula <<static>> {
+  + {static} AttemptCatch(target: Pokemon, ball: CaptureItem): CatchResult
 }
 
 ' Relationships
-User --> Player : creates
-Player --> Pokemon : owns
-Player --> Inventory : has
-Player --> LocationData : discovers
+User "1" --> "0..1" Player : has PlayerData
+Player "1" --> "*" Pokemon : owns team
+Player --> Item : has inventory
 
 Pokemon --> PokemonSpecies : base species
 Pokemon --> PokemonMove : learns
 Pokemon --> Stats : has
-Pokemon --> PokemonStatus : current status
 
 PokemonSpecies --> Stats : base stats
 PokemonSpecies --> PokemonMove : available moves
@@ -210,17 +178,15 @@ PokemonSpecies --> ElementType : has type
 Item <|-- HealingItem
 Item <|-- CaptureItem
 Item <|-- GeneralItem
+Item --> ItemCategory : categorized by
 
 Inventory --> Item : contains
 
+Trainer <|-- NPC
+NPC --> NPCRole : has role
+
 GameSession --> User : current user
-GameSession --> Player : current player
 GameSession --> Pokemon : enemy pokemon
 GameSession --> LocationData : current location
-
-PokemonData --> PokemonMove : has moves
-NpcData --> PokemonData : pokemon team
-PhaseData --> NpcData : battle npc
-LocationData --> NpcData : npcs
 
 @enduml

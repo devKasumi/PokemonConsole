@@ -17,6 +17,7 @@ skinparam package {
 title Pokemon Game - High Level Architecture
 
 package "Presentation Layer" {
+  class ScreenManager
   class LoginScreen
   class MainMenuScreen
   class BattleScreen
@@ -26,15 +27,26 @@ package "Presentation Layer" {
 }
 
 package "Application Layer" {
+  interface IBattleService
+  interface IStoryService
+  interface IExpService
+  interface IHealingService
+  interface ICatchService
+  interface IAuthenService
+  interface IPvPService
+  interface INetworkService
+  interface IWorldGenerationService
+  interface IFileService
   class BattleService
   class StoryService
   class ExpService
   class HealingService
   class CatchService
   class AuthenService
-  class FileService
+  class PvPService
   class WorldGenerationService
-  class MatchmakingService
+  class PokemonSpawner
+  class ItemSpawner
 }
 
 package "Domain Layer" {
@@ -43,21 +55,41 @@ package "Domain Layer" {
   class Player
   class Pokemon
   class PokemonSpecies
-  class PokemonMove
   class Item
-  class Inventory
+  class Trainer
+  class CatchFormula
 }
 
 package "Infrastructure Layer" {
   class UserRepository
   class PokedexRepository
   class ItemRepository
-  class PokemonSpawner
-  class ItemSpawner
+  class FileService
+  class NetworkService
+  class MySqlUserRepository
+  class MySqlPokedexRepository
+  class MySqlItemRepository
+  class MySqlStoryService
+  class DatabaseSeeder
 }
 
-Presentation --> Application: uses
-Application --> Domain: manipulates
-Application --> Infrastructure: queries
-Domain --> Infrastructure: persists
+package "Pokemon.Shared" {
+  class DamageCalculator
+  class TypeChart
+  class PvPTurnResult
+  class BattleActionRequest
+}
+
+package "PokemonServer" {
+  class BattleHub
+  class MatchmakingService
+  class PvPManager
+  class BattleRoom
+}
+
+Presentation --> Application: uses interfaces
+Application --> Domain: manipulates entities
+Infrastructure --> Application: implements interfaces
+Infrastructure ..> Domain: persists entities
+
 @enduml

@@ -1,4 +1,5 @@
 @startuml UC8_Matchmaking_UseCase
+title UC8 - Join Matchmaking (Use Case Diagram)
 skinparam linetype ortho
 left to right direction
 
@@ -8,55 +9,42 @@ together {
 }
 
 rectangle "Matchmaking System" {
-  (Select PvP Mode)
-  (Join Matchmaking Queue)
-  (Add to waiting queue)
-  (Server searches for opponent)
-  (Opponent Found?)
-  (Found match)
-  (Keep waiting)
-  (Create Battle Room)
-  (Load opponent team)
-  (Load opponent stats)
-  (Both players notified)
-  (Accept Match?)
-  (Confirm)
-  (Decline)
-  (Ready for battle)
-  (Return to queue/Main menu)
-  (Proceed to Battle)
+  (Select PvP from MainMenu)
+  (PvPService.StartMatchmaking)
+  (NetworkService connects to BattleHub)
+  (BattleHub adds to MatchmakingService queue)
+  (MatchmakingService searches for opponent)
+  (Match found)
+  (Keep searching)
+  (Create BattleRoom)
+  (Both players notified: MatchFound)
+  (Switch to PvPScreen)
+  (Cancel matchmaking)
+  (Return to MainMenu)
 }
 
-Player1 --> (Select PvP Mode)
-Player2 --> (Select PvP Mode)
+Player1 --> (Select PvP from MainMenu)
+Player2 --> (Select PvP from MainMenu)
 
-(Select PvP Mode) --> (Join Matchmaking Queue)
-(Join Matchmaking Queue) --> (Add to waiting queue)
-(Add to waiting queue) --> (Server searches for opponent) : <<invoke>>
+(Select PvP from MainMenu) --> (PvPService.StartMatchmaking)
+(PvPService.StartMatchmaking) --> (NetworkService connects to BattleHub)
+(NetworkService connects to BattleHub) --> (BattleHub adds to MatchmakingService queue)
+(BattleHub adds to MatchmakingService queue) --> (MatchmakingService searches for opponent) : <<invoke>>
 
-(Server searches for opponent) --> (Opponent Found?)
-(Opponent Found?) --> (Found match) : both rank similar
-(Opponent Found?) --> (Keep waiting) : timeout/rank gap
+(MatchmakingService searches for opponent) --> (Match found) : two players in queue
+(MatchmakingService searches for opponent) --> (Keep searching) : waiting
 
-(Found match) --> (Create Battle Room) : <<include>>
-(Create Battle Room) --> (Load opponent team)
-(Create Battle Room) --> (Load opponent stats)
+(Match found) --> (Create BattleRoom) : <<include>>
+(Create BattleRoom) --> (Both players notified: MatchFound)
 
-(Load opponent team) --> (Both players notified)
-(Load opponent stats) --> (Both players notified)
+(Both players notified: MatchFound) --> (Switch to PvPScreen)
+(Switch to PvPScreen) --> Player1
+(Switch to PvPScreen) --> Player2
 
-(Both players notified) --> Player1
-(Both players notified) --> Player2
+(Keep searching) --> (Cancel matchmaking) : player cancels
+(Cancel matchmaking) --> (Return to MainMenu)
+(Return to MainMenu) --> Player1
 
-Player1 --> (Accept Match?)
-Player2 --> (Accept Match?)
-
-(Accept Match?) --> (Confirm) : Yes
-(Accept Match?) --> (Decline) : No
-
-(Confirm) --> (Ready for battle)
-(Decline) --> (Return to queue/Main menu)
-
-(Ready for battle) --> (Proceed to Battle)
+@enduml
 
 @enduml

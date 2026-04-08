@@ -1,39 +1,41 @@
 @startuml UC14_ChallengeGym_UseCase
+title UC14 - Challenge Gym Leader (Use Case Diagram)
 skinparam linetype ortho
 left to right direction
 
 actor Player
 
 rectangle "Gym Challenge System" {
-  (Arrive at Gym)
-  (Talk to Gym Leader)
-  (Receive challenge)
-  (Gym Leader requirements met?)
-  (Gym Leader team ready)
+  (Select Challenge Gym in StoryScreen)
+  (StoryService.TryChallengeGym)
+  (Check team alive & progress)
+  (Requirements met?)
+  (PokemonSpawner generates Gym Leader team)
+  (Set GameSession.CurrentEnemyTeam)
+  (Switch to BattleScreen)
   (Battle Gym Leader)
-  (Battle won?)
-  (Defeated)
-  (Victory)
-  (Receive Badge)
-  (Receive Prize Money)
-  (Receive Blueprint/TM)
-  (GymLeader defeated)
-  (Update story progress)
+  (Player won?)
+  (Player.GymBadges incremented)
+  (ExpService processes rewards)
+  (Display error message)
+  (Return to StoryScreen)
 }
 
-Player --> (Arrive at Gym)
-(Arrive at Gym) --> (Talk to Gym Leader)
-(Talk to Gym Leader) --> (Receive challenge)
-(Receive challenge) --> (Gym Leader requirements met?)
-(Gym Leader requirements met?) --> (Gym Leader team ready)
-(Gym Leader team ready) --> (Battle Gym Leader)
-(Battle Gym Leader) --> (Battle won?)
-(Battle won?) --> (Victory)
-(Battle won?) --> (Defeated)
-(Victory) --> (Receive Badge)
-(Receive Badge) --> (GymLeader defeated)
-(GymLeader defeated) --> (Update story progress)
-(Update story progress) --> Player
-(Gym Leader requirements met?) --> Player : Return later with stronger team
+Player --> (Select Challenge Gym in StoryScreen)
+(Select Challenge Gym in StoryScreen) --> (StoryService.TryChallengeGym)
+(StoryService.TryChallengeGym) --> (Check team alive & progress)
+(Check team alive & progress) --> (Requirements met?)
+(Requirements met?) --> (PokemonSpawner generates Gym Leader team) : yes
+(Requirements met?) --> (Display error message) : no
+(PokemonSpawner generates Gym Leader team) --> (Set GameSession.CurrentEnemyTeam)
+(Set GameSession.CurrentEnemyTeam) --> (Switch to BattleScreen)
+(Switch to BattleScreen) --> (Battle Gym Leader)
+(Battle Gym Leader) --> (Player won?)
+(Player won?) --> (Player.GymBadges incremented) : victory
+(Player.GymBadges incremented) --> (ExpService processes rewards)
+(ExpService processes rewards) --> (Return to StoryScreen)
+(Player won?) --> (Return to StoryScreen) : defeat
+(Display error message) --> (Return to StoryScreen)
+(Return to StoryScreen) --> Player
 
 @enduml

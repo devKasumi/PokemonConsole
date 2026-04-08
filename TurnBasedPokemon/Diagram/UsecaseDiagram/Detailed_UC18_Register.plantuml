@@ -1,4 +1,5 @@
 @startuml UC18_Register_UseCase
+title UC18 - Register (Use Case Diagram)
 skinparam linetype ortho
 left to right direction
 
@@ -11,12 +12,11 @@ rectangle "Account Registration System" {
   (Enter password)
   (Validate input)
   (Handle username taken)
-  (Handle weak password)
-  (Save to database)
-  (Create profile)
-  (Initialize starter)
+  (Save to users.json)
+  (Create Player profile)
+  (Initialize starter selection)
   (Account created)
-  (Show login screen)
+  (Enter Story Screen)
 }
 
 NewPlayer --> (Open game)
@@ -26,14 +26,12 @@ NewPlayer --> (Open game)
 (Enter password) --> (Validate input)
 
 (Validate input) --> (Handle username taken) : username taken
-(Validate input) --> (Handle weak password) : weak password
-(Validate input) --> (Save to database) : valid input
+(Validate input) --> (Save to users.json) : valid input
 (Handle username taken) --> (Enter username)
-(Handle weak password) --> (Enter password)
-(Save to database) --> (Create profile)
-(Create profile) --> (Initialize starter)
-(Initialize starter) --> (Account created)
-(Account created) --> (Show login screen)
-(Show login screen) --> NewPlayer
+(Save to users.json) --> (Create Player profile)
+(Create Player profile) --> (Initialize starter selection)
+(Initialize starter selection) --> (Account created)
+(Account created) --> (Enter Story Screen)
+(Enter Story Screen) --> NewPlayer
 
 @enduml

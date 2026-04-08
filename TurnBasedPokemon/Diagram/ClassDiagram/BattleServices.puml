@@ -10,31 +10,50 @@ skinparam class {
 title Application Layer - Battle Services
 
 interface IBattleService {
-  + ExecuteTurn(playerMove: int, enemyMove: int): BattleResult
-  + GetAvailableMoves(): List<PokemonMove>
-  + CalculateDamage(attacker: Pokemon, move: PokemonMove, defender: Pokemon): int
+  + ExecutePlayerTurn(moveIndex: int): BattleTurnResult
+  + ExecuteEnemyTurn(): BattleTurnResult
+  + ProcessVictory(): ProcessExpResult
+  + CanSwitchPokemon(target: Pokemon): bool
 }
 
 class BattleService {
-  + ExecuteTurn(playerMove: int, enemyMove: int): BattleResult
-  + GetAvailableMoves(): List<PokemonMove>
-  + CalculateDamage(attacker: Pokemon, move: PokemonMove, defender: Pokemon): int
-  - CheckStatusEffect(pokemon: Pokemon): bool
-  - ApplyStatusEffect(attacker: Pokemon, move: PokemonMove, defender: Pokemon)
+  - _gameSession: GameSession
+  - _userRepo: IUserRepository
+  - _worldGen: IWorldGenerationService
+  - _expService: IExpService
+  + ExecutePlayerTurn(moveIndex: int): BattleTurnResult
+  + ExecuteEnemyTurn(): BattleTurnResult
+  + ProcessVictory(): ProcessExpResult
+  + CanSwitchPokemon(target: Pokemon): bool
 }
 
-class BattleResult {
-  + Winner: Player?
-  + Loser: Player?
+record BattleTurnResult {
+  + IsEnemyFainted: bool
+  + IsPlayerFainted: bool
+  + MoveUsed: string?
+  + CombatLogs: List<string>
+  + {static} Continue(): BattleTurnResult
+  + {static} EnemyFainted(logs): BattleTurnResult
+  + {static} PlayerFainted(logs): BattleTurnResult
+}
+
+record ProcessExpResult {
   + ExpGained: int
-  + Message: string
+  + LeveledUp: bool
+  + OldName: string?
+  + EvolutionName: string?
+  + NewMovesLearned: List<string>
+  + HasEvolved: bool <<computed>>
 }
 
 ' Relationships
 BattleService ..|> IBattleService
-BattleService --> BattleResult
-BattleService --> Pokemon
-BattleService --> PokemonMove
+BattleService --> BattleTurnResult
+BattleService --> ProcessExpResult
+BattleService --> GameSession
+BattleService --> IUserRepository
+BattleService --> IWorldGenerationService
+BattleService --> IExpService
 
 @enduml</content>
 <parameter name="filePath">c:\C#\PokemonConsole\TurnBasedPokemon\Diagram\ClassDiagram\BattleServices.puml

@@ -1,43 +1,41 @@
 @startuml UC3_CatchPokemon_Activity
+title UC3 - Catch Pokemon (Activity Diagram)
 start
 :Player in battle with wild Pokemon;
-:Player selects "Catch" action;
+:BattleScreen shows "Catch" option;
+:Player selects Catch action;
 
-if (Player has Pokeballs?) then (yes)
+if (Player has CaptureItems in inventory?) then (yes)
   :Display available ball types;
-  :Player selects Pokeball type;
+  :Player selects CaptureItem;
   
-  if (Throw Pokeball?) then (yes)
-    :Consume 1 Pokeball from inventory;
-    
-    :Calculate catch rate;
-    note
-      Catch Rate = Base Rate × 
-      (3 × MaxHP - 2 × CurrentHP) / (3 × MaxHP) ×
-      Status Modifier × Ball Modifier
-    end note
-    
-    :Generate random number (0-255);
-    if (Random <= Catch Rate?) then (yes)
-      :Shake animation;
-      :Pokemon caught!;
-      :Add Pokemon to player collection;
-      :Award catch bonus EXP;
-      stop
-    else (no)
-      :Shake failed;
-      :"Pokemon broke free!";
-      :Continue battle;
-      stop
-    endif
+  :BattleScreen calls CatchService.ExecuteCapture(item, target);
+  :CatchService calls CatchFormula.AttemptCatch();
+  
+  note
+    CatchFormula calculates shake count (0-3)
+    based on HP ratio, ball modifier, status
+  end note
+  
+  :CatchService returns CatchResult;
+  
+  if (CatchResult.IsCaught?) then (yes)
+    :Display shake animation (CatchResult.Shakes times);
+    :Pokemon caught!;
+    :Pokemon added to Player.PokemonTeam;
+    :CaptureItem consumed from inventory;
+    :Display CatchResult.DisplayMessage;
+    stop
   else (no)
-    :Cancel catch attempt;
+    :Display shake animation (CatchResult.Shakes times);
+    :Display "Pokemon broke free!";
+    :CaptureItem consumed from inventory;
     :Continue battle;
     stop
   endif
 else (no)
-  :Display "Out of Pokeballs" message;
-  :Continue battle without catching;
+  :Display "No Pokeballs!";
+  :Continue battle;
   stop
 endif
 @enduml

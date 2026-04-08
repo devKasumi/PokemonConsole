@@ -10,72 +10,103 @@ skinparam class {
 title Presentation Layer - UI Screens
 
 interface IScreen {
-  + Render()
-  + ProcessInput()
+  + Initialize(data: object?)
+  + Update()
+  + Shutdown()
+}
+
+class ScreenManager {
+  + CurrentScreen: ScreenType
+  - _screens: Dictionary<ScreenType, IScreen>
+  - _isRunning: bool
+  - _pendingData: object?
+  + RegisterScreen(screenType: ScreenType, screen: IScreen)
+  + ExitGame()
+  + Run()
+  + SwitchTo(screenType: ScreenType, data: object?)
 }
 
 class LoginScreen {
-  - _authenService: AuthenService
-  - _userRepository: IUserRepository
-  + Render()
-  + ProcessInput()
-  - DisplayLoginPrompt()
-  - HandleLoginInput(username: string, password: string)
-  - ValidateCredentials(username: string, password: string): bool
+  - _screenManager: ScreenManager
+  - _gameSession: GameSession
+  - _authenService: IAuthenService
+  + Initialize(data: object?)
+  + Update()
+  + Shutdown()
+  - HandleLogin()
+  - HandleRegister()
 }
 
 class MainMenuScreen {
+  - _screenManager: ScreenManager
   - _gameSession: GameSession
-  + Render()
-  + ProcessInput()
-  - DisplayMenuOptions()
-  - HandleMenuSelection(choice: int)
+  - _pvpService: IPvPService
+  - _authenService: IAuthenService
+  + Initialize(data: object?)
+  + Update()
+  - HandleStartNewGame()
+  - HandleLoadGame()
+  - HandlePvP()
+  - HandleSaveGame()
+  - HandleBackToLogin()
 }
 
 class BattleScreen {
-  - _battleService: IBattleService
+  - _screenManager: ScreenManager
   - _gameSession: GameSession
-  - _expService: IExpService
-  + Render()
-  + ProcessInput()
-  - DisplayBattleStatus()
-  - DisplayMoveOptions()
-  - HandlePlayerMove(moveIndex: int)
-  - DisplayBattleResult(result: BattleResult)
+  - _battleService: IBattleService
+  + Initialize(data: object?)
+  + Update()
+  - HandleFightOption()
+  - ExecuteBattleTurn(moveIndex: int)
+  - HandleVictory()
+  - CheckNextOpponent()
+  - HandleOpenBag()
+  - HandleSwitchPokemon()
+  - HandleRun()
 }
 
 class StoryScreen {
-  - _storyService: IStoryService
-  - _worldGenService: IWorldGenerationService
+  - _screenManager: ScreenManager
   - _gameSession: GameSession
-  + Render()
-  + ProcessInput()
-  - DisplayCurrentPhase()
-  - DisplayLocationInfo()
-  - HandleExploration(command: string)
-  - HandleChallengeGym()
+  - _storyService: IStoryService
+  - _authenService: IAuthenService
+  + Initialize(data: object?)
+  + Update()
+  - DisplayNarrative()
+  - RenderMenu()
+  - ShowStarterMenu()
+  - HandleTalk(npc: NpcData)
+  - HandleWildArea()
+  - HandleGymBattle()
+  - HandlePokemonLeagueBattle()
 }
 
 class InventoryScreen {
+  - _screenManager: ScreenManager
   - _gameSession: GameSession
-  + Render()
-  + ProcessInput()
-  - DisplayInventory()
-  - DisplayPokemonTeam()
-  - HandleItemUsage(itemId: int)
-  - HandlePokemonSwitch(pokemonId: int)
+  - _catchService: ICatchService
+  - _healingService: IHealingService
+  + Initialize(data: object?)
+  + Update()
+  + Shutdown()
+  - OpenPocket(category: ItemCategory)
+  - UseItem(item: Item): bool
 }
 
 class PvPScreen {
-  - _matchmakingService: MatchmakingService
-  - _battleService: IBattleService
-  - _gameSession: GameSession
-  + Render()
-  + ProcessInput()
-  - DisplayPvPMenu()
-  - HandleFindOpponent()
-  - DisplayPvPBattle()
-  - HandlePvPMove(moveIndex: int)
+  - _sm: ScreenManager
+  - _network: INetworkService
+  - _session: GameSession
+  - _roomId: string
+  - _lastResult: PvPTurnResult? <<volatile>>
+  - _waitingForResult: bool <<volatile>>
+  + Initialize(data: object?)
+  + Update()
+  + Shutdown()
+  - HandleTurnResult(result: PvPTurnResult)
+  - RenderBattleScene(result: PvPTurnResult)
+  - ShowMoveMenu(myActive: PvPMonState)
 }
 
 ' Relationships
@@ -86,22 +117,28 @@ StoryScreen ..|> IScreen
 InventoryScreen ..|> IScreen
 PvPScreen ..|> IScreen
 
-LoginScreen --> AuthenService
-LoginScreen --> IUserRepository
+ScreenManager --> IScreen : manages
+ScreenManager --> ScreenType : uses
 
+LoginScreen --> IAuthenService
+LoginScreen --> GameSession
+
+MainMenuScreen --> IPvPService
+MainMenuScreen --> IAuthenService
 MainMenuScreen --> GameSession
+
 BattleScreen --> IBattleService
 BattleScreen --> GameSession
-BattleScreen --> IExpService
 
 StoryScreen --> IStoryService
-StoryScreen --> IWorldGenerationService
+StoryScreen --> IAuthenService
 StoryScreen --> GameSession
 
+InventoryScreen --> ICatchService
+InventoryScreen --> IHealingService
 InventoryScreen --> GameSession
 
-PvPScreen --> MatchmakingService
-PvPScreen --> IBattleService
+PvPScreen --> INetworkService
 PvPScreen --> GameSession
 
 @enduml

@@ -1,50 +1,51 @@
 @startuml UC2_BattleWild_UseCase
+title UC2 - Battle Wild Pokemon (Use Case Diagram)
 skinparam linetype ortho
 left to right direction
 
 actor Player
 
 rectangle "Wild Battle System" {
-  (Enter Wild Area)
-  (Encounter Pokemon)
-  (Start Battle)
-  (Display Battle UI)
-  (Initialize turn order)
+  (Explore in StoryScreen)
+  (Random wild encounter)
+  (WorldGenService spawns Pokemon)
+  (Switch to BattleScreen)
   (Choose Action)
   (Select Move)
   (Switch Pokemon)
+  (Attempt Catch)
   (Run from Battle)
-  (Calculate Damage)
-  (Apply Damage)
-  (Check if Pokemon Fainted)
-  (Battle Continues)
-  (Battle End - Victory)
-  (Battle End - Defeat)
-  (Gain EXP)
-  (Gain Money)
+  (BattleService calculates DamageResult)
+  (Apply damage)
+  (Check if Pokemon fainted)
+  (Battle continues)
+  (Battle Won)
+  (Battle Lost)
+  (ExpService.ProcessVictory)
 }
 
-Player --> (Enter Wild Area)
-(Enter Wild Area) --> (Encounter Pokemon) : random spawn
-(Encounter Pokemon) --> (Start Battle)
-(Start Battle) --> (Display Battle UI)
-(Display Battle UI) --> (Choose Action)
+Player --> (Explore in StoryScreen)
+(Explore in StoryScreen) --> (Random wild encounter) : random spawn
+(Random wild encounter) --> (WorldGenService spawns Pokemon)
+(WorldGenService spawns Pokemon) --> (Switch to BattleScreen)
+(Switch to BattleScreen) --> (Choose Action)
 
-(Choose Action) --> (Select Move) : Move option
-(Choose Action) --> (Switch Pokemon) : Switch option
-(Choose Action) --> (Run from Battle) : Run option
+(Choose Action) --> (Select Move) : Move
+(Choose Action) --> (Switch Pokemon) : Switch
+(Choose Action) --> (Attempt Catch) : Catch
+(Choose Action) --> (Run from Battle) : Run
 
-(Select Move) --> (Calculate Damage) : <<include>>
-(Calculate Damage) --> (Apply Damage)
-(Apply Damage) --> (Check if Pokemon Fainted)
-(Check if Pokemon Fainted) --> (Battle Continues) : still fighting
-(Check if Pokemon Fainted) --> (Battle End - Victory) : enemy defeated
-(Check if Pokemon Fainted) --> (Battle End - Defeat) : player defeated
+(Select Move) --> (BattleService calculates DamageResult) : <<include>>
+(BattleService calculates DamageResult) --> (Apply damage)
+(Apply damage) --> (Check if Pokemon fainted)
+(Check if Pokemon fainted) --> (Battle continues) : still fighting
+(Check if Pokemon fainted) --> (Battle Won) : enemy defeated
+(Check if Pokemon fainted) --> (Battle Lost) : player defeated
 
-(Battle End - Victory) --> (Gain EXP)
-(Battle End - Victory) --> (Gain Money)
-(Gain EXP) --> Player
+(Battle Won) --> (ExpService.ProcessVictory)
+(ExpService.ProcessVictory) --> Player
 
 (Run from Battle) --> Player : Escape
+(Attempt Catch) --> Player : See UC3
 
 @enduml

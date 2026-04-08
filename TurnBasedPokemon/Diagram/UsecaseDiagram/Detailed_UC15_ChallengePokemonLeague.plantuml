@@ -1,43 +1,48 @@
 @startuml UC15_ChallengePokemonLeague_UseCase
+title UC15 - Challenge Pokemon League (Use Case Diagram)
 skinparam linetype ortho
 left to right direction
 
 actor Player
 
 rectangle "Pokemon League System" {
-  (Arrive at Pokemon League)
-  (All badges collected?)
-  (Meet Elite Four Leader)
+  (Select Pokemon League in StoryScreen)
+  (Check Player.GymBadges == 8)
+  (Has all badges?)
+  (StoryService.TryChallengePokemonLeague)
+  (PokemonSpawner generates boss team)
+  (Switch to BattleScreen)
   (Battle Elite Four member)
-  (Elite member defeated?)
-  (Advance to next member)
+  (Player won?)
+  (Next Elite Four member)
   (All Elite Four beaten?)
-  (Meet Champion)
   (Battle Champion)
-  (Champion defeated?)
-  (Won league)
-  (Hall of Fame)
-  (Champion title)
-  (Prize money)
+  (AuthenService.SetChampion)
+  (Player becomes Champion)
+  (Return to StoryScreen)
+  (Display not ready message)
 }
 
-Player --> (Arrive at Pokemon League)
-(Arrive at Pokemon League) --> (All badges collected?)
-(All badges collected?) --> (Meet Elite Four Leader)
-(Meet Elite Four Leader) --> (Battle Elite Four member)
-(Battle Elite Four member) --> (Elite member defeated?)
-(Elite member defeated?) --> (Advance to next member)
-(Advance to next member) --> (Meet Elite Four Leader)
-(Elite member defeated?) --> (All Elite Four beaten?)
-(All Elite Four beaten?) --> (Meet Champion)
-(Meet Champion) --> (Battle Champion)
-(Battle Champion) --> (Champion defeated?)
-(Champion defeated?) --> (Won league)
-(Champion defeated?) --> Player : Lose, return to Pokemon Center
-(Won league) --> (Hall of Fame)
-(Hall of Fame) --> (Champion title)
-(Champion title) --> (Prize money)
-(Prize money) --> Player
-(All badges collected?) --> Player : Not ready for league
+Player --> (Select Pokemon League in StoryScreen)
+(Select Pokemon League in StoryScreen) --> (Check Player.GymBadges == 8)
+(Check Player.GymBadges == 8) --> (Has all badges?)
+(Has all badges?) --> (StoryService.TryChallengePokemonLeague) : yes
+(Has all badges?) --> (Display not ready message) : no
+
+(StoryService.TryChallengePokemonLeague) --> (PokemonSpawner generates boss team)
+(PokemonSpawner generates boss team) --> (Switch to BattleScreen)
+(Switch to BattleScreen) --> (Battle Elite Four member)
+(Battle Elite Four member) --> (Player won?)
+(Player won?) --> (Next Elite Four member) : victory
+(Player won?) --> (Return to StoryScreen) : defeat
+(Next Elite Four member) --> (All Elite Four beaten?)
+(All Elite Four beaten?) --> (Battle Champion) : all beaten
+(All Elite Four beaten?) --> (StoryService.TryChallengePokemonLeague) : more members
+(Battle Champion) --> (AuthenService.SetChampion) : victory
+(AuthenService.SetChampion) --> (Player becomes Champion)
+(Player becomes Champion) --> (Return to StoryScreen)
+(Battle Champion) --> (Return to StoryScreen) : defeat
+(Display not ready message) --> (Return to StoryScreen)
+(Return to StoryScreen) --> Player
 
 @enduml

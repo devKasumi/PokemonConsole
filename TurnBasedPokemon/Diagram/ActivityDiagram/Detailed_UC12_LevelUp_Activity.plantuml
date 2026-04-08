@@ -1,53 +1,35 @@
 @startuml UC12_LevelUp_Activity
+title UC12 - Level Up (Activity Diagram)
 start
-:Pokemon gains EXP;
-:Calculate total EXP;
+:Battle won — BattleScreen calls ExpService.ProcessVictory();
+:ExpService calculates EXP based on defeated Pokemon;
 
-:Check EXP needed for next level;
-note
-  EXP Threshold = Base EXP × Level
-  Different formula for each growth type
-end note
-
-if (Current EXP >= Threshold?) then (yes)
-  :Set level = level + 1;
-  :Recalculate stats based on level;
-  note
-    New HP = Base HP + (Level × Growth)
-    New ATK = Base ATK + (Level × Growth)
-    Similar for DEF, SpA, SpD, SPE
-  end note
-  
-  :Check move learn table;
-  if (New moves available at this level?) then (yes)
-    :Display new move choices;
-    note
-      Show up to 4 moves
-      Player chooses which to keep
-    end note
-    :Player selects move or pass;
-    :Add move to moveset;
-  endif
+:ExpService checks each participating Pokemon;
+if (Current EXP >= level threshold?) then (yes)
+  :ExpService increments Pokemon.Level;
+  :Recalculate stats based on new level;
   
   :Check evolution conditions;
-  if (Level >= Evolution level?) then (yes)
-    :Display "Pokemon evolving!";
-    :Play evolution animation;
-    :Change Pokemon sprite/stats;
-    :Update Pokedex entry;
-    :Evolution complete;
+  if (Level >= evolution level?) then (yes)
+    :WorldGenService evolves Pokemon;
+    :Update Pokemon name, stats, sprite;
+    :Display "Pokemon evolved!";
   endif
   
-  :Display level up summary;
+  :Return ProcessExpResult;
   note
-    - Level gained
-    - Stat changes
-    - New moves learned
-    - Evolution status
+    ProcessExpResult contains:
+    - ExpGained
+    - LeveledUp (bool)
+    - Evolved (bool)
+    - New stats
   end note
   
+  :BattleScreen displays level up summary;
+  
 else (no)
-  :Continue battle;
+  :Add EXP to Pokemon;
+  :Return ProcessExpResult (no level up);
 endif
 
 stop

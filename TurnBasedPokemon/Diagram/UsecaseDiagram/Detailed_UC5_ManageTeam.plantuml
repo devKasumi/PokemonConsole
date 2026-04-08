@@ -1,53 +1,35 @@
 @startuml UC5_ManageTeam_UseCase
+title UC5 - Manage Pokemon Team (Use Case Diagram)
+note "**Under Development**\nNo dedicated TeamScreen exists.\nTeam management is handled inline\nvia CatchService and BattleScreen." as N1
 skinparam linetype ortho
 left to right direction
 
 actor Player
 
 rectangle "Team Management System" {
-  (Access Team Management)
-  (View Current Team)
-  (Team Size Check)
-  (Add Pokemon from Box)
-  (Select Pokemon)
-  (Add to Team)
-  (Modify Team)
-  (Replace/Swap Pokemon)
-  (Remove Pokemon)
-  (Select target position)
-  (Choose replacement)
-  (Swap confirmed)
-  (Select Pokemon to remove)
-  (Confirm removal)
-  (Move to PC Box)
-  (Save Team Configuration)
+  (View PokemonTeam)
+  (CatchService adds Pokemon)
+  (BattleScreen switch Pokemon)
+  (StoryService heals team)
 }
 
-Player --> (Access Team Management)
-(Access Team Management) --> (View Current Team)
-(View Current Team) --> (Team Size Check)
+Player --> (View PokemonTeam)
+(View PokemonTeam) --> Player
 
-(Team Size Check) --> (Add Pokemon from Box) : < 6 Pokemon
-(Team Size Check) --> (Modify Team) : = 6 Pokemon
+Player --> (CatchService adds Pokemon) : via catch in battle
+(CatchService adds Pokemon) --> Player
 
-(Add Pokemon from Box) --> (Select Pokemon)
-(Select Pokemon) --> (Add to Team)
+Player --> (BattleScreen switch Pokemon) : during battle
+(BattleScreen switch Pokemon) --> Player
 
-(Modify Team) --> (Replace/Swap Pokemon)
-(Modify Team) --> (Remove Pokemon)
+Player --> (StoryService heals team) : at Pokemon Center
+(StoryService heals team) --> Player
 
-(Replace/Swap Pokemon) --> (Select target position)
-(Select target position) --> (Choose replacement)
-(Choose replacement) --> (Swap confirmed) : <<confirm>>
-
-(Remove Pokemon) --> (Select Pokemon to remove)
-(Select Pokemon to remove) --> (Confirm removal)
-(Confirm removal) --> (Move to PC Box) : <<move>>
-
-(Swap confirmed) --> (Save Team Configuration) : <<invoke>>
-(Move to PC Box) --> (Save Team Configuration) : <<invoke>>
-(Add to Team) --> (Save Team Configuration) : <<invoke>>
-
-(Save Team Configuration) --> Player
+note right of (View PokemonTeam)
+  Planned features:
+  - Swap positions
+  - Release Pokemon
+  - Box management
+end note
 
 @enduml

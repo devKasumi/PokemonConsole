@@ -1,26 +1,25 @@
 @startuml UC1_Login_Activity
+title UC1 - Login (Activity Diagram)
 start
 :Player launches game;
-:Display Login Screen;
+:LoginScreen displayed;
 :Player enters username & password;
-:System receives input;
-if (Username exists in DB?) then (yes)
-  :Verify password hash;
+:LoginScreen calls AuthenService.Login(LoginRequest);
+
+if (User found in JSON repository?) then (yes)
   if (Password correct?) then (yes)
-    :Load user profile from database;
-    :Load user Pokemon team;
-    :Load user inventory;
-    :Initialize GameSession;
-    :Display Main Menu;
+    :AuthenService loads Player, PokemonTeam, Inventory;
+    :AuthenService sets GameSession.Player;
+    :ScreenManager switches to MainMenuScreen;
     stop
   else (no)
     :Display "Incorrect Password" error;
-    :Return to login screen;
+    :Return to LoginScreen;
     stop
   endif
 else (no)
   :Display "User not found" error;
-  :Return to login screen;
+  :Return to LoginScreen;
   stop
 endif
 @enduml

@@ -1,34 +1,39 @@
 @startuml UC9_PvPBattle_Activity
+title UC9 - PvP Battle (Activity Diagram)
 start
-:Both players connect to server and are matched in a battle room;
-:Server (PvPManager) initializes battle state and notifies both clients;
-:Display both teams on screen (client);
+:PvPScreen initialized with INetworkService;
+:PvPManager (server) initializes BattleRoom state;
+:BattleHub sends StartBattle to both clients;
+:PvPScreen displays both teams;
 
 repeat
-  :Player 1 selects move (client);
-  :Player 2 selects move (client);
-  :Both moves sent to server;
+  :Player selects move via PvPScreen;
+  :NetworkService sends SubmitMove to BattleHub;
+  :BattleHub forwards to PvPManager;
+  
   if (Both moves received?) then (yes)
-    :Server (PvPManager) determines turn order (speed stat);
-    :Server applies attack damage, checks status, fainting, and updates state;
-    :Server sends updated HP, party, and logs to both clients;
-    :Clients display animations and update UI;
+    :PvPManager determines turn order (speed);
+    :PvPManager calculates damage using DamageResult;
+    :PvPManager applies effects and updates HP;
+    :BattleHub sends TurnResult to both clients;
+    :PvPScreen updates UI with received state;
   else
-    :Server waits or uses default action if timeout;
+    :PvPManager waits for timeout;
   endif
+  
   if (Pokemon fainted?) then (yes)
     if (More Pokemon available?) then (yes)
-      :Server prompts player to select next Pokemon;
-      :Client sends selection to server;
-      :Server updates active Pokemon;
+      :PvPManager requests next Pokemon selection;
+      :Client sends SwitchPokemon via NetworkService;
     else (no)
-      :Server declares winner and ends battle;
+      :PvPManager declares winner;
+      :BattleHub sends BattleEnded to both clients;
     endif
   endif
 repeat while (Battle ongoing)
 
-:Server determines winner & loser;
-:Server awards EXP, calculates ELO, and records results;
-:Server syncs results to database and notifies both clients;
+:PvPScreen receives final result via volatile field;
+:Display victory/defeat screen;
+:ScreenManager returns to MainMenuScreen;
 stop
 @enduml

@@ -1,97 +1,85 @@
 @startuml UC8_Matchmaking_Sequence
-participant Player1
-participant PvPScreen1
-participant HubConnection1
-participant MatchmakingService
+participant Player
+participant MainMenuScreen
+participant IPvPService as PvPService
+participant INetworkService as NetworkService
 participant BattleHub
-participant HubConnection2
-participant PvPScreen2
-participant Player2
-participant Database
+participant MatchmakingService
+participant GameSession
 
-Player1 -> PvPScreen1: Click "Find PvP Match"
-activate PvPScreen1
+Player -> MainMenuScreen: Select "PvP Battle"
+activate MainMenuScreen
 
-PvPScreen1 -> PvPScreen1: Prepare team + validate
-PvPScreen1 -> HubConnection1: Connect to SignalR Hub
-activate HubConnection1
+MainMenuScreen -> PvPService: CanAccessPvP()
+activate PvPService
+PvPService -> GameSession: Check Player.IsChampion
+GameSession --> PvPService: IsChampion status
+PvPService --> MainMenuScreen: bool (can access)
+deactivate PvPService
 
-PvPScreen1 -> BattleHub: JoinMatchmaking(playerId, teamData)
-activate BattleHub
-activate MatchmakingService
+alt Not Champion
+  MainMenuScreen --> Player: "Must complete main storyline first"
+else Is Champion
+  MainMenuScreen -> PvPService: Connect()
+  activate PvPService
+  PvPService -> NetworkService: Connect()
+  activate NetworkService
+  NetworkService -> BattleHub: SignalR connection
+  BattleHub --> NetworkService: Connected
+  NetworkService --> PvPService: true
+  deactivate NetworkService
+  PvPService --> MainMenuScreen: true (connected)
+  deactivate PvPService
 
-note over MatchmakingService
-  Create WaitingPlayer object with:
-  - ConnectionId
-  - Username
-  - Team Pokemon
-  - ELO rating
-end note
+  MainMenuScreen --> Player: "Searching for opponent... Press [Q] to cancel"
 
-MatchmakingService -> MatchmakingService: AddToQueue(player1)
-MatchmakingService -> MatchmakingService: Queue size = 1, keep waiting
+  MainMenuScreen -> PvPService: Subscribe OnMatchFound + OnMatchmakingRejected
+  MainMenuScreen -> PvPService: FindMatch()
+  activate PvPService
+  PvPService -> NetworkService: FindMatch(username, pokemonTeam)
+  activate NetworkService
+  NetworkService -> BattleHub: FindMatch(username, serializedParty)
+  activate BattleHub
 
-BattleHub --> PvPScreen1: "Queue joined"
-deactivate BattleHub
-PvPScreen1 --> Player1: Show "Searching for opponent..."
+  BattleHub -> MatchmakingService: JoinQueue(connectionId, username, party)
+  activate MatchmakingService
 
-par Server Matchmaking
-  MatchmakingService -> MatchmakingService: PoolQueue()
-  note over MatchmakingService
-    Every 500ms check if 2+ players waiting
-    and match similar ELO ranks
-  end note
-  
-  MatchmakingService -> MatchmakingService: PopPlayer2()
-  MatchmakingService -> MatchmakingService: Compare ELO(player1, player2)
-  
-  alt ELO within range (±100)
-    MatchmakingService -> MatchmakingService: CreateMatch(player1, player2)
-    
-    note over MatchmakingService
-      Generate:
-      - RoomId
-      - Match timestamp
-      - Team data for both
-    end note
-    
-    MatchmakingService -> BattleHub: NotifyMatchFound(roomId, opponentData)
-    activate BattleHub
-    
-    BattleHub -> HubConnection1: MatchFound event
-    HubConnection1 --> PvPScreen1: Show opponent info
-    
-    HubConnection2 -> BattleHub: ConfirmOpponent(player2)
-    
-    alt Player2 accepts
-      BattleHub -> MatchmakingService: ConfirmMatch(roomId)
-      MatchmakingService -> Database: INSERT INTO active_rooms
-      Database --> MatchmakingService: Room created
-      
-      MatchmakingService -> BattleHub: BothPlayersReady
-      
-      BattleHub -> HubConnection1: StartBattle(roomId, opponent)
-      HubConnection1 --> PvPScreen1: Transition to battle
-      
-      BattleHub -> HubConnection2: StartBattle(roomId, opponent)
-      HubConnection2 --> PvPScreen2: Transition to battle
-      
-    else Player2 declines
-      MatchmakingService -> MatchmakingService: RemoveFromMatch(player2)
-      MatchmakingService -> MatchmakingService: RequeuePlayer(player2)
-      BattleHub -> HubConnection1: Continue searching
-      PvPScreen1 --> Player1: "Searching for opponent..."
-    end
-    
+  alt Another player in queue
+    MatchmakingService -> MatchmakingService: Match two players
+    MatchmakingService --> BattleHub: BattleRoom (roomId, player1, player2)
+
+    BattleHub -> NetworkService: MatchFound(roomId, opponentName)
     deactivate BattleHub
-    
-  else ELO too far apart
-    MatchmakingService -> MatchmakingService: RequeueBoth()
-    MatchmakingService -> MatchmakingService: ExpandRankRange()
+    NetworkService -> PvPService: OnMatchFound event
+    deactivate NetworkService
+    PvPService -> MainMenuScreen: OnMatchFound(roomId, opponent)
+    deactivate PvPService
+
+    MainMenuScreen --> Player: "Match found! Opponent: {name}"
+    MainMenuScreen -> MainMenuScreen: SwitchTo(ScreenType.PvP, roomId)
+
+  else Same account detected
+    MatchmakingService --> BattleHub: Rejection reason
+    BattleHub -> NetworkService: MatchmakingRejected(reason)
+    NetworkService -> PvPService: OnMatchmakingRejected event
+    PvPService -> MainMenuScreen: OnMatchmakingRejected(reason)
+    MainMenuScreen --> Player: Show rejection error
+
+  else No match yet (waiting)
+    MatchmakingService --> BattleHub: Keep waiting
+    deactivate MatchmakingService
+
+    loop Player waits
+      alt Player presses [Q]
+        Player -> MainMenuScreen: Press Q
+        MainMenuScreen -> PvPService: CancelMatchmaking()
+        PvPService -> NetworkService: CancelMatchmakingAsync()
+        NetworkService -> BattleHub: Leave queue
+        MainMenuScreen --> Player: "Matchmaking cancelled"
+      end
+    end
   end
 end
 
-deactivate MatchmakingService
-deactivate HubConnection1
-deactivate PvPScreen1
+deactivate MainMenuScreen
 @enduml

@@ -1,63 +1,27 @@
 @startuml UC5_ManageTeam_Activity
-start
-:Player opens Team Management;
-:Display current team (max 6 slots);
-
-if (Team size < 6?) then (yes)
-  :Show "Add Pokemon" option;
-  if (Player adds Pokemon?) then (yes)
-    :Display Pokemon Box;
-    :Show available Pokemon;
-    :Player selects Pokemon from box;
-    :Add to team;
-    :Update team display;
-  else (no)
-    :Skip adding;
-  endif
-elseif (Team size == 6?) then (yes)
-  :Show "Team is full" message;
-  :Display "Modify Team" option;
-endif
-
-:Show current team roster;
-:Display each Pokemon:;
+title UC5 - Manage Team (Activity Diagram)
 note
-  - Pokemon name & level
-  - HP / Stats
-  - Moves
-  - Status (healthy/injured)
+  **Under Development** — No dedicated TeamScreen exists.
+  Team management is currently handled inline:
+  - Adding: CatchService.ExecuteCapture() adds to Player.PokemonTeam
+  - Switching in battle: BattleScreen calls IBattleService.CanSwitchPokemon()
+  - Healing: StoryService.HealTeamAtCenter() heals all team members
 end note
 
-repeat
-  if (Player selects action?) then (yes)
-    if (Select Pokemon for details?) then (yes)
-      :Show Pokemon full stats;
-      :Show moves (can reorder);
-      if (Player changes moves?) then (yes)
-        :Save move order;
-      endif
-    elseif (Swap positions?) then (yes)
-      :Swap position 1 <-> 2;
-    elseif (Replace Pokemon?) then (yes)
-      if (Team size == 6?) then (yes)
-        :Select Pokemon to remove;
-        :Move to box;
-        :Select Pokemon from box to add;
-        :Add to team;
-      endif
-    elseif (Remove Pokemon?) then (yes)
-      :Select Pokemon to remove;
-      :Move to PC Box;
-    endif
-  endif
-  
-  if (User confirms changes?) then (yes)
-    :Finalize modifications;
-  endif
-repeat while (Player modifying team)
+start
+:Player views team (planned feature);
+:Read Player.PokemonTeam from GameSession;
+:Display team roster (up to 6 Pokemon);
 
-:Save team configuration;
-:Update database;
-:Return to main menu;
+note
+  Planned future features:
+  - View detailed Pokemon stats
+  - Swap positions in team
+  - Release Pokemon
+  - Move Pokemon to/from box
+  Currently not implemented as
+  a standalone screen or service.
+end note
+
 stop
 @enduml

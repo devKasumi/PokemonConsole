@@ -1,76 +1,39 @@
 @startuml UC7_InteractNPC_UseCase
+title UC7 - Interact with NPC (Use Case Diagram)
 skinparam linetype ortho
 left to right direction
 
 actor Player
 
 rectangle "NPC Interaction System" {
-  (Encounter NPC)
-  (Check NPC Type)
-  (NPC Available?)
-  (Start Interaction)
-  (Display NPC Dialogue)
-  (NPC dialogue with choices)
-  (Select Response)
-  (NPC Reaction Type)
-  (Trade Pokemon)
-  (Give Item/Quest)
-  (Battle Challenge)
-  (Story Information)
-  (Continue Dialogue)
-  (Pokemon Exchange)
-  (Add Item/Quest)
-  (Start NPC Battle)
-  (Update Story Context)
-  (Update Pokedex)
-  (Quest Log Updated)
-  (Battle sequence)
-  (Mark event)
-  (Interaction Complete)
-  (NPC interaction recorded)
-  (NPC Busy)
+  (Approach NPC on map)
+  (StoryScreen.HandleTalk)
+  (Display NPC dialogue)
+  (Check npc.Action)
+  (Normal NPC)
+  (Battle NPC)
+  (Display dialogue text)
+  (StoryService.TryChallengeTrainer)
+  (PokemonSpawner generates team)
+  (Switch to BattleScreen)
+  (Return to StoryScreen)
 }
 
-Player --> (Encounter NPC)
-(Encounter NPC) --> (Check NPC Type)
+Player --> (Approach NPC on map)
+(Approach NPC on map) --> (StoryScreen.HandleTalk)
+(StoryScreen.HandleTalk) --> (Display NPC dialogue)
+(Display NPC dialogue) --> (Check npc.Action)
 
-(Check NPC Type) --> (Battle Challenge) : Gym Leader/Elite Four/Champion
-(Check NPC Type) --> (NPC Available?) : Other NPC
+(Check npc.Action) --> (Normal NPC) : action == null
+(Check npc.Action) --> (Battle NPC) : action == "StartBattle"
 
-(Battle Challenge) --> (Start NPC Battle) : <<include>>
+(Normal NPC) --> (Display dialogue text)
+(Display dialogue text) --> (Return to StoryScreen)
+(Return to StoryScreen) --> Player
 
-(NPC Available?) --> (Start Interaction) : Yes
-(NPC Available?) --> (NPC Busy) : No
-
-(Start Interaction) --> (Display NPC Dialogue)
-(Display NPC Dialogue) --> (NPC dialogue with choices)
-(NPC dialogue with choices) --> (Select Response)
-(Select Response) --> (NPC Reaction Type)
-
-(NPC Reaction Type) --> (Trade Pokemon)
-(NPC Reaction Type) --> (Give Item/Quest)
-(NPC Reaction Type) --> (Battle Challenge)
-(NPC Reaction Type) --> (Story Information)
-(NPC Reaction Type) --> (Continue Dialogue)
-
-(Trade Pokemon) --> (Pokemon Exchange) : <<include>>
-(Give Item/Quest) --> (Add Item/Quest) : <<include>>
-(Battle Challenge) --> (Start NPC Battle) : <<include>>
-(Story Information) --> (Update Story Context) : <<include>>
-
-(Pokemon Exchange) --> (Update Pokedex)
-(Add Item/Quest) --> (Quest Log Updated)
-(Start NPC Battle) --> (Battle sequence)
-(Update Story Context) --> (Mark event)
-
-(Update Pokedex) --> (Interaction Complete)
-(Quest Log Updated) --> (Interaction Complete)
-(Battle sequence) --> (Interaction Complete)
-(Mark event) --> (Interaction Complete)
-
-(Interaction Complete) --> (NPC interaction recorded)
-(NPC interaction recorded) --> Player
-
-(NPC Busy) --> Player
+(Battle NPC) --> (StoryService.TryChallengeTrainer) : <<include>>
+(StoryService.TryChallengeTrainer) --> (PokemonSpawner generates team)
+(PokemonSpawner generates team) --> (Switch to BattleScreen)
+(Switch to BattleScreen) --> Player
 
 @enduml

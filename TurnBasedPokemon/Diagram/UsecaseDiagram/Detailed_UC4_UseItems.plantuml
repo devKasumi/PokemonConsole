@@ -1,39 +1,40 @@
 @startuml UC4_UseItems_UseCase
+title UC4 - Use Items (Use Case Diagram)
 skinparam linetype ortho
 left to right direction
 
 actor Player
 
 rectangle "Item System" {
-  (Enter Inventory)
-  (View Items)
-  (Select Item)
-  (Item Type Check)
-  (Healing Item)
-  (Pokeball)
-  (Choose Target Pokemon)
-  (Apply item effect)
+  (Open InventoryScreen)
+  (View Player.Inventory)
+  (Select item)
+  (Item type check)
+  (HealingItem selected)
+  (CaptureItem selected)
+  (Choose target Pokemon)
+  (HealingService applies effect)
   (Consume item)
-  (Cannot use Pokeball outside battle)
-  (Use catch mechanics)
+  (CatchService.ExecuteCapture)
+  (Cannot use outside battle)
 }
 
-Player --> (Enter Inventory)
-(Enter Inventory) --> (View Items)
-(View Items) --> (Select Item)
-(Select Item) --> (Item Type Check)
+Player --> (Open InventoryScreen)
+(Open InventoryScreen) --> (View Player.Inventory)
+(View Player.Inventory) --> (Select item)
+(Select item) --> (Item type check)
 
-(Item Type Check) --> (Healing Item) : Healing
-(Item Type Check) --> (Pokeball) : Pokeball
+(Item type check) --> (HealingItem selected) : HealingItem
+(Item type check) --> (CaptureItem selected) : CaptureItem
 
-(Healing Item) --> (Choose Target Pokemon)
-(Choose Target Pokemon) --> (Apply item effect)
-(Apply item effect) --> (Consume item)
+(HealingItem selected) --> (Choose target Pokemon)
+(Choose target Pokemon) --> (HealingService applies effect)
+(HealingService applies effect) --> (Consume item)
 (Consume item) --> Player
 
-(Pokeball) --> (Use catch mechanics)
-(Pokeball) --> (Cannot use Pokeball outside battle)
-(Use catch mechanics) --> Player
-(Cannot use Pokeball outside battle) --> Player
+(CaptureItem selected) --> (CatchService.ExecuteCapture) : in battle
+(CaptureItem selected) --> (Cannot use outside battle) : not in battle
+(CatchService.ExecuteCapture) --> Player
+(Cannot use outside battle) --> Player
 
 @enduml

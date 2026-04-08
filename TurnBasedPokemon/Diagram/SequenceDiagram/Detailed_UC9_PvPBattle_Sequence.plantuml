@@ -1,45 +1,71 @@
 @startuml UC9_PvPBattle_Sequence
-participant Player1
-participant HubConnection
+participant Player
+participant PvPScreen
+participant INetworkService as NetworkService
 participant BattleHub
 participant PvPManager
 participant DamageCalculator
-participant Player2
-participant Database
+participant Opponent
 
-Player1 -> HubConnection: FindMatch(username)
-HubConnection -> BattleHub: FindMatch(username)
-BattleHub -> PvPManager: InitializeBattle(roomId, player1, team1, player2, team2)
-BattleHub -> Player1: MatchFound(roomId, opponent)
-BattleHub -> Player2: MatchFound(roomId, opponent)
+note over PvPScreen
+  PvPScreen receives roomId via
+  Initialize(data: { RoomId })
+  from MainMenuScreen after matchmaking
+end note
 
-loop while (Battle active)
+PvPScreen -> PvPScreen: Initialize(roomId)
+PvPScreen -> NetworkService: Subscribe OnTurnResultReceived
+
+loop Battle Active
+  PvPScreen -> PvPScreen: RenderBattleScene(lastResult)
+  PvPScreen -> PvPScreen: ShowMoveMenu(myActive)
+  Player -> PvPScreen: Select move (1-4)
+  activate PvPScreen
+
+  PvPScreen -> PvPScreen: Validate move index (loop until valid)
+
+  PvPScreen -> NetworkService: SubmitMoveAsync(roomId, playerName, moveIndex, attackerPokemon)
+  activate NetworkService
+  NetworkService -> BattleHub: SubmitMove(BattleActionRequest)
   activate BattleHub
-  
-  PvPBattle1 -> HubConnection: SubmitMove(roomId, moveIndex)
 
-  loop while (Battle active)
-    Player1 -> HubConnection: SubmitMove(roomId, moveIndex)
-    Player2 -> HubConnection: SubmitMove(roomId, moveIndex)
-    HubConnection -> BattleHub: SubmitMove(request)
-    HubConnection -> BattleHub: SubmitMove(request)
-    BattleHub -> PvPManager: RegisterMove(request)
-    BattleHub -> PvPManager: RegisterMove(request)
-    alt Both moves received
-      BattleHub -> PvPManager: ProcessTurn(roomId)
-      PvPManager -> DamageCalculator: CalculateDamage(attacker, defender, move)
-      DamageCalculator --> PvPManager: Damage value
-      PvPManager --> BattleHub: PvPTurnResult (HP, logs, winner)
-      BattleHub -> Player1: ReceiveTurnResult(result)
-      BattleHub -> Player2: ReceiveTurnResult(result)
-    else Waiting for moves
-      BattleHub -> Player1: WaitingForOpponentMove
-      BattleHub -> Player2: WaitingForOpponentMove
-    end
+  BattleHub -> PvPManager: RegisterMove(request)
+  activate PvPManager
+
+  note over PvPManager
+    Both players' moves must be
+    registered before processing
+  end note
+
+  Opponent -> BattleHub: SubmitMove(BattleActionRequest)
+  BattleHub -> PvPManager: RegisterMove(opponentRequest)
+
+  alt Both moves received
+    PvPManager -> PvPManager: Determine turn order (Speed)
+    PvPManager -> DamageCalculator: Calculate(attacker, defender, move)
+    activate DamageCalculator
+    DamageCalculator -> DamageCalculator: TypeChart.GetMultiplier()
+    DamageCalculator --> PvPManager: DamageResult(damage, isCritical, typeMultiplier)
+    deactivate DamageCalculator
+    PvPManager -> PvPManager: Apply damage, check fainted
+    PvPManager --> BattleHub: PvPTurnResult(playerState, opponentState, logs, winner?)
+    deactivate PvPManager
+    BattleHub -> NetworkService: TurnResultReceived(PvPTurnResult)
+    deactivate BattleHub
+    NetworkService -> PvPScreen: OnTurnResultReceived event
+    deactivate NetworkService
+    PvPScreen -> PvPScreen: Cache result in _lastResult (volatile)
+  else Waiting for opponent
+    PvPScreen --> Player: "Waiting for opponent..."
+    PvPScreen -> PvPScreen: Thread.Sleep(200) polling loop
   end
-deactivate PvPBattle2
-BattleHub -> Database: RecordMatch(roomId, winner, loser, eloChanges, timestamp)
-Database --> BattleHub: Match recorded
-BattleHub -> Player1: BattleEnd(yourResult, eloChange, rewards)
-BattleHub -> Player2: BattleEnd(yourResult, eloChange, rewards)
+
+  deactivate PvPScreen
+
+  alt Winner determined
+    PvPScreen --> Player: Display winner + battle summary
+    PvPScreen -> PvPScreen: SwitchTo(MainMenu)
+  end
+end
+
 @enduml

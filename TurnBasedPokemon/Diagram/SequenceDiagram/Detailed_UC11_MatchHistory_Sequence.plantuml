@@ -1,85 +1,37 @@
 @startuml UC11_MatchHistory_Sequence
-participant Player
-participant HistoryScreen
-participant PvPMatchService
-participant Database
+title UC11 - Match History (Sequence Diagram)
+note over Player
+  **Under Development** — No dedicated MatchHistory screen exists.
+  Currently only Player.PvPWins / PvPLosses counters exist.
+  Detailed per-match recording and display is not yet implemented.
+end note
 
-Player -> HistoryScreen: Open Match History
-activate HistoryScreen
+participant "Player" as Player
+participant "MainMenuScreen" as Screen
+participant "GameSession" as GS
 
-HistoryScreen -> PvPMatchService: GetPlayerMatchHistory(userId)
-activate PvPMatchService
+Player -> Screen: View PvP stats (future)
+activate Screen
 
-PvPMatchService -> Database: SELECT * FROM pvp_matches WHERE player_id=? ORDER BY match_date DESC
-activate Database
-Database --> PvPMatchService: Match records
-deactivate Database
+Screen -> GS: Get Player
+activate GS
+GS --> Screen: Player (PvPWins, PvPLosses)
+deactivate GS
 
-alt Matches found
-  PvPMatchService -> PvPMatchService: FormatMatchSummary(matches)
-  PvPMatchService --> HistoryScreen: Match list with summaries
+Screen --> Player: Display basic PvP stats
+
+note over Screen
+  Planned features:
+  - Detailed match history per game
+  - Turn-by-turn replay
+  - ELO rating tracking
+  - Opponent info
   
-  HistoryScreen --> Player: Display match table
-  note over Player
-    Columns:
-    - #
-    - Opponent
-    - Result
-    - ELO Change
-    - Date
-    - Duration
-  end note
-  
-  loop Player views different matches
-    Player -> HistoryScreen: Select specific match
-    activate HistoryScreen
-    
-    HistoryScreen -> PvPMatchService: GetMatchDetails(matchId)
-    activate PvPMatchService
-    
-    PvPMatchService -> Database: SELECT * FROM match_turns WHERE match_id=?
-    activate Database
-    Database --> PvPMatchService: Turn-by-turn data
-    deactivate Database
-    
-    PvPMatchService -> PvPMatchService: ParseTurnLog(turnData)
-    PvPMatchService --> HistoryScreen: Detailed match info
-    deactivate PvPMatchService
-    
-    HistoryScreen --> Player: Show:
-    note over HistoryScreen
-      - Opponent full name & level
-      - Your team (Pokemon names)
-      - Opponent team (Pokemon names)
-      - Turn-by-turn actions:
-        * What move was used
-        * Damage dealt
-        * Critical hit?
-        * Status effect?
-        * Pokemon fainted?
-      - Battle duration (turns)
-      - ELO change calculation
-    end note
-    
-    Player -> HistoryScreen: Filter/Export/Back
-    alt View replay
-      HistoryScreen -> HistoryScreen: Simulate battle replay
-      HistoryScreen --> Player: Play battle animation
-      
-    else Export to CSV
-      HistoryScreen -> PvPMatchService: ExportMatch(matchId, format)
-      PvPMatchService -> PvPMatchService: GenerateCsv(matchData)
-      PvPMatchService --> HistoryScreen: CSV file
-      HistoryScreen --> Player: Download file
-      
-    else Go back
-      deactivate HistoryScreen
-    end
-  end
-  
-else No matches
-  HistoryScreen --> Player: "No matches found"
-end
+  Requires:
+  - Match history data model
+  - Repository persistence
+  - Dedicated MatchHistoryScreen
+end note
 
-deactivate HistoryScreen
+deactivate Screen
 @enduml

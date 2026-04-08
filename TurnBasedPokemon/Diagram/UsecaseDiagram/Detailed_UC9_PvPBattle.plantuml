@@ -1,4 +1,5 @@
 @startuml UC9_PvPBattle_UseCase
+title UC9 - PvP Battle (Use Case Diagram)
 skinparam linetype ortho
 left to right direction
 
@@ -8,72 +9,56 @@ together {
 }
 
 rectangle "PvP Battle System" {
-  (Enter PvP Battle)
-  (Initialize Battle Arena)
-  (Load both teams)
-  (Display battle UI)
-  (Player1 Turn - Submit Move)
-  (Player2 Turn - Wait)
-  (Validate move)
-  (Server receives move)
-  (Wait for both players)
-  (Both moves submitted?)
-  (Both ready)
-  (Timeout)
-  (Calculate turn order)
-  (Execute moves in order)
-  (Player attacks)
-  (Damage calc)
-  (Sync to both)
-  (Check if battle over)
-  (Someone fainted?)
-  (Battle continues)
-  (Winner determined)
-  (Use default action)
-  (Next turn)
-  (Award rewards)
+  (PvPScreen initialized)
+  (PvPManager initializes BattleRoom)
+  (BattleHub sends StartBattle)
+  (Display both teams)
+  (Player selects move)
+  (NetworkService sends SubmitMove)
+  (BattleHub forwards to PvPManager)
+  (Both moves received?)
+  (PvPManager calculates DamageResult)
+  (Timeout - use default action)
+  (BattleHub sends TurnResult)
+  (PvPScreen updates UI)
+  (Check if Pokemon fainted)
+  (Switch Pokemon via NetworkService)
+  (PvPManager declares winner)
+  (BattleHub sends BattleEnded)
+  (Display result)
+  (Return to MainMenu)
 }
 
-Player1 --> (Enter PvP Battle)
-Player2 --> (Enter PvP Battle)
+Player1 --> (PvPScreen initialized)
+Player2 --> (PvPScreen initialized)
 
-(Enter PvP Battle) --> (Initialize Battle Arena)
-(Initialize Battle Arena) --> (Load both teams)
-(Load both teams) --> (Display battle UI)
+(PvPScreen initialized) --> (PvPManager initializes BattleRoom)
+(PvPManager initializes BattleRoom) --> (BattleHub sends StartBattle)
+(BattleHub sends StartBattle) --> (Display both teams)
 
-Player1 --> (Player1 Turn - Submit Move)
-Player2 --> (Player2 Turn - Wait)
+Player1 --> (Player selects move)
+Player2 --> (Player selects move)
 
-(Player1 Turn - Submit Move) --> (Validate move)
-(Validate move) --> (Server receives move)
-(Server receives move) --> (Wait for both players)
-(Wait for both players) --> (Both moves submitted?)
+(Player selects move) --> (NetworkService sends SubmitMove)
+(NetworkService sends SubmitMove) --> (BattleHub forwards to PvPManager)
+(BattleHub forwards to PvPManager) --> (Both moves received?)
 
-(Both moves submitted?) --> (Both ready) : in time
-(Both moves submitted?) --> (Timeout) : timeout
+(Both moves received?) --> (PvPManager calculates DamageResult) : both ready
+(Both moves received?) --> (Timeout - use default action) : timeout
+(Timeout - use default action) --> (PvPManager calculates DamageResult)
 
-(Both ready) --> (Calculate turn order)
-(Calculate turn order) --> (Execute moves in order)
+(PvPManager calculates DamageResult) --> (BattleHub sends TurnResult)
+(BattleHub sends TurnResult) --> (PvPScreen updates UI)
+(PvPScreen updates UI) --> (Check if Pokemon fainted)
 
-(Execute moves in order) --> (Player attacks)
-(Player attacks) --> (Damage calc)
-(Damage calc) --> (Sync to both)
+(Check if Pokemon fainted) --> (Switch Pokemon via NetworkService) : fainted, has more
+(Check if Pokemon fainted) --> (PvPManager declares winner) : no more Pokemon
+(Check if Pokemon fainted) --> Player1 : battle continues
 
-(Timeout) --> (Use default action)
-(Use default action) --> (Execute moves in order)
-
-(Sync to both) --> (Check if battle over)
-(Check if battle over) --> (Someone fainted?)
-
-(Someone fainted?) --> (Battle continues) : still fighting
-(Someone fainted?) --> (Winner determined) : someone lost
-
-(Battle continues) --> (Next turn)
-(Next turn) --> Player1
-(Next turn) --> Player2
-
-(Winner determined) --> (Award rewards)
-(Award rewards) --> Player1
-(Award rewards) --> Player2
+(PvPManager declares winner) --> (BattleHub sends BattleEnded)
+(BattleHub sends BattleEnded) --> (Display result)
+(Display result) --> (Return to MainMenu)
+(Return to MainMenu) --> Player1
+(Return to MainMenu) --> Player2
 
 @enduml

@@ -7,125 +7,137 @@ skinparam class {
   ArrowColor #333333
 }
 
-title Infrastructure Layer - Repositories & Persistence
+title Infrastructure Layer - Repositories, Persistence & Network
 
-interface IUserRepository {
-  + GetUser(username: string): User?
-  + CreateUser(user: User): bool
-  + UpdateUser(user: User): bool
-  + DeleteUser(userId: int): bool
+' ===== User Repositories =====
+interface IUserRepository <<Application>> {
+  + GetAll(): List<User>
+  + GetByUsername(username: string): User?
+  + Save(user: User)
 }
 
-class JsonUserRepository {
-  - _filePath: string
-  + GetUser(username: string): User?
-  + CreateUser(user: User): bool
-  + UpdateUser(user: User): bool
-  + DeleteUser(userId: int): bool
-  - ReadJsonFile(): List<User>
-  - WriteJsonFile(users: List<User>)
+class UserRepository <<Json>> {
+  - _filePath: string = "users.json"
+  - _fileService: IFileService
+  + GetAll(): List<User>
+  + GetByUsername(username: string): User?
+  + Save(user: User)
 }
 
-class MySqlUserRepository {
-  - _connection: IDbConnection
+class MySqlUserRepository <<MySql>> {
+  - _connection: string
+  - _pokedex: IPokedexRepository
+  + GetAll(): List<User>
+  + GetByUsername(username: string): User?
+  + Save(user: User)
+}
+
+' ===== Pokedex Repositories =====
+interface IPokedexRepository <<Application>> {
+  + GetSpecies(name: string): PokemonSpecies?
+  + GetSpeciesById(id: int): PokemonSpecies?
+}
+
+class PokedexRepository <<Json>> {
+  - _filePath: string = "pokemon.json"
+  - _fileService: IFileService
+  - _cache: Dictionary<string, PokemonSpecies>
+  + GetSpecies(name: string): PokemonSpecies?
+  + GetSpeciesById(id: int): PokemonSpecies?
+}
+
+class MySqlPokedexRepository <<MySql>> {
   - _connectionString: string
-  + GetUser(username: string): User?
-  + CreateUser(user: User): bool
-  + UpdateUser(user: User): bool
-  + DeleteUser(userId: int): bool
-  - ExecuteQuery(query: string): DataTable
+  - _cache: Dictionary<string, PokemonSpecies>
+  + GetSpecies(name: string): PokemonSpecies?
+  + GetSpeciesById(id: int): PokemonSpecies?
 }
 
-interface IPokedexRepository {
-  + GetSpecies(speciesId: int): PokemonSpecies?
-  + GetAllSpecies(): List<PokemonSpecies>
-  + GetMovesBySpecies(speciesId: int): List<PokemonMove>
-}
-
-class JsonPokedexRepository {
-  - _filePath: string
-  + GetSpecies(speciesId: int): PokemonSpecies?
-  + GetAllSpecies(): List<PokemonSpecies>
-  + GetMovesBySpecies(speciesId: int): List<PokemonMove>
-  - ReadJsonFile(): Dictionary<int, PokemonSpecies>
-}
-
-class MySqlPokedexRepository {
-  - _connection: IDbConnection
-  - _connectionString: string
-  + GetSpecies(speciesId: int): PokemonSpecies?
-  + GetAllSpecies(): List<PokemonSpecies>
-  + GetMovesBySpecies(speciesId: int): List<PokemonMove>
-  - QuerySpecies(speciesId: int): DataRow?
-}
-
-interface IItemRepository {
-  + GetItem(itemId: int): Item?
+' ===== Item Repositories =====
+interface IItemRepository <<Application>> {
+  + GetItemByName(name: string): Item?
+  + GetItemById(id: int): Item?
   + GetAllItems(): List<Item>
-  + GetItemsByType(itemType: string): List<Item>
 }
 
-class JsonItemRepository {
-  - _filePath: string
-  + GetItem(itemId: int): Item?
+class ItemRepository <<Json>> {
+  - _filePath: string = "item.json"
+  - _fileService: IFileService
+  - _cache: Dictionary<string, Item>
+  + GetItemByName(name: string): Item?
+  + GetItemById(id: int): Item?
   + GetAllItems(): List<Item>
-  + GetItemsByType(itemType: string): List<Item>
-  - ReadJsonFile(): List<Item>
 }
 
-class MySqlItemRepository {
-  - _connection: IDbConnection
-  - _connectionString: string
-  + GetItem(itemId: int): Item?
+class MySqlItemRepository <<MySql>> {
+  - _connection: string
+  - _cache: Dictionary<string, Item>
+  + GetItemByName(name: string): Item?
+  + GetItemById(id: int): Item?
   + GetAllItems(): List<Item>
-  + GetItemsByType(itemType: string): List<Item>
-  - QueryItems(filter: string?): List<Item>
 }
 
-class PokemonSpawner {
-  - _random: Random
-  - _pokedexRepo: IPokedexRepository
-  + SpawnPokemon(speciesIdList: List<int>): Pokemon
-  - GenerateRandomStats(species: PokemonSpecies): Stats
-  - SelectRandomMoves(species: PokemonSpecies): List<PokemonMove>
-  - DetermineLevelRange(baseLevel: int): Tuple<int, int>
-}
-
-class ItemSpawner {
-  - _random: Random
-  - _itemRepo: IItemRepository
-  + SpawnItem(itemIdList: List<int>): Item
-  - SelectItemByWeight(items: List<Item>): Item
-}
-
+' ===== File Service =====
 class FileService {
-  - _filePath: string
-  + SaveGame(player: Player)
-  + LoadGame(username: string): Player?
-  + ExistsGame(username: string): bool
-  - SerializePlayer(player: Player): string
-  - DeserializePlayer(json: string): Player
-  - GetGameFilePath(username: string): string
+  - _options: JsonSerializerOptions
+  + Save<T>(fileName: string, data: T)
+  + Load<T>(fileName: string): T?
+  + Exists(fileName: string): bool
+  + Delete(fileName: string)
+}
+
+' ===== Network Service =====
+class NetworkService {
+  - _connection: HubConnection
+  + OnMatchFound: event Action<string, string>
+  + OnWaiting: event Action
+  + OnMatchmakingRejected: event Action<string>
+  + OnTurnResultReceived: event Action<PvPTurnResult>
+  + LastTurnResult: PvPTurnResult?
+  + Connect(): Task<bool>
+  + FindMatch(username: string, party: List<Pokemon>): Task
+  + SubmitMoveAsync(roomId: string, playerName: string, moveIndex: int, attackerPokemon: Pokemon): Task
+  + CancelMatchmakingAsync(): Task
+}
+
+' ===== MySql Story Service =====
+class MySqlStoryService {
+  - _gameSession: GameSession
+  - _pokemonSpawner: PokemonSpawner
+  - _itemSpawner: ItemSpawner
+  - _dbConnection: string
+}
+
+' ===== Database Seeder =====
+class DatabaseSeeder {
+  - _connection: string
+  - _userRepo: MySqlUserRepository
+  + SeedAll()
+  - SeedItems()
+  - SeedPokedex()
+  - SeedStory()
+  - SeedUsers()
 }
 
 ' Relationships
-JsonUserRepository ..|> IUserRepository
+UserRepository ..|> IUserRepository
 MySqlUserRepository ..|> IUserRepository
+UserRepository --> IFileService
 
-JsonPokedexRepository ..|> IPokedexRepository
+PokedexRepository ..|> IPokedexRepository
 MySqlPokedexRepository ..|> IPokedexRepository
+PokedexRepository --> IFileService
 
-JsonItemRepository ..|> IItemRepository
+ItemRepository ..|> IItemRepository
 MySqlItemRepository ..|> IItemRepository
+ItemRepository --> IFileService
 
-PokemonSpawner --> IPokedexRepository
-PokemonSpawner --> Pokemon
-PokemonSpawner --> Stats
+FileService ..|> IFileService
 
-ItemSpawner --> IItemRepository
-ItemSpawner --> Item
+NetworkService ..|> INetworkService
 
-FileService --> Player
-FileService --> Inventory
+MySqlStoryService ..|> IStoryService
+
+DatabaseSeeder --> MySqlUserRepository
 
 @enduml

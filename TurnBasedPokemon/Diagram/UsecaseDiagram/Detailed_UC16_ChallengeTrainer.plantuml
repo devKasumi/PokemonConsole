@@ -1,41 +1,42 @@
 @startuml UC16_ChallengeTrainer_UseCase
+title UC16 - Challenge Trainer (Use Case Diagram)
+note "**Under Development**\nTrainer challenge exists via\nStoryService.TryChallengeTrainer()\nbut no dedicated screen yet." as N1
 skinparam linetype ortho
 left to right direction
 
 actor Player
-actor Trainer <<right>>
 
 rectangle "Trainer Battle System" {
-  (Encounter Trainer)
-  (Trainer initiates battle)
-  (Load trainer team)
-  (Execute battle)
+  (Encounter Trainer NPC in StoryScreen)
+  (StoryScreen.HandleTalk displays dialogue)
+  (npc.Action == StartBattle)
+  (StoryService.TryChallengeTrainer)
+  (Check team alive)
+  (PokemonSpawner generates trainer team)
+  (Set GameSession.CurrentEnemyTeam)
+  (Switch to BattleScreen)
   (Battle result)
   (Player won)
   (Player lost)
-  (Trainer defeated)
-  (Receive reward money)
-  (Gain experience)
-  (Trainer gives item)
-  (Update trainer status)
+  (ExpService processes rewards)
+  (Return to StoryScreen)
 }
 
-Player --> (Encounter Trainer)
-Trainer --> (Trainer initiates battle)
-(Encounter Trainer) --> (Trainer initiates battle)
-
-(Trainer initiates battle) --> (Load trainer team)
-(Load trainer team) --> (Execute battle)
-(Execute battle) --> (Battle result)
-
-(Battle result) --> (Player won)
-(Battle result) --> (Player lost)
-(Player won) --> (Trainer defeated)
-(Trainer defeated) --> (Receive reward money)
-(Receive reward money) --> (Gain experience)
-(Gain experience) --> (Trainer gives item)
-(Trainer gives item) --> (Update trainer status)
-(Update trainer status) --> Player
-(Player lost) --> Player : Return to Pokemon Center
+Player --> (Encounter Trainer NPC in StoryScreen)
+(Encounter Trainer NPC in StoryScreen) --> (StoryScreen.HandleTalk displays dialogue)
+(StoryScreen.HandleTalk displays dialogue) --> (npc.Action == StartBattle)
+(npc.Action == StartBattle) --> (StoryService.TryChallengeTrainer)
+(StoryService.TryChallengeTrainer) --> (Check team alive)
+(Check team alive) --> (PokemonSpawner generates trainer team) : alive
+(PokemonSpawner generates trainer team) --> (Set GameSession.CurrentEnemyTeam)
+(Set GameSession.CurrentEnemyTeam) --> (Switch to BattleScreen)
+(Switch to BattleScreen) --> (Battle result)
+(Battle result) --> (Player won) : victory
+(Battle result) --> (Player lost) : defeat
+(Player won) --> (ExpService processes rewards)
+(ExpService processes rewards) --> (Return to StoryScreen)
+(Player lost) --> (Return to StoryScreen)
+(Check team alive) --> (Return to StoryScreen) : all fainted
+(Return to StoryScreen) --> Player
 
 @enduml

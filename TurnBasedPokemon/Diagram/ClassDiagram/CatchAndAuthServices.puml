@@ -10,42 +10,58 @@ skinparam class {
 title Application Layer - Catch and Authentication Services
 
 interface ICatchService {
-  + ExecuteCapture(enemy: Pokemon, item: CaptureItem): CatchResult
+  + ExecuteCapture(item: CaptureItem, target: Pokemon): CatchResult
 }
 
 class CatchService {
-  - _randomizer: Random
-  + ExecuteCapture(enemy: Pokemon, item: CaptureItem): CatchResult
-  - CalculateCatchProbability(pokemon: Pokemon, item: CaptureItem): double
-  - GenerateCatchMessage(success: bool): string
+  - _gameSession: GameSession
+  + ExecuteCapture(item: CaptureItem, target: Pokemon): CatchResult
 }
 
-class CatchResult {
-  + Success: bool
-  + Message: string
-  + CaughtPokemon: Pokemon?
+record CatchResult {
+  + IsCaught: bool
+  + Shakes: int
+  + DisplayMessage: string
+  + {static} Success(shakes: int, pokemonName: string): CatchResult
+  + {static} Failure(shakes: int, pokemonName: string): CatchResult
 }
 
 interface IAuthenService {
-  + IsValidCredentials(username: string, password: string): bool
-  + HashPassword(password: string): string
-  + VerifyPassword(password: string, hash: string): bool
+  + Register(request: RegisterRequest): bool
+  + Login(request: LoginRequest): bool
+  + LoadProgress(username: string): bool
+  + SaveProgress()
+  + SetChampion()
 }
 
 class AuthenService {
-  + IsValidCredentials(username: string, password: string): bool
-  + HashPassword(password: string): string
-  + VerifyPassword(password: string, hash: string): bool
+  - _userRepository: IUserRepository
+  - _gameSession: GameSession
+  + Register(request: RegisterRequest): bool
+  + Login(request: LoginRequest): bool
+  + LoadProgress(username: string): bool
+  + SaveProgress()
+  + SetChampion()
+}
+
+record RegisterRequest {
+  + Username: string
+  + Password: string
+}
+
+record LoginRequest {
+  + Username: string
+  + Password: string
 }
 
 ' Relationships
 CatchService ..|> ICatchService
-CatchService --> Pokemon
-CatchService --> CaptureItem
+CatchService --> GameSession
 CatchService --> CatchResult
 
 AuthenService ..|> IAuthenService
-AuthenService --> User
+AuthenService --> IUserRepository
+AuthenService --> GameSession
 
 @enduml</content>
 <parameter name="filePath">c:\C#\PokemonConsole\TurnBasedPokemon\Diagram\ClassDiagram\CatchAndAuthServices.puml

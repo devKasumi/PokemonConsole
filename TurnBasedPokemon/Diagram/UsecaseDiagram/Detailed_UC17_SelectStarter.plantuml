@@ -1,44 +1,40 @@
 @startuml UC17_SelectStarter_UseCase
+title UC17 - Select Starter Pokemon (Use Case Diagram)
 skinparam linetype ortho
 left to right direction
 
 actor Player
 
 rectangle "Starter Pokemon System" {
-  (Start new game)
-  (Meet Professor)
-  (Receive starter options)
-  (Display starter choices)
+  (New player after registration)
+  (StoryScreen shows starter selection)
+  (Display 3 starter options)
   (Player selects starter)
-  (Confirm selection)
-  (Receive Pokemon)
-  (Add to Pokedex)
-  (Add to team)
-  (Get Pokedex)
-  (Get Pokeballs)
-  (Game starts)
+  (StoryService.GiveStarter)
+  (PokemonSpawner creates starter)
+  (Add to Player.PokemonTeam)
+  (Receive initial items)
+  (Story mode begins)
 }
 
-Player --> (Start new game)
-(Start new game) --> (Meet Professor)
-(Meet Professor) --> (Receive starter options)
+Player --> (New player after registration)
+(New player after registration) --> (StoryScreen shows starter selection)
+(StoryScreen shows starter selection) --> (Display 3 starter options)
 
-(Receive starter options) --> (Display starter choices)
-note right of (Display starter choices)
-  Typically 3 starter options:
+note right of (Display 3 starter options)
+  From story.json config:
   - Grass type
   - Fire type
   - Water type
 end note
 
-(Display starter choices) --> (Player selects starter)
+(Display 3 starter options) --> (Player selects starter)
 Player --> (Player selects starter)
-(Player selects starter) --> (Confirm selection)
-(Confirm selection) --> (Receive Pokemon)
-
-(Receive Pokemon) --> (Add to team)
-(Add to team) --> (Get Pokeballs)
-(Get Pokeballs) --> (Game starts)
-(Game starts) --> Player
+(Player selects starter) --> (StoryService.GiveStarter)
+(StoryService.GiveStarter) --> (PokemonSpawner creates starter) : <<include>>
+(PokemonSpawner creates starter) --> (Add to Player.PokemonTeam)
+(Add to Player.PokemonTeam) --> (Receive initial items)
+(Receive initial items) --> (Story mode begins)
+(Story mode begins) --> Player
 
 @enduml

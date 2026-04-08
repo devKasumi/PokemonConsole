@@ -1,76 +1,50 @@
 @startuml UC4_UseItems_Sequence
 participant Player
 participant InventoryScreen
-participant InventoryService
-participant ItemEffectService
-participant HealingService
+participant ICatchService as CatchService
+participant IHealingService as HealingService
 participant GameSession
-participant BattleService
 
-Player -> InventoryScreen: Open Inventory
+Player -> InventoryScreen: Open Inventory (from BattleScreen)
 activate InventoryScreen
 
-InventoryScreen -> InventoryService: GetAllItems()
-activate InventoryService
-InventoryService -> GameSession: FetchInventory()
-GameSession --> InventoryService: Items list
-InventoryService --> InventoryScreen: Display items
-deactivate InventoryService
+InventoryScreen -> InventoryScreen: RenderText() - display item pockets
+InventoryScreen --> Player: Show item categories (Healing, Capture, General)
 
-Player -> InventoryScreen: Select item
-activate InventoryScreen
+Player -> InventoryScreen: Select pocket category
+InventoryScreen -> InventoryScreen: OpenPocket(ItemCategory)
 
-InventoryScreen -> ItemEffectService: GetItemInfo(itemId)
-activate ItemEffectService
-ItemEffectService --> InventoryScreen: Item details & available actions
-deactivate ItemEffectService
+alt Item Category = Healing
+  InventoryScreen --> Player: Show healing items list
+  Player -> InventoryScreen: Select healing item
 
-alt Item Type = HP Restore
-  InventoryScreen --> Player: Show Pokemon selection
-  Player -> InventoryScreen: Select Pokemon
-  
-  InventoryScreen -> HealingService: RestoreHP(pokemon, itemAmount)
+  InventoryScreen -> HealingService: ExecuteHealing(healingItem)
   activate HealingService
-  HealingService -> HealingService: Calculate new HP (currentHP + restore)
-  HealingService -> HealingService: Cap at maxHP
-  HealingService -> GameSession: UpdatePokemonHP(pokemon, newHP)
-  GameSession --> HealingService: HP updated
+  HealingService -> GameSession: Get Player.CurrentPokemon
+  HealingService -> HealingService: Restore HP (min of healAmount, maxHp - currentHp)
+  HealingService -> GameSession: Player.RemoveItem(item)
+  HealingService --> InventoryScreen: true (success)
   deactivate HealingService
-  
-  InventoryScreen -> InventoryService: ConsumeItem(itemId, 1)
-  activate InventoryService
-  InventoryService -> GameSession: RemoveItem(itemId)
-  GameSession --> InventoryService: Item removed
-  deactivate InventoryService
-  
+
   InventoryScreen --> Player: Show "Pokemon HP restored!"
 
-else Item Type = Status Cure
-  InventoryScreen --> Player: Show Pokemon selection
-  Player -> InventoryScreen: Select Pokemon
-  
-  InventoryScreen -> ItemEffectService: ApplyStatusCure(pokemon, statusType)
-  activate ItemEffectService
-  ItemEffectService -> GameSession: RemoveStatus(pokemon, status)
-  GameSession --> ItemEffectService: Status removed
-  deactivate ItemEffectService
-  
-  InventoryScreen -> InventoryService: ConsumeItem(itemId, 1)
-  activate InventoryService
-  InventoryService -> GameSession: RemoveItem(itemId)
-  GameSession --> InventoryService: Item removed
-  deactivate InventoryService
-  
-  InventoryScreen --> Player: Show "Status cured!"
+else Item Category = Capture
+  alt In Battle (wild Pokemon)
+    InventoryScreen --> Player: Show available Pokeballs
+    Player -> InventoryScreen: Select ball type
 
-else Item Type = Pokeball
-  alt In Battle
-    InventoryScreen -> BattleService: ThrowPokeball(ballType)
-    BattleService --> InventoryScreen: Catch attempt result
-  else Not In Battle
-    InventoryScreen --> Player: Show "Cannot use outside battle"
+    InventoryScreen -> CatchService: ExecuteCapture(captureItem, enemyPokemon)
+    activate CatchService
+    CatchService --> InventoryScreen: CatchResult(IsCaught, Shakes, DisplayMessage)
+    deactivate CatchService
+
+    InventoryScreen --> Player: Show catch result
+  else Not in wild battle
+    InventoryScreen --> Player: "Cannot use here"
   end
 
+else Item Category = General
+  InventoryScreen --> Player: Show general items (info only)
 end
 
 deactivate InventoryScreen

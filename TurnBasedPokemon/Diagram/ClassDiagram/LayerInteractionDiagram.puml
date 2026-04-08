@@ -24,6 +24,7 @@ package "Presentation Layer" {
   class StoryScreen
   class InventoryScreen
   class PvPScreen
+  class ScreenManager
 }
 
 package "Application Layer" {
@@ -33,9 +34,10 @@ package "Application Layer" {
   class HealingService
   class CatchService
   class AuthenService
-  class FileService
   class WorldGenerationService
-  class MatchmakingService
+  class PvPService
+  class PokemonSpawner
+  class ItemSpawner
 }
 
 package "Domain Layer" {
@@ -44,57 +46,53 @@ package "Domain Layer" {
   class Player
   class Pokemon
   class PokemonSpecies
-  class PokemonMove
   class Item
-  class Inventory
 }
 
 package "Infrastructure Layer" {
   class UserRepository
   class PokedexRepository
   class ItemRepository
-  class PokemonSpawner
-  class ItemSpawner
+  class FileService
+  class NetworkService
 }
 
 ' Main layer interactions
-Presentation --> Application : uses services
+Presentation --> Application : uses interfaces
 Application --> Domain : manipulates entities
-Application --> Infrastructure : queries data
-Domain --> Infrastructure : persists data
+Infrastructure ..|> Application : implements interfaces
 
 ' Key specific interactions
-LoginScreen --> AuthenService : authenticate
-AuthenService --> User : validate
-AuthenService --> UserRepository : query
+LoginScreen --> AuthenService : IAuthenService
+MainMenuScreen --> PvPService : IPvPService
+MainMenuScreen --> AuthenService : IAuthenService (save/load)
 
-BattleScreen --> BattleService : execute battle
-BattleService --> Pokemon : update stats
-BattleService --> Player : update state
+BattleScreen --> BattleService : IBattleService
+BattleService --> GameSession : battle state
+BattleService --> ExpService : IExpService
 
-StoryScreen --> StoryService : progress story
-StoryService --> GameSession : update progress
+StoryScreen --> StoryService : IStoryService
+StoryScreen --> AuthenService : IAuthenService (champion)
+StoryService --> GameSession : story state
+StoryService --> PokemonSpawner : spawn pokemon
+StoryService --> ItemSpawner : spawn items
 
-InventoryScreen --> GameSession : manage inventory
+InventoryScreen --> CatchService : ICatchService
+InventoryScreen --> HealingService : IHealingService
 
-PvPScreen --> MatchmakingService : find opponents
-MatchmakingService --> Player : match players
+PvPScreen --> NetworkService : INetworkService
+PvPService --> NetworkService : INetworkService
+PvPService --> GameSession : check champion
 
-ExpService --> Pokemon : level up
-HealingService --> Pokemon : heal
+AuthenService --> UserRepository : IUserRepository
+AuthenService --> GameSession : session state
 
-CatchService --> Pokemon : capture
+WorldGenerationService --> PokemonSpawner : spawn
+WorldGenerationService --> ItemSpawner : spawn
+PokemonSpawner --> PokedexRepository : IPokedexRepository
+ItemSpawner --> ItemRepository : IItemRepository
 
-FileService --> Player : save/load
-
-WorldGenerationService --> Pokemon : generate wild
-WorldGenerationService --> Item : generate items
-WorldGenerationService --> PokemonSpawner : spawn pokemon
-WorldGenerationService --> ItemSpawner : spawn items
-
-GameSession --> UserRepository : persist user
-GameSession --> PokedexRepository : access species
-GameSession --> ItemRepository : access items
+UserRepository --> FileService : IFileService
 
 @enduml</content>
 <parameter name="filePath">c:\C#\PokemonConsole\TurnBasedPokemon\Diagram\ClassDiagram\LayerInteractionDiagram.puml

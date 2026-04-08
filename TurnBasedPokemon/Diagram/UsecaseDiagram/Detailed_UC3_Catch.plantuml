@@ -1,48 +1,46 @@
 @startuml UC3_CatchPokemon_UseCase
+title UC3 - Catch Pokemon (Use Case Diagram)
 skinparam linetype ortho
 left to right direction
 
 actor Player
 
 rectangle "Pokemon Catch System" {
-  (During Battle with Wild Pokemon)
-  (Select Catch Option)
-  (Available Pokeballs?)
-  (Select Pokeball Type)
-  (Throw Pokeball)
-  (Reduce Pokemon HP)
-  (Calculate Catch Rate)
-  (Shake Check)
-  (Caught!)
-  (Escaped)
-  (Add to Team/Box)
-  (Gain Pokedex Entry)
-  (Ball Used Up)
-  (Continue Battle)
-  (Cannot Catch)
+  (In battle with wild Pokemon)
+  (Select Catch action)
+  (Has CaptureItems?)
+  (Select CaptureItem type)
+  (CatchService.ExecuteCapture)
+  (CatchFormula.AttemptCatch)
+  (CatchResult returned)
+  (Pokemon caught)
+  (Pokemon escaped)
+  (Add to Player.PokemonTeam)
+  (Consume CaptureItem)
+  (Continue battle)
+  (No Pokeballs)
 }
 
-Player --> (During Battle with Wild Pokemon)
-(During Battle with Wild Pokemon) --> (Select Catch Option)
-(Select Catch Option) --> (Available Pokeballs?)
+Player --> (In battle with wild Pokemon)
+(In battle with wild Pokemon) --> (Select Catch action)
+(Select Catch action) --> (Has CaptureItems?)
 
-(Available Pokeballs?) --> (Select Pokeball Type) : has balls
-(Available Pokeballs?) --> (Cannot Catch) : no balls
+(Has CaptureItems?) --> (Select CaptureItem type) : has balls
+(Has CaptureItems?) --> (No Pokeballs) : empty
 
-(Select Pokeball Type) --> (Throw Pokeball)
-(Throw Pokeball) --> (Reduce Pokemon HP) : <<prerequisite>>
-(Throw Pokeball) --> (Calculate Catch Rate) : <<include>>
-(Calculate Catch Rate) --> (Shake Check)
-(Shake Check) --> (Caught!) : <<success>>
-(Shake Check) --> (Escaped) : <<fail>>
+(Select CaptureItem type) --> (CatchService.ExecuteCapture)
+(CatchService.ExecuteCapture) --> (CatchFormula.AttemptCatch) : <<include>>
+(CatchFormula.AttemptCatch) --> (CatchResult returned)
+(CatchResult returned) --> (Pokemon caught) : IsCaught = true
+(CatchResult returned) --> (Pokemon escaped) : IsCaught = false
 
-(Caught!) --> (Add to Team/Box)
-(Caught!) --> (Gain Pokedex Entry)
-(Add to Team/Box) --> Player
+(Pokemon caught) --> (Add to Player.PokemonTeam)
+(Pokemon caught) --> (Consume CaptureItem)
+(Add to Player.PokemonTeam) --> Player
 
-(Escaped) --> (Ball Used Up)
-(Ball Used Up) --> (Continue Battle)
-(Cannot Catch) --> (Continue Battle)
-(Continue Battle) --> Player
+(Pokemon escaped) --> (Consume CaptureItem)
+(Consume CaptureItem) --> (Continue battle)
+(No Pokeballs) --> (Continue battle)
+(Continue battle) --> Player
 
 @enduml

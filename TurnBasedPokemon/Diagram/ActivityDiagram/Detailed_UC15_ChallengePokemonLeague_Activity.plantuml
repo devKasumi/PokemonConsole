@@ -1,51 +1,39 @@
 @startuml UC15_ChallengePokemonLeague_Activity
+title UC15 - Challenge Pokemon League (Activity Diagram)
 start
-:Player enters Pokemon League;
-:Check if has all 8 badges;
+:Player selects "Pokemon League" in StoryScreen;
+:StoryScreen checks Player.GymBadges;
 
 if (Has all 8 badges?) then (yes)
+  :StoryService retrieves Elite Four + Champion NPC list;
+  
   repeat
-    :Display their team;
-    :Player vs Elite Four Battle;
+    :StoryScreen calls StoryService.TryChallengePokemonLeague(boss);
+    :PokemonSpawner generates boss team;
+    :Set GameSession.CurrentEnemyTeam;
+    :Set GameSession.IsTrainerBattle = true;
+    :ScreenManager switches to BattleScreen;
     
     if (Player won?) then (yes)
-      :Continue to next member;
+      :ExpService processes victory rewards;
+      :Continue to next Elite Four member;
     else (no)
-      :Black out - return to Pokemon Center;
+      :Return to StoryScreen;
       stop
     endif
   repeat while (More Elite Four members)
   
-  :Meet Champion;
-  :Champion intro dialogue;
-  :Display Champion team (usually strong);
-  
   :Final battle: Player vs Champion;
   if (Player won?) then (yes)
-    :Play victory theme;
-    :Champion concedes defeat;
-    :Player enters Hall of Fame;
-    note
-      Hall of Fame entry includes:
-      - Player name
-      - Date defeated
-      - Team composition
-      - Time played
-    end note
-    
-    :Receive Champion title;
-    :Receive massive prize money;
-    :Unlock post-game content;
-    
+    :AuthenService.SetChampion(username);
+    :Display "You are the Champion!";
+    :Player.IsChampion = true;
   else (no)
-    :Defeat screen;
-    :Return to Pokemon Center;
-    :Can retry after healing;
+    :Return to StoryScreen;
   endif
   
 else (no)
-  :Guard blocks:;
-  :"You must earn all 8 badges first!";
+  :Display "You need all 8 badges!";
 endif
 
 stop

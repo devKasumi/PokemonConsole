@@ -1,37 +1,27 @@
 @startuml UC17_SelectStarter_Activity
+title UC17 - Select Starter (Activity Diagram)
 start
-:Start new game;
-:Display intro sequence;
-:Meet Professor Oak / your regional professor;
-:Professor: "Welcome! There are 3 starter Pokemon";
+:New player completes registration;
+:ScreenManager switches to StoryScreen;
+:StoryScreen shows starter selection;
 
 :Display 3 starter options;
 note
-  Typically shown as:
-  - Picture
-  - Name
+  Loaded from story.json config:
+  - Pokemon Name
   - Type
-  - Level 5 stats
+  - Base stats
 end note
 
 :Player selects starter;
-repeat
-  if (Change mind?) then (yes)
-    :Display options again;
-  endif
-repeat while (Change mind?)
 
-:Confirm selection;
+:StoryScreen calls StoryService.GiveStarter(starterIndex);
+:PokemonSpawner creates starter Pokemon;
+:Starter added to Player.PokemonTeam;
+:Player receives initial items (Pokeballs);
+
 :Display "You received [Starter Name]!";
-:Starter added to team;
-
-:Professor gives items;
-:Receive initial Pokeballs (5x Pokéballs);
-:Receive Potions (2x);
-
-:Game officially starts;
-:Player in home town;
-
+:Story mode begins;
 
 stop
 @enduml
