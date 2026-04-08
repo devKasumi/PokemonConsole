@@ -1,9 +1,8 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Text.Json;
-using System.IO;
 using PokemonEntity;
+using Application.RepoInterfaces;
 
 public class StoryService : IStoryService
 {
@@ -12,35 +11,12 @@ public class StoryService : IStoryService
     private readonly ItemSpawner _itemSpawner;
     private GameData _gameData;
 
-    public StoryService(GameSession session, PokemonSpawner pokeSpawner, ItemSpawner itemSpawner)
+    public StoryService(GameSession session, PokemonSpawner pokeSpawner, ItemSpawner itemSpawner, IStoryRepository storyRepo)
     {
         _gameSession = session;
         _pokemonSpawner = pokeSpawner;
         _itemSpawner = itemSpawner;
-        _gameData = LoadData();
-    }
-
-    private GameData LoadData()
-    {
-        if (!File.Exists("story.json")) return new GameData();
-
-        string json = File.ReadAllText("story.json");
-        
-        var options = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-            Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() }
-        };
-
-        try 
-        {
-            return JsonSerializer.Deserialize<GameData>(json, options) ?? new GameData();
-        }
-        catch (JsonException ex)
-        {
-            Console.WriteLine($"[!] JSON Error: {ex.Message}");
-            throw; 
-        }
+        _gameData = storyRepo.LoadStoryData();
     }
 
     public void InitializeStory(string command)

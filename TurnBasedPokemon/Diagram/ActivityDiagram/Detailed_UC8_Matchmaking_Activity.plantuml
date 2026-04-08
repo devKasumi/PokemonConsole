@@ -2,33 +2,52 @@
 title UC8 - Matchmaking (Activity Diagram)
 start
 :Player selects "PvP" from MainMenuScreen;
-:MainMenuScreen calls PvPService.StartMatchmaking();
-:PvPService calls NetworkService.ConnectAsync();
+:MainMenuScreen calls PvPService.CanAccessPvP();
 
-if (Connection to BattleHub successful?) then (yes)
-  :NetworkService sends JoinMatchmaking(player data);
-  :BattleHub adds player to MatchmakingService queue;
-  :Display "Searching for opponent...";
-  
-  repeat
-    :MatchmakingService checks queue;
+if (Player is Champion?) then (yes)
+  :MainMenuScreen calls PvPService.Connect();
+  :PvPService internally calls NetworkService.ConnectAsync();
+
+  if (Connection to BattleHub successful?) then (yes)
+    :MainMenuScreen subscribes OnMatchFound + OnMatchmakingRejected;
+    :MainMenuScreen calls PvPService.FindMatch();
+    :PvPService delegates to NetworkService.FindMatch(username, team);
+    :BattleHub adds player to MatchmakingService queue;
+    :Display "Searching for opponent...";
     
-    if (Two players in queue?) then (yes)
-      :MatchmakingService creates BattleRoom;
-      :BattleHub notifies both clients: MatchFound;
-      :PvPService receives opponent info;
-      :ScreenManager switches to PvPScreen;
-    endif
+    repeat
+      :MatchmakingService checks queue;
+      
+      if (Two players in queue?) then (yes)
+        :MatchmakingService creates BattleRoom;
+        :BattleHub notifies both clients: MatchFound;
+        :PvPService receives OnMatchFound event;
+        :ScreenManager switches to PvPScreen;
+      endif
+
+      if (Same account detected?) then (yes)
+        :PvPService receives OnMatchmakingRejected;
+        :Display rejection error;
+        :Return to MainMenuScreen;
+        stop
+      endif
+      
+      if (Player cancelled?) then (yes)
+        :MainMenuScreen calls PvPService.CancelMatchmaking();
+        :PvPService delegates to NetworkService.CancelMatchmakingAsync();
+        :Return to MainMenuScreen;
+        stop
+      endif
+    repeat while (Searching for opponent)
     
-    if (Player cancelled?) then (yes)
-      :NetworkService sends LeaveMatchmaking;
-      :Return to MainMenuScreen;
-      stop
-    endif
-  repeat while (Searching for opponent)
-  
+  else (no)
+    :Display "Cannot connect to server";
+    :Return to MainMenuScreen;
+    stop
+  endif
+
 else (no)
-  :Display "Cannot connect to server";
+  :Display "Must complete main storyline first";
   :Return to MainMenuScreen;
   stop
 endif

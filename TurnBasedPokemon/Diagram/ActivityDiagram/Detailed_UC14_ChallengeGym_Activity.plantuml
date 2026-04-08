@@ -21,7 +21,7 @@ if (Requirements met and team alive?) then (yes)
   end note
   
   if (Player won?) then (yes)
-    :Player.GymBadges incremented;
+    :Player.Badges updated (add badge);
     :ExpService processes victory rewards;
     :Display "Gym Badge earned!";
     :Unlock next story area;

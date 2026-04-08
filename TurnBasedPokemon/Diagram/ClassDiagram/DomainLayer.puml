@@ -34,13 +34,23 @@ class Player {
 class Pokemon <<Pokemon.Shared>> {
   + Specie: PokemonSpecies
   + Level: int
-  + Exp: int
-  + CurrentHp: int
-  + MaxHp: int
+  + TotalExp: int
+  + CurrentHP: int
+  + MaxHP: int
+  + CurrentExp: int
+  + MaxExpForNextLevel: int
   + Moves: List<PokemonMove>
+  + IsFainted: bool
+  + Status: PokemonStatus
   + TakeDamage(damage: int)
+  + Heal(hpAmount: int)
+  + GainExperience(amount: int)
   + LevelUp()
-  + ReplaceMove(oldMove: PokemonMove, newMove: PokemonMove)
+  + CanEvolve(): bool
+  + Evolve(evolvedTemplate: Pokemon)
+  + LearnNewMovesAtLevel(level: int): List<string>
+  + UpdateMoveSet(newMoves: List<PokemonMove>)
+  + ReplaceMove(index: int, newMove: PokemonMove)
 }
 
 class PokemonSpecies <<Pokemon.Shared>> {
@@ -49,44 +59,65 @@ class PokemonSpecies <<Pokemon.Shared>> {
   + Types: List<ElementType>
   + BaseStats: Stats
   + MoveSet: List<PokemonMove>
+  + CatchRate: int
+  + BaseExp: int
+  + EvolutionId: int?
+  + EvolutionLevel: int?
 }
 
 class PokemonMove <<Pokemon.Shared>> {
   + Name: string
   + Type: ElementType
   + Power: int
-  + Accuracy: int
-  + CriticalChance: double
-  + Priority: int
+  + PP: int
+  + MoveType: MoveType
+  + LevelLearned: int
 }
 
 class Stats <<Pokemon.Shared>> {
+  + HP: int
   + Attack: int
   + Defense: int
-  + SpAtk: int
-  + SpDef: int
+  + SpAttack: int
+  + SpDefense: int
   + Speed: int
 }
 
 enum ElementType <<Pokemon.Shared>> {
-  NORMAL
-  FIRE
-  WATER
-  GRASS
-  ELECTRIC
-  ICE
-  FIGHTING
-  POISON
-  GROUND
-  FLYING
-  PSYCHIC
-  BUG
-  ROCK
-  GHOST
-  DRAGON
-  DARK
-  STEEL
-  FAIRY
+  None
+  Fire
+  Water
+  Grass
+  Electric
+  Psychic
+  Ice
+  Dragon
+  Dark
+  Fairy
+  Normal
+  Fighting
+  Flying
+  Poison
+  Ground
+  Rock
+  Bug
+  Ghost
+  Steel
+}
+
+enum MoveType <<Pokemon.Shared>> {
+  Physical
+  Special
+  Status
+}
+
+enum PokemonStatus <<Pokemon.Shared>> {
+  None
+  Asleep
+  Frozen
+  Paralyzed
+  Burned
+  Poisoned
 }
 
 enum ItemCategory {
@@ -159,7 +190,73 @@ enum NPCRole {
 }
 
 class CatchFormula <<static>> {
-  + {static} AttemptCatch(target: Pokemon, ball: CaptureItem): CatchResult
+  + {static} AttemptCatch(target: Pokemon, ball: CaptureItem): CatchAttemptResult
+}
+
+class CatchAttemptResult <<record>> {
+  + IsCaught: bool
+  + Shakes: int
+}
+
+' ===== Story Data Models =====
+class GameData {
+  + Phases: List<PhaseData>
+}
+
+class PhaseData {
+  + PhaseId: int
+  + Name: string
+  + Locations: List<LocationData>
+}
+
+class LocationData {
+  + Id: int
+  + Name: string
+  + Narratives: List<string>
+  + NPCs: List<NpcData>
+  + WildPokemons: List<string>
+  + MinLevel: int
+  + MaxLevel: int
+}
+
+class NpcData {
+  + Name: string
+  + Role: string
+  + Dialogue: List<string>
+  + Action: string
+  + RequiredBadge: int
+  + PokemonTeam: List<NpcPokemon>
+  + ActionParam: string
+}
+
+class NpcPokemon {
+  + Name: string
+  + Level: int
+  + Moves: List<PokemonMove>
+}
+
+' ===== Pokemon.Shared Rules =====
+class DamageCalculator <<static>> <<Pokemon.Shared>> {
+  + {static} Calculate(attacker: Pokemon, defender: Pokemon, move: PokemonMove): DamageResult
+}
+
+class DamageResult <<record>> <<Pokemon.Shared>> {
+  + Damage: int
+  + IsCritical: bool
+  + TypeMultiplier: float
+  + IsImmune: bool <<computed>>
+  + IsSuperEffective: bool <<computed>>
+  + IsNotVeryEffective: bool <<computed>>
+}
+
+class ExpCalculator <<static>> <<Pokemon.Shared>> {
+  + {static} CalculateExpGain(isTrainer: bool, baseExp: int, level: int, participants: int): int
+  + {static} CanLevelUp(currentLevel: int, totalExp: int): bool
+  + {static} GetRequiredExpForLevel(level: int): int
+}
+
+class TypeChart <<static>> <<Pokemon.Shared>> {
+  + {static} GetEffectivenessMultiplier(attackType: ElementType, defenseType: ElementType): float
 }
 
 ' Relationships
@@ -169,11 +266,12 @@ Player --> Item : has inventory
 
 Pokemon --> PokemonSpecies : base species
 Pokemon --> PokemonMove : learns
-Pokemon --> Stats : has
+Pokemon --> PokemonStatus : has status
 
 PokemonSpecies --> Stats : base stats
 PokemonSpecies --> PokemonMove : available moves
 PokemonSpecies --> ElementType : has type
+PokemonMove --> MoveType : has move type
 
 Item <|-- HealingItem
 Item <|-- CaptureItem
@@ -188,5 +286,13 @@ NPC --> NPCRole : has role
 GameSession --> User : current user
 GameSession --> Pokemon : enemy pokemon
 GameSession --> LocationData : current location
+
+GameData --> PhaseData : contains
+PhaseData --> LocationData : contains
+LocationData --> NpcData : has npcs
+NpcData --> NpcPokemon : has team
+
+DamageCalculator --> DamageResult : returns
+DamageCalculator --> TypeChart : uses
 
 @enduml

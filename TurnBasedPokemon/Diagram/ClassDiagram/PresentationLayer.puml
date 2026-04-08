@@ -1,6 +1,8 @@
 @startuml PresentationLayerScreens
 skinparam classAttributeIconSize 0
-skinparam direction top to bottom
+top to bottom direction
+skinparam nodesep 30
+skinparam ranksep 50
 skinparam class {
   BackgroundColor #FFF9E6
   BorderColor #333333
@@ -9,22 +11,10 @@ skinparam class {
 
 title Presentation Layer - UI Screens
 
-interface IScreen {
-  + Initialize(data: object?)
-  + Update()
-  + Shutdown()
-}
-
-class ScreenManager {
-  + CurrentScreen: ScreenType
-  - _screens: Dictionary<ScreenType, IScreen>
-  - _isRunning: bool
-  - _pendingData: object?
-  + RegisterScreen(screenType: ScreenType, screen: IScreen)
-  + ExitGame()
-  + Run()
-  + SwitchTo(screenType: ScreenType, data: object?)
-}
+' ================================================================
+' ROW 1: Screen Implementations
+' Column order: Login | Battle | Story | MainMenu | PvP | Inventory | ScreenManager
+' ================================================================
 
 class LoginScreen {
   - _screenManager: ScreenManager
@@ -37,26 +27,17 @@ class LoginScreen {
   - HandleRegister()
 }
 
-class MainMenuScreen {
-  - _screenManager: ScreenManager
-  - _gameSession: GameSession
-  - _pvpService: IPvPService
-  - _authenService: IAuthenService
-  + Initialize(data: object?)
-  + Update()
-  - HandleStartNewGame()
-  - HandleLoadGame()
-  - HandlePvP()
-  - HandleSaveGame()
-  - HandleBackToLogin()
-}
-
 class BattleScreen {
   - _screenManager: ScreenManager
   - _gameSession: GameSession
   - _battleService: IBattleService
+  - _pvpRoomId: string?
+  - _isPvP: bool
   + Initialize(data: object?)
   + Update()
+  - RenderText()
+  - ShowCommandMenu()
+  - ShowMoveMenu()
   - HandleFightOption()
   - ExecuteBattleTurn(moveIndex: int)
   - HandleVictory()
@@ -64,6 +45,9 @@ class BattleScreen {
   - HandleOpenBag()
   - HandleSwitchPokemon()
   - HandleRun()
+  - HandlePlayerFainted()
+  - DisplayBattleMessage(msg: string)
+  - DisplayEvolutionScene()
 }
 
 class StoryScreen {
@@ -82,6 +66,42 @@ class StoryScreen {
   - HandlePokemonLeagueBattle()
 }
 
+class MainMenuScreen {
+  - _screenManager: ScreenManager
+  - _gameSession: GameSession
+  - _pvpService: IPvPService
+  - _authenService: IAuthenService
+  + Initialize(data: object?)
+  + Update()
+  - HandleStartNewGame()
+  - HandleLoadGame()
+  - HandlePvP()
+  - HandleSaveGame()
+  - HandleBackToLogin()
+}
+
+class PvPScreen {
+  - _sm: ScreenManager
+  - _session: GameSession
+  - _pvpService: IPvPService
+  - _roomId: string
+  - _lastResult: PvPTurnResult? <<volatile>>
+  - _waitingForResult: bool <<volatile>>
+  + Initialize(data: object?)
+  + Update()
+  + Shutdown()
+  - ValidateRoom(): bool
+  - RenderRoomHeader()
+  - RenderCombatLogs(result: PvPTurnResult)
+  - HandleGameOver(result: PvPTurnResult)
+  - HandleWaitingForOpponent()
+  - HandlePlayerInput(result: PvPTurnResult)
+  - ReadMoveSelection(moveCount: int): int
+  - SubmitMove(selectedMove: int)
+  - RenderBattleScene(result: PvPTurnResult)
+  - ShowMoveMenu(myActive: PvPMonState)
+}
+
 class InventoryScreen {
   - _screenManager: ScreenManager
   - _gameSession: GameSession
@@ -90,42 +110,85 @@ class InventoryScreen {
   + Initialize(data: object?)
   + Update()
   + Shutdown()
+  - RenderText()
   - OpenPocket(category: ItemCategory)
   - UseItem(item: Item): bool
 }
 
-class PvPScreen {
-  - _sm: ScreenManager
-  - _network: INetworkService
-  - _session: GameSession
-  - _roomId: string
-  - _lastResult: PvPTurnResult? <<volatile>>
-  - _waitingForResult: bool <<volatile>>
+class ScreenManager {
+  + CurrentScreen: ScreenType
+  - _screens: Dictionary<ScreenType, IScreen>
+  - _isRunning: bool
+  - _pendingData: object?
+  + RegisterScreen(screenType: ScreenType, screen: IScreen)
+  + ExitGame()
+  + Run()
+  + SwitchTo(screenType: ScreenType, data: object?)
+}
+
+' ================================================================
+' ROW 2: IScreen interface
+' ================================================================
+
+interface IScreen {
   + Initialize(data: object?)
   + Update()
   + Shutdown()
-  - HandleTurnResult(result: PvPTurnResult)
-  - RenderBattleScene(result: PvPTurnResult)
-  - ShowMoveMenu(myActive: PvPMonState)
 }
 
-' Relationships
+' ================================================================
+' ROW 3: Dependencies
+' Column order matches Row 1 for vertical alignment
+' ================================================================
+
+interface IAuthenService
+interface IBattleService
+interface IStoryService
+class GameSession <<Domain>>
+interface IPvPService
+interface ICatchService
+interface IHealingService
+class ScreenType <<enum>>
+
+' ================================================================
+' VERTICAL ALIGNMENT (hidden links to enforce columns)
+' ================================================================
+LoginScreen -[hidden]down- IAuthenService
+BattleScreen -[hidden]down- IBattleService
+StoryScreen -[hidden]down- IStoryService
+MainMenuScreen -[hidden]down- GameSession
+PvPScreen -[hidden]down- IPvPService
+InventoryScreen -[hidden]down- ICatchService
+ScreenManager -[hidden]down- ScreenType
+
+' Row 3 horizontal ordering
+IAuthenService -[hidden]right- IBattleService
+IBattleService -[hidden]right- IStoryService
+IStoryService -[hidden]right- GameSession
+GameSession -[hidden]right- IPvPService
+IPvPService -[hidden]right- ICatchService
+ICatchService -[hidden]right- IHealingService
+IHealingService -[hidden]right- ScreenType
+
+' ================================================================
+' RELATIONSHIPS
+' ================================================================
+
+' Implements IScreen
 LoginScreen ..|> IScreen
-MainMenuScreen ..|> IScreen
 BattleScreen ..|> IScreen
 StoryScreen ..|> IScreen
+MainMenuScreen ..|> IScreen
 InventoryScreen ..|> IScreen
 PvPScreen ..|> IScreen
 
+' ScreenManager
 ScreenManager --> IScreen : manages
-ScreenManager --> ScreenType : uses
+ScreenManager --> ScreenType
 
+' Each screen to its primary dependency (straight down)
 LoginScreen --> IAuthenService
 LoginScreen --> GameSession
-
-MainMenuScreen --> IPvPService
-MainMenuScreen --> IAuthenService
-MainMenuScreen --> GameSession
 
 BattleScreen --> IBattleService
 BattleScreen --> GameSession
@@ -134,11 +197,15 @@ StoryScreen --> IStoryService
 StoryScreen --> IAuthenService
 StoryScreen --> GameSession
 
+MainMenuScreen --> GameSession
+MainMenuScreen --> IPvPService
+MainMenuScreen --> IAuthenService
+
+PvPScreen --> IPvPService
+PvPScreen --> GameSession
+
 InventoryScreen --> ICatchService
 InventoryScreen --> IHealingService
 InventoryScreen --> GameSession
-
-PvPScreen --> INetworkService
-PvPScreen --> GameSession
 
 @enduml

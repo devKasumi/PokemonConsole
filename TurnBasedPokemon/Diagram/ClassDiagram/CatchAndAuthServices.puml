@@ -18,7 +18,7 @@ class CatchService {
   + ExecuteCapture(item: CaptureItem, target: Pokemon): CatchResult
 }
 
-record CatchResult {
+class CatchResult <<record>> {
   + IsCaught: bool
   + Shakes: int
   + DisplayMessage: string
@@ -44,12 +44,12 @@ class AuthenService {
   + SetChampion()
 }
 
-record RegisterRequest {
+class RegisterRequest <<record>> {
   + Username: string
   + Password: string
 }
 
-record LoginRequest {
+class LoginRequest <<record>> {
   + Username: string
   + Password: string
 }

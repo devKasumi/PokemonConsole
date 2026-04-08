@@ -12,7 +12,8 @@ rectangle "Pokemon Catch System" {
   (Select CaptureItem type)
   (CatchService.ExecuteCapture)
   (CatchFormula.AttemptCatch)
-  (CatchResult returned)
+  (CatchAttemptResult returned)
+  (CatchService maps to CatchResult)
   (Pokemon caught)
   (Pokemon escaped)
   (Add to Player.PokemonTeam)
@@ -30,9 +31,10 @@ Player --> (In battle with wild Pokemon)
 
 (Select CaptureItem type) --> (CatchService.ExecuteCapture)
 (CatchService.ExecuteCapture) --> (CatchFormula.AttemptCatch) : <<include>>
-(CatchFormula.AttemptCatch) --> (CatchResult returned)
-(CatchResult returned) --> (Pokemon caught) : IsCaught = true
-(CatchResult returned) --> (Pokemon escaped) : IsCaught = false
+(CatchFormula.AttemptCatch) --> (CatchAttemptResult returned)
+(CatchAttemptResult returned) --> (CatchService maps to CatchResult)
+(CatchService maps to CatchResult) --> (Pokemon caught) : IsCaught = true
+(CatchService maps to CatchResult) --> (Pokemon escaped) : IsCaught = false
 
 (Pokemon caught) --> (Add to Player.PokemonTeam)
 (Pokemon caught) --> (Consume CaptureItem)

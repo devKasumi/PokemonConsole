@@ -12,11 +12,10 @@ rectangle "Account Registration System" {
   (Enter password)
   (Validate input)
   (Handle username taken)
-  (Save to users.json)
-  (Create Player profile)
-  (Initialize starter selection)
-  (Account created)
-  (Enter Story Screen)
+  (AuthenService hashes password)
+  (Save new User to users.json)
+  (Registration successful)
+  (Return to Login menu)
 }
 
 NewPlayer --> (Open game)
@@ -26,12 +25,11 @@ NewPlayer --> (Open game)
 (Enter password) --> (Validate input)
 
 (Validate input) --> (Handle username taken) : username taken
-(Validate input) --> (Save to users.json) : valid input
+(Validate input) --> (AuthenService hashes password) : valid input
 (Handle username taken) --> (Enter username)
-(Save to users.json) --> (Create Player profile)
-(Create Player profile) --> (Initialize starter selection)
-(Initialize starter selection) --> (Account created)
-(Account created) --> (Enter Story Screen)
-(Enter Story Screen) --> NewPlayer
+(AuthenService hashes password) --> (Save new User to users.json)
+(Save new User to users.json) --> (Registration successful)
+(Registration successful) --> (Return to Login menu)
+(Return to Login menu) --> NewPlayer
 
 @enduml

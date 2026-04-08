@@ -5,25 +5,23 @@ using Screens;
 public class PvPScreen : IScreen
 {
     private readonly ScreenManager _sm;
-    private readonly INetworkService _network;
     private readonly GameSession _session;
+    private readonly IPvPService _pvpService;
     
     private string _roomId = "";
     private volatile PvPTurnResult? _lastResult = null;
     private bool _initialized = false;
     private volatile bool _waitingForResult = false;
 
-    public PvPScreen(ScreenManager sm, INetworkService network, GameSession session)
+    public PvPScreen(ScreenManager sm, GameSession session, IPvPService pvpService)
     {
         _sm = sm;
-        _network = network;
         _session = session;
+        _pvpService = pvpService;
     }
 
     public void Initialize(object? data = null)
     {
-        // GUARD: ScreenManager calls Initialize every loop iteration.
-        // Only run setup once per PvP session.
         if (_initialized) return;
         _initialized = true;
 
@@ -35,18 +33,17 @@ public class PvPScreen : IScreen
             _roomId = data.GetType().GetProperty("RoomId")?.GetValue(data)?.ToString() ?? "";
         }
 
-        _network.OnTurnResultReceived += HandleTurnResult;
+        _pvpService.SubscribeTurnResult(HandleTurnResult);
 
-        // Pick up any initial state that arrived before we subscribed
-        if (_network.LastTurnResult != null)
+        if (_pvpService.LastTurnResult != null)
         {
-            _lastResult = _network.LastTurnResult;
+            _lastResult = _pvpService.LastTurnResult;
         }
     }
 
     public void Shutdown()
     {
-        _network.OnTurnResultReceived -= HandleTurnResult;
+        _pvpService.UnsubscribeTurnResult(HandleTurnResult);
         _initialized = false;
     }
 
@@ -60,29 +57,13 @@ public class PvPScreen : IScreen
     {
         Console.Clear();
 
-        // 0. Check if player is in a room
-        if (string.IsNullOrEmpty(_roomId))
-        {
-            Console.WriteLine("[Error] You are not in a PvP room. Returning to Main Menu.");
-            Console.ReadKey(true);
-            _sm.SwitchTo(ScreenType.MainMenu);
-            return;
-        }
+        if (!ValidateRoom()) return;
 
-        // Always show room header
-        Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine("============================================================");
-        Console.WriteLine("                   [ PVP ARENA ]");
-        Console.WriteLine($"                   Room: {_roomId}");
-        Console.WriteLine("============================================================");
-        Console.ResetColor();
+        RenderRoomHeader();
 
-        // Capture a snapshot of the current state to avoid race conditions
-        // (HandleTurnResult fires on SignalR thread and can change _lastResult mid-render)
         var result = _lastResult;
         bool waiting = _waitingForResult;
 
-        // 1. Wait for initial battle state from server
         if (result == null)
         {
             Console.WriteLine("\n[System] Waiting for battle data from server...");
@@ -90,47 +71,78 @@ public class PvPScreen : IScreen
             return;
         }
 
-        // 2. Render the battle scene
         RenderBattleScene(result);
+        RenderCombatLogs(result);
 
-        // 3. Show combat logs
-        if (result.CombatLogs.Count > 0)
+        if (result.IsGameOver) { HandleGameOver(result); return; }
+        if (waiting) { HandleWaitingForOpponent(); return; }
+
+        HandlePlayerInput(result);
+    }
+
+    private bool ValidateRoom()
+    {
+        if (!string.IsNullOrEmpty(_roomId)) return true;
+
+        Console.WriteLine("[Error] You are not in a PvP room. Returning to Main Menu.");
+        Console.ReadKey(true);
+        _sm.SwitchTo(ScreenType.MainMenu);
+        return false;
+    }
+
+    private void RenderRoomHeader()
+    {
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine("============================================================");
+        Console.WriteLine("                   [ PVP ARENA ]");
+        Console.WriteLine($"                   Room: {_roomId}");
+        Console.WriteLine("============================================================");
+        Console.ResetColor();
+    }
+
+    private void RenderCombatLogs(PvPTurnResult result)
+    {
+        if (result.CombatLogs.Count == 0) return;
+
+        Console.ForegroundColor = ConsoleColor.DarkGray;
+        Console.WriteLine("------------------------------------------------------------");
+        foreach (var log in result.CombatLogs)
         {
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.WriteLine("------------------------------------------------------------");
-            foreach (var log in result.CombatLogs)
-            {
-                Console.WriteLine($"  > {log}");
-            }
-            Console.WriteLine("------------------------------------------------------------");
-            Console.ResetColor();
+            Console.WriteLine($"  > {log}");
         }
+        Console.WriteLine("------------------------------------------------------------");
+        Console.ResetColor();
+    }
 
-        // 4. Game Over check
-        if (result.IsGameOver)
-        {
-            Console.WriteLine();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"  ★ MATCH OVER! Winner: {result.WinnerName} ★");
-            Console.ResetColor();
-            Console.WriteLine("\n  Press any key to return to Main Menu...");
-            Console.ReadKey(true);
-            _initialized = false;
-            _sm.SwitchTo(ScreenType.MainMenu);
-            return;
-        }
+    private void HandleGameOver(PvPTurnResult result)
+    {
+        bool isWin = _pvpService.RecordMatchResult(result.WinnerName ?? "");
 
-        // 5. Waiting for server to process (already submitted, waiting for opponent)
-        if (waiting)
-        {
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine("\n  [System] Waiting for opponent to make a move...");
-            Console.ResetColor();
-            Thread.Sleep(500);
-            return;
-        }
+        Console.WriteLine();
+        Console.ForegroundColor = isWin ? ConsoleColor.Green : ConsoleColor.Red;
+        Console.WriteLine(isWin
+            ? $"  ★ VICTORY! You won the match! ★"
+            : $"  ✖ DEFEAT! {result.WinnerName} won the match. ✖");
+        Console.ResetColor();
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine($"  Record: {_session.Player?.PvPWins}W - {_session.Player?.PvPLosses}L");
+        Console.ResetColor();
+        Console.WriteLine("\n  Press any key to return to Main Menu...");
+        Console.ReadKey(true);
+        _initialized = false;
+        _sm.SwitchTo(ScreenType.MainMenu);
+    }
 
-        // 6. Player Input Phase
+    private void HandleWaitingForOpponent()
+    {
+        Console.ForegroundColor = ConsoleColor.DarkYellow;
+        Console.WriteLine("\n  [System] Waiting for opponent to make a move...");
+        Console.ResetColor();
+        Thread.Sleep(500);
+    }
+
+    private void HandlePlayerInput(PvPTurnResult result)
+    {
         var myActive = result.Player1Active;
         if (myActive == null)
         {
@@ -142,10 +154,13 @@ public class PvPScreen : IScreen
         }
 
         ShowMoveMenu(myActive);
+        int selectedMove = ReadMoveSelection(myActive.Moves.Count);
+        SubmitMove(selectedMove);
+    }
 
-        // 60-second timer for move selection
+    private int ReadMoveSelection(int moveCount)
+    {
         var deadline = DateTime.UtcNow.AddSeconds(60);
-        int selectedMove = -1;
 
         while (DateTime.UtcNow < deadline)
         {
@@ -156,33 +171,28 @@ public class PvPScreen : IScreen
             {
                 var input = Console.ReadLine();
                 if (!string.IsNullOrWhiteSpace(input) && int.TryParse(input, out int moveChoice)
-                    && moveChoice >= 1 && moveChoice <= myActive.Moves.Count)
+                    && moveChoice >= 1 && moveChoice <= moveCount)
                 {
-                    selectedMove = moveChoice - 1;
-                    break;
+                    return moveChoice - 1;
                 }
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"  [!] Invalid input. Please enter a number from 1 to {myActive.Moves.Count}.");
+                Console.WriteLine($"  [!] Invalid input. Please enter a number from 1 to {moveCount}.");
                 Console.ResetColor();
             }
             Thread.Sleep(200);
         }
 
-        if (selectedMove < 0)
-        {
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine("\n  [System] Time's up! Your turn has been skipped.");
-            Console.ResetColor();
-        }
+        Console.ForegroundColor = ConsoleColor.DarkYellow;
+        Console.WriteLine("\n  [System] Time's up! Your turn has been skipped.");
+        Console.ResetColor();
+        return -1;
+    }
 
-        // Submit move to server (fire-and-forget, don't block the thread)
+    private void SubmitMove(int selectedMove)
+    {
         Console.WriteLine("\n  [Network] Sending move to server...");
         _waitingForResult = true;
-        _ = _network.SubmitMoveAsync(_roomId, _session.CurrentUser!.Username, selectedMove, _session.Player!.PokemonTeam[0]);
-
-        // Update() returns → game loop calls Update() again → sees _waitingForResult=true → shows "Waiting..."
-        // When server responds → HandleTurnResult sets _waitingForResult=false and _lastResult
-        // → next Update() renders updated HP
+        _pvpService.SubmitMove(_roomId, selectedMove);
     }
 
     #region Rendering Methods (mirroring BattleScreen style, no EXP)

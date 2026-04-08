@@ -15,19 +15,19 @@ public class CatchService : ICatchService
         Pokemon targetPokemon = _gameSession.CurrentEnemyPokemon;
         if (targetPokemon == null) return new CatchResult {IsCaught = false, Shakes = 0};
 
-        CatchResult result = CatchFormula.AttemptCatch(targetPokemon, item);
+        CatchAttemptResult attempt = CatchFormula.AttemptCatch(targetPokemon, item);
         player?.RemoveItem(item);
 
-        if (result.IsCaught)
+        if (attempt.IsCaught)
         {
             player?.PokemonTeam.Add(targetPokemon);
             _gameSession.ClearBattle();
         }
 
         return new CatchResult{
-            IsCaught = result.IsCaught,
-            Shakes = result.Shakes,
-            DisplayMessage = GenerateMessage(result.IsCaught, result.Shakes, target.Specie.Name),
+            IsCaught = attempt.IsCaught,
+            Shakes = attempt.Shakes,
+            DisplayMessage = GenerateMessage(attempt.IsCaught, attempt.Shakes, target.Specie.Name),
         };
     }
 

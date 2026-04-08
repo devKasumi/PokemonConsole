@@ -2,175 +2,142 @@
 skinparam linetype ortho
 skinparam shadowing false
 skinparam backgroundColor #FFFFFF
-skinparam defaultFontSize 14
+skinparam defaultFontSize 12
 skinparam entity {
   BackgroundColor #F8F8D8
   BorderColor #333333
 }
-left to right direction
 
 title Pokemon Game - Entity Relationship Diagram
 
+legend top left
+  **Dynamic Data** = User Progress (users, players, pokemons)
+  **Static Data** = Game Config (pokedex, items, game_phases, locations)
+  Inventory & NPCs stored as JSON inside parent tables.
+end legend
+
+' ================================================================
+' DYNAMIC DATA (User Progress)
+' ================================================================
+
 entity "Users" as U {
-  * user_id : INT
+  * Id : INT <<PK, Auto>>
   --
-  username : VARCHAR(50)
-  password_hash : VARCHAR(255)
-  email : VARCHAR(100)
-  created_at : TIMESTAMP
-  last_login : TIMESTAMP
+  Username : VARCHAR(50) <<UNIQUE>>
+  Password : VARCHAR(255)
 }
 
 entity "Players" as P {
-  * player_id : INT
+  * UserId : INT <<PK, FK>>
   --
-  user_id : INT
-  player_name : VARCHAR(100)
-  level : INT
-  current_exp : INT
-  total_exp : INT
-  badges : JSON
-  current_location : VARCHAR(100)
-  current_phase : INT
-  is_champion : BOOLEAN
-  pvp_wins : INT
-  pvp_losses : INT
-  created_at : TIMESTAMP
-}
-
-entity "Pokemon Species" as PS {
-  * species_id : INT
-  --
-  name : VARCHAR(50)
-  image_name : VARCHAR(100)
-  element_type : VARCHAR(20)
-  base_stats : JSON
-  catch_rate : INT
-  evolution_level : INT
-  evolves_into : INT
-  available_moves : JSON
+  Name : VARCHAR(100)
+  CurrentPhase : INT
+  CurrentLocation : VARCHAR(100)
+  Badges : TEXT (JSON)
+  InventoryData : LONGTEXT (JSON)
+  IsChampion : TINYINT(1)
+  PvPWins : INT
+  PvPLosses : INT
 }
 
 entity "Pokemons" as PK {
-  * pokemon_id : INT
+  * Id : INT <<PK, Auto>>
   --
-  player_id : INT
-  species_id : INT
-  nickname : VARCHAR(50)
-  level : INT
-  current_exp : INT
-  total_exp : INT
-  current_hp : INT
-  max_hp : INT
-  stats : JSON
-  current_moves : JSON
-  status : VARCHAR(20)
-  is_owned : BOOLEAN
-  catch_level : INT
-  evolution_stage : INT
-  injury_count : INT
-  caught_at : TIMESTAMP
+  PlayerId : INT <<FK>>
+  SpeciesId : INT <<FK>>
+  Level : INT
+  TotalExp : INT
+  CurrentExp : INT
+  MaxExpForNextLevel : INT
+  CurrentHP : INT
+  MaxHP : INT
+  IsFainted : TINYINT(1)
+  Status : INT (enum)
+  MovesData : TEXT (JSON)
 }
 
-entity "Pokemon Moves" as PM {
-  * move_id : INT
+' ================================================================
+' STATIC DATA (Game Configuration)
+' ================================================================
+
+entity "Pokedex" as PS {
+  * Id : INT <<PK>>
   --
-  name : VARCHAR(50)
-  type : VARCHAR(20)
-  power : INT
-  accuracy : INT
-  critical_chance : DECIMAL(5,2)
-  priority : INT
-  description : TEXT
+  Name : VARCHAR(100)
+  Data : LONGTEXT (JSON)
 }
 
 entity "Items" as I {
-  * item_id : INT
+  * Id : INT <<PK>>
   --
-  name : VARCHAR(100)
-  description : TEXT
-  item_type : VARCHAR(20)
-  heal_amount : INT
-  catch_multiplier : DECIMAL(5,2)
-  value : INT
-  is_consumable : BOOLEAN
-}
-
-entity "Inventory" as INV {
-  * inventory_id : INT
-  --
-  player_id : INT
-  item_id : INT
-  quantity : INT
-}
-
-entity "Game Sessions" as GS {
-  * session_id : INT
-  --
-  player_id : INT
-  current_location : VARCHAR(100)
-  current_enemy_team : JSON
-  current_enemy_pokemon : INT
-  is_trainer_battle : BOOLEAN
-  session_start : TIMESTAMP
-  last_updated : TIMESTAMP
-}
-
-entity "Locations" as L {
-  * location_id : INT
-  --
-  name : VARCHAR(100)
-  description : TEXT
-  is_discovered : BOOLEAN
-  possible_pokemon : JSON
-  possible_items : JSON
-  connected_locations : JSON
+  Name : VARCHAR(100)
+  Type : VARCHAR(50)
+  Details : TEXT (JSON)
 }
 
 entity "Game Phases" as GP {
-  * phase_id : INT
+  * PhaseId : INT <<PK>>
   --
-  title : VARCHAR(200)
-  order_number : INT
-  dialogue : JSON
-  battle_required : BOOLEAN
-  npc_team : JSON
-  rewards : JSON
+  Name : VARCHAR(100)
 }
 
-entity "NPCs" as N {
-  * npc_id : INT
+entity "Locations" as L {
+  * Id : INT <<PK>>
   --
-  name : VARCHAR(100)
-  dialogue : TEXT
-  image_name : VARCHAR(100)
-  team : JSON
-  is_trainer : BOOLEAN
-  defeated : BOOLEAN
+  PhaseId : INT <<FK>>
+  Name : VARCHAR(100)
+  MinLevel : INT
+  MaxLevel : INT
+  WildPokemons : TEXT (JSON)
+  Narratives : TEXT (JSON)
+  NPCs : LONGTEXT (JSON)
 }
 
-entity "Battle History" as BH {
-  * battle_id : INT
-  --
-  player1_id : INT
-  player2_id : INT
-  winner_id : INT
-  battle_type : VARCHAR(20)
-  battle_duration : INT
-  battle_date : TIMESTAMP
-}
+' ================================================================
+' RELATIONSHIPS
+' ================================================================
 
-U ||--|| P : "1 - 1"
-P ||--o{ PK : "1 - N"
-PK }o--|| PS : "N - 1"
-PK }o--o{ PM : "N - N"
-P ||--o{ INV : "1 - N"
-INV }o--|| I : "N - 1"
-P ||--o{ GS : "1 - N"
-GS }o--|| L : "N - 1"
-L ||--o{ GP : "1 - N"
-GP ||--o{ N : "1 - N"
-P ||--o{ BH : "1 - N"
-BH }o--|| N : "N - 1"
+U ||--|| P
+P ||--o{ PK
+PK }o--|| PS
+GP ||--o{ L
+P }o..o{ I : "InventoryData JSON\nreferences Items"
+
+' ================================================================
+' NOTES (JSON field documentation)
+' ================================================================
+
+note right of PS
+  **Data JSON contains:**
+  Types, BaseStats,
+  MoveSet, CatchRate,
+  BaseExp, EvolutionId,
+  EvolutionLevel
+end note
+
+note right of I
+  **Details JSON contains:**
+  Description, Category, Price
+  HealAmount (Healing)
+  CatchRateMultiplier (Capture)
+  SoldRate (General)
+end note
+
+note bottom of L
+  **NPCs JSON contains:**
+  Name, Role, Dialogue,
+  Action, RequiredBadge,
+  PokemonTeam, ActionParam
+end note
+
+note bottom of P
+  **InventoryData:** nested JSON dict
+  Key = ItemCategory, Value = {Name: [Items]}
+end note
+
+note bottom of PK
+  **MovesData:** JSON array
+  [{Name, Type, Power, PP, MoveType, LevelLearned}]
+end note
 
 @enduml

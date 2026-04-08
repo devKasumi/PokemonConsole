@@ -48,13 +48,13 @@ loop Battle ongoing
     BattleScreen -> GameSession: Update CurrentPokemon
 
   else Action = Run
-    BattleScreen -> BattleScreen: 50% escape chance
-    alt Escape successful
+    alt Not a trainer battle
+      BattleScreen -> GameSession: ClearBattle()
       BattleScreen --> Player: "Got away safely!"
       BattleScreen -> BattleScreen: SwitchTo(Story)
       break
-    else Escape failed
-      BattleScreen --> Player: "Can't escape!"
+    else Trainer battle
+      BattleScreen --> Player: "You can not run, this is a trainer battle!"
     end
   end
 

@@ -1,7 +1,8 @@
 @startuml LayerInteractionDiagram
 skinparam classAttributeIconSize 0
-skinparam direction top to bottom
-skinparam linetype ortho
+top to bottom direction
+skinparam nodesep 60
+skinparam ranksep 50
 skinparam class {
   BackgroundColor #FFF9E6
   BorderColor #333333
@@ -13,29 +14,30 @@ skinparam arrow {
 skinparam package {
   BackgroundColor #FFFACD
   BorderColor #333333
+  padding 15
 }
 
 title Pokemon Game - Layer Interaction Diagram
 
 package "Presentation Layer" {
+  class InventoryScreen
   class LoginScreen
-  class MainMenuScreen
   class BattleScreen
   class StoryScreen
-  class InventoryScreen
   class PvPScreen
+  class MainMenuScreen
   class ScreenManager
 }
 
 package "Application Layer" {
+  class CatchService
+  class HealingService
   class BattleService
   class StoryService
-  class ExpService
-  class HealingService
-  class CatchService
+  class PvPService
   class AuthenService
   class WorldGenerationService
-  class PvPService
+  class ExpService
   class PokemonSpawner
   class ItemSpawner
 }
@@ -50,49 +52,17 @@ package "Domain Layer" {
 }
 
 package "Infrastructure Layer" {
+  class NetworkService
   class UserRepository
   class PokedexRepository
   class ItemRepository
   class FileService
-  class NetworkService
 }
 
-' Main layer interactions
-Presentation --> Application : uses interfaces
-Application --> Domain : manipulates entities
-Infrastructure ..|> Application : implements interfaces
-
-' Key specific interactions
-LoginScreen --> AuthenService : IAuthenService
-MainMenuScreen --> PvPService : IPvPService
-MainMenuScreen --> AuthenService : IAuthenService (save/load)
-
-BattleScreen --> BattleService : IBattleService
-BattleService --> GameSession : battle state
-BattleService --> ExpService : IExpService
-
-StoryScreen --> StoryService : IStoryService
-StoryScreen --> AuthenService : IAuthenService (champion)
-StoryService --> GameSession : story state
-StoryService --> PokemonSpawner : spawn pokemon
-StoryService --> ItemSpawner : spawn items
-
-InventoryScreen --> CatchService : ICatchService
-InventoryScreen --> HealingService : IHealingService
-
-PvPScreen --> NetworkService : INetworkService
-PvPService --> NetworkService : INetworkService
-PvPService --> GameSession : check champion
-
-AuthenService --> UserRepository : IUserRepository
-AuthenService --> GameSession : session state
-
-WorldGenerationService --> PokemonSpawner : spawn
-WorldGenerationService --> ItemSpawner : spawn
-PokemonSpawner --> PokedexRepository : IPokedexRepository
-ItemSpawner --> ItemRepository : IItemRepository
-
-UserRepository --> FileService : IFileService
+' ===== Layer ordering =====
+Presentation -[hidden]down- Application
+Application -[hidden]down- Domain
+Domain -[hidden]down- Infrastructure
 
 @enduml</content>
 <parameter name="filePath">c:\C#\PokemonConsole\TurnBasedPokemon\Diagram\ClassDiagram\LayerInteractionDiagram.puml

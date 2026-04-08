@@ -9,6 +9,10 @@ skinparam class {
 
 title Application Layer - Story Services
 
+interface IStoryRepository <<Application>> {
+  + LoadStoryData(): GameData
+}
+
 interface IStoryService {
   + InitializeStory(command: string)
   + GetCurrentLocation(): LocationData
@@ -28,6 +32,7 @@ class StoryService <<Application>> {
   - _pokemonSpawner: PokemonSpawner
   - _itemSpawner: ItemSpawner
   - _gameData: GameData
+  + StoryService(session, pokeSpawner, itemSpawner, storyRepo: IStoryRepository)
   + InitializeStory(command: string)
   + GetCurrentLocation(): LocationData
   + ShouldPlayNarrative(): bool
@@ -55,6 +60,7 @@ MySqlStoryService ..|> IStoryService
 StoryService --> GameSession
 StoryService --> PokemonSpawner
 StoryService --> ItemSpawner
+StoryService --> IStoryRepository
 MySqlStoryService --> GameSession
 
 @enduml</content>

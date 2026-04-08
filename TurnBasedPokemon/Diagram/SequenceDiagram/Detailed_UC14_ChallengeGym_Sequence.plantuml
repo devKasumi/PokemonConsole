@@ -17,12 +17,12 @@ StoryService -> StoryService: Check RequiredBadge count
 
 alt Requirements met (enough badges)
   StoryService -> StoryService: Spawn Gym Leader team via PokemonSpawner
+  StoryService -> GameSession: CurrentEnemyTeam = bossTeam
+  StoryService -> GameSession: IsTrainerBattle = true
   StoryService --> StoryScreen: (true, message, gymLeader, leaderTeam)
   deactivate StoryService
 
   StoryScreen --> Player: Show Gym Leader intro dialogue
-
-  StoryScreen -> GameSession: SetupBattle(leaderTeam, isTrainer=true)
   StoryScreen -> StoryScreen: SwitchTo(ScreenType.Battle)
 
   note over BattleService

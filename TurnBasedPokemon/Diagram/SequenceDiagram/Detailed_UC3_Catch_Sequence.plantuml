@@ -28,18 +28,21 @@ alt Has Pokeballs
     - Random shake checks (1-3)
   end note
 
-  CatchFormula --> CatchService: CatchResult(IsCaught, Shakes, DisplayMessage)
+  CatchFormula --> CatchService: CatchAttemptResult(IsCaught, Shakes)
   deactivate CatchFormula
+
+  CatchService -> CatchService: RemoveItem(ball) from player
+  CatchService -> CatchService: Map to CatchResult(IsCaught, Shakes, DisplayMessage)
 
   alt IsCaught = true
     CatchService -> GameSession: Player.PokemonTeam.Add(pokemon)
-    CatchService --> InventoryScreen: CatchResult.Success
+    CatchService -> GameSession: ClearBattle()
+    CatchService --> InventoryScreen: CatchResult(IsCaught, Shakes, DisplayMessage)
     deactivate CatchService
     InventoryScreen --> Player: Show shake animation + "Pokemon caught!"
 
   else IsCaught = false
-    CatchService -> GameSession: Player.RemoveItem(ball)
-    CatchService --> InventoryScreen: CatchResult.Failure
+    CatchService --> InventoryScreen: CatchResult(IsCaught, Shakes, DisplayMessage)
     deactivate CatchService
     InventoryScreen --> Player: Show shakes + "Pokemon broke free!"
   end

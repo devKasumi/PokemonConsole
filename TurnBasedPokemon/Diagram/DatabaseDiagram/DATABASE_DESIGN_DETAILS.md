@@ -155,17 +155,7 @@
 For a comprehensive view of all entities and their relationships, see:
 - **[Detailed_ERD.puml](Detailed_ERD.puml)** - Complete Entity Relationship Diagram with all tables, fields, and relationships
 
-This detailed ERD includes additional entities like:
-- pokemon_species (normalized from pokedex)
-- pokemon_moves
-- inventory (separate table)
-- game_sessions
-- locations
-- game_phases
-- npcs
-- battle_history
-
-The diagram shows proper normalization, foreign key relationships, and cardinality.
+The detailed ERD covers the same 7 tables (users, players, pokemons, pokedex, items, game_phases, locations) with full field descriptions, JSON structure documentation, and relationship annotations.
 
 ### Data (pokedex.Data)
 ```json

@@ -8,7 +8,7 @@ actor Player
 rectangle "Wild Battle System" {
   (Explore in StoryScreen)
   (Random wild encounter)
-  (WorldGenService spawns Pokemon)
+  (PokemonSpawner spawns Pokemon)
   (Switch to BattleScreen)
   (Choose Action)
   (Select Move)
@@ -26,8 +26,8 @@ rectangle "Wild Battle System" {
 
 Player --> (Explore in StoryScreen)
 (Explore in StoryScreen) --> (Random wild encounter) : random spawn
-(Random wild encounter) --> (WorldGenService spawns Pokemon)
-(WorldGenService spawns Pokemon) --> (Switch to BattleScreen)
+(Random wild encounter) --> (PokemonSpawner spawns Pokemon)
+(PokemonSpawner spawns Pokemon) --> (Switch to BattleScreen)
 (Switch to BattleScreen) --> (Choose Action)
 
 (Choose Action) --> (Select Move) : Move

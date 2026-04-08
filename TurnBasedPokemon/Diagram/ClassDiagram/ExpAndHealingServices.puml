@@ -21,7 +21,7 @@ class ExpService {
   + CalculateExpGain(playerPoke: Pokemon, enemyPoke: Pokemon): int
 }
 
-record ProcessExpResult {
+class ProcessExpResult <<record>> {
   + ExpGained: int
   + LeveledUp: bool
   + OldName: string?

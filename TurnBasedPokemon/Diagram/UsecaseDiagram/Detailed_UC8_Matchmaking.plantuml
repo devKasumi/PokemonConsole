@@ -10,8 +10,10 @@ together {
 
 rectangle "Matchmaking System" {
   (Select PvP from MainMenu)
-  (PvPService.StartMatchmaking)
-  (NetworkService connects to BattleHub)
+  (PvPService.CanAccessPvP)
+  (PvPService.Connect)
+  (PvPService.FindMatch)
+  (PvPService delegates to NetworkService -> BattleHub)
   (BattleHub adds to MatchmakingService queue)
   (MatchmakingService searches for opponent)
   (Match found)
@@ -19,16 +21,18 @@ rectangle "Matchmaking System" {
   (Create BattleRoom)
   (Both players notified: MatchFound)
   (Switch to PvPScreen)
-  (Cancel matchmaking)
+  (PvPService.CancelMatchmaking)
   (Return to MainMenu)
 }
 
 Player1 --> (Select PvP from MainMenu)
 Player2 --> (Select PvP from MainMenu)
 
-(Select PvP from MainMenu) --> (PvPService.StartMatchmaking)
-(PvPService.StartMatchmaking) --> (NetworkService connects to BattleHub)
-(NetworkService connects to BattleHub) --> (BattleHub adds to MatchmakingService queue)
+(Select PvP from MainMenu) --> (PvPService.CanAccessPvP)
+(PvPService.CanAccessPvP) --> (PvPService.Connect) : IsChampion
+(PvPService.Connect) --> (PvPService.FindMatch)
+(PvPService.FindMatch) --> (PvPService delegates to NetworkService -> BattleHub)
+(PvPService delegates to NetworkService -> BattleHub) --> (BattleHub adds to MatchmakingService queue)
 (BattleHub adds to MatchmakingService queue) --> (MatchmakingService searches for opponent) : <<invoke>>
 
 (MatchmakingService searches for opponent) --> (Match found) : two players in queue
@@ -41,10 +45,8 @@ Player2 --> (Select PvP from MainMenu)
 (Switch to PvPScreen) --> Player1
 (Switch to PvPScreen) --> Player2
 
-(Keep searching) --> (Cancel matchmaking) : player cancels
-(Cancel matchmaking) --> (Return to MainMenu)
+(Keep searching) --> (PvPService.CancelMatchmaking) : player cancels
+(PvPService.CancelMatchmaking) --> (Return to MainMenu)
 (Return to MainMenu) --> Player1
-
-@enduml
 
 @enduml

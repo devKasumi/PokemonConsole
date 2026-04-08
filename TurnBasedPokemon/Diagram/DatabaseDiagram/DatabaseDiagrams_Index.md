@@ -1,9 +1,9 @@
 # Pokemon Game Database Diagrams Index
 
 **Created:** April 7, 2026  
-**Last Updated:** June 2025  
+**Last Updated:** April 8, 2026  
 
-> **Note:** The current implementation uses JSON file-based persistence (users.json, pokemon.json, item.json, story.json) via `UserRepository`, `PokedexRepository`, `ItemRepository`, and `FileService`. These diagrams describe the **logical data model** and may serve as reference for a future database migration.
+> **Note:** The current implementation uses JSON file-based persistence (users.json, pokemon.json, item.json, story.json) via repository interfaces (`IUserRepository`, `IPokedexRepository`, `IItemRepository`, `IStoryRepository`). MySQL-backed implementations also exist under Infrastructure. These diagrams describe the **logical data model** used by both persistence strategies.
 
 ---
 
@@ -15,7 +15,7 @@
 
 ### Detailed Design  
 - **[Detailed_ERD.puml](Detailed_ERD.puml)**  
-  Comprehensive ERD with normalized tables, proper relationships, and additional entities like pokemon_species, pokemon_moves, inventory, game_sessions, battle_history, etc.
+  Comprehensive ERD matching the actual MySQL schema: users, players, pokemons, pokedex, items, game_phases, locations. Includes JSON field documentation and relationship annotations.
 
 ### Design Documentation
 - **[DATABASE_DESIGN_DETAILS.md](DATABASE_DESIGN_DETAILS.md)**  
@@ -27,10 +27,7 @@
 
 The Pokemon game database is designed with proper normalization and includes:
 
-- **User Management**: Authentication and player profiles
-- **Game Progress**: Pokemon ownership, inventory, locations, story phases
-- **Static Data**: Pokemon species, moves, items, NPCs
-- **Battle Records**: PvP history and statistics
-- **Session Management**: Current game state persistence
-
-All diagrams use PlantUML ERD notation for clear visualization of table structures and relationships.
+- **User Management**: Authentication (users) and player profiles (players)
+- **Game Progress**: Pokemon ownership (pokemons), inventory (JSON in players), PvP stats (PvPWins/PvPLosses)
+- **Static Data**: Pokemon species (pokedex), items, game phases, locations with NPCs (JSON)
+- **Persistence**: Dual strategy — JSON files + MySQL via repository interfaces

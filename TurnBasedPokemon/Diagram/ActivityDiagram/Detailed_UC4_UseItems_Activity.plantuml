@@ -6,11 +6,9 @@ start
 :Player selects item to use;
 
 if (Item type == HealingItem?) then (yes)
-  :Display Player.PokemonTeam;
-  :Player selects target Pokemon;
-  :InventoryScreen calls HealingService.UseItem(item, target);
-  :HealingService restores HP via Pokemon.Heal();
-  :Consume 1 HealingItem from inventory;
+  :InventoryScreen calls HealingService.ExecuteHealing(healingItem);
+  :HealingService heals Player.CurrentPokemon via Pokemon.Heal();
+  :HealingService removes item via Player.RemoveItem();
 
 elseif (Item type == CaptureItem?) then (yes)
   if (In battle with wild Pokemon?) then (yes)

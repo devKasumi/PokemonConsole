@@ -22,7 +22,7 @@ Player --> (New player after registration)
 (StoryScreen shows starter selection) --> (Display 3 starter options)
 
 note right of (Display 3 starter options)
-  From story.json config:
+  From story data (via IStoryRepository):
   - Grass type
   - Fire type
   - Water type

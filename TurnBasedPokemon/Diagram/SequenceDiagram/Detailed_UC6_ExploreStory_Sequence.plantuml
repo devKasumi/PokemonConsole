@@ -2,6 +2,7 @@
 participant Player
 participant StoryScreen
 participant IStoryService as StoryService
+participant IStoryRepository as StoryRepository
 participant IAuthenService as AuthenService
 participant GameSession
 
@@ -11,7 +12,15 @@ activate StoryScreen
 StoryScreen -> StoryService: InitializeStory(command)
 activate StoryService
 StoryService -> GameSession: Get Player.CurrentPhase
-StoryService -> StoryService: LoadData() from story.json
+
+note over StoryService
+  StoryService loads story data from
+  IStoryRepository (injected in constructor).
+  Data is cached in _gameData field.
+end note
+
+StoryService -> StoryRepository: LoadStoryData()
+StoryRepository --> StoryService: GameData (phases, locations, NPCs)
 StoryService -> GameSession: Set CurrentLocation
 StoryService --> StoryScreen: Story initialized
 deactivate StoryService

@@ -12,16 +12,12 @@ if (Save requested?) then (yes)
   
 elseif (Load requested?) then (yes)
   :Player selects "Load" from MainMenuScreen;
-  :MainMenuScreen calls AuthenService.LoadProgress();
+  :MainMenuScreen calls AuthenService.LoadProgress(username);
   :AuthenService reads from users.json via UserRepository;
-  :AuthenService restores Player, PokemonTeam, Inventory;
-  :AuthenService sets GameSession.Player;
+  :AuthenService sets GameSession.CurrentUser = loadedUser;
+  :GameSession provides Player, PokemonTeam, Inventory;
   :Display "Game loaded!";
   
-endif
-
-stop
-@enduml
 endif
 
 stop

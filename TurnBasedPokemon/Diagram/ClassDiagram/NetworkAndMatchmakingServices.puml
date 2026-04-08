@@ -27,6 +27,11 @@ interface IPvPService <<Application>> {
   + Connect(): bool
   + FindMatch()
   + CancelMatchmaking()
+  + SubscribeTurnResult(handler: Action<PvPTurnResult>)
+  + UnsubscribeTurnResult(handler: Action<PvPTurnResult>)
+  + LastTurnResult: PvPTurnResult?
+  + SubmitMove(roomId: string, moveIndex: int)
+  + RecordMatchResult(winnerName: string): bool
   + OnMatchFound: event Action<string, string>
   + OnMatchmakingRejected: event Action<string>
 }
@@ -34,10 +39,16 @@ interface IPvPService <<Application>> {
 class PvPService <<Application>> {
   - _gameSession: GameSession
   - _networkService: INetworkService
+  - _authenService: IAuthenService
   + CanAccessPvP(): bool
   + Connect(): bool
   + FindMatch()
   + CancelMatchmaking()
+  + SubscribeTurnResult(handler: Action<PvPTurnResult>)
+  + UnsubscribeTurnResult(handler: Action<PvPTurnResult>)
+  + LastTurnResult: PvPTurnResult?
+  + SubmitMove(roomId: string, moveIndex: int)
+  + RecordMatchResult(winnerName: string): bool
   + OnMatchFound: event Action<string, string>
   + OnMatchmakingRejected: event Action<string>
 }
@@ -58,13 +69,23 @@ class NetworkService <<Infrastructure>> {
 
 ' ===== Server Side (PokemonServer) =====
 class BattleHub <<Server>> {
-  + FindMatch(username: string, serializedParty: string)
+  - _matchmakingService: MatchmakingService
+  - _pvpManager: PvPManager
+  - _serviceProvider: IServiceProvider
+  + FindMatch(username: string, party: List<Pokemon>)
   + SubmitMove(request: BattleActionRequest)
+  + CancelMatchmaking()
+  + OnDisconnectedAsync(exception: Exception?)
 }
 
 class MatchmakingService <<Server>> {
-  - _waitingPlayers: List<WaitingPlayer>
-  + JoinQueue(connectionId: string, username: string, party: List<Pokemon>): BattleRoom?
+  - _waitingPlayers: ConcurrentDictionary<string, WaitingPlayer>
+  - _activeRooms: ConcurrentDictionary<string, BattleRoom>
+  - _pendingParties: ConcurrentDictionary<string, List<Pokemon>>
+  + StoreParty(connectionId: string, party: List<Pokemon>)
+  + GetParty(connectionId: string): List<Pokemon>
+  + JoinQueue(connectionId: string, username: string): (BattleRoom?, bool)
+  + LeaveQueue(connectionId: string)
   + GetRoom(roomId: string): BattleRoom?
 }
 
@@ -76,12 +97,14 @@ class BattleRoom <<Server>> {
 }
 
 class PvPManager <<Server>> {
+  - _battleStates: ConcurrentDictionary<string, PvPBattleState>
+  - _pendingMoves: ConcurrentDictionary<string, List<BattleActionRequest>>
   + InitializeBattle(roomId: string, player1: string, party1: List<Pokemon>, player2: string, party2: List<Pokemon>)
-  + RegisterMove(request: BattleActionRequest)
+  + RegisterMove(request: BattleActionRequest, connectionId: string)
   + IsRoomReady(roomId: string): bool
   + ProcessTurn(roomId: string): PvPTurnResult
-  + SwapPokemon(roomId: string, playerName: string, newIndex: int)
   + GetBattleState(roomId: string): PvPBattleState?
+  + GetMissingPlayer(roomId: string): (string, string)?
 }
 
 class WaitingPlayer <<Server>> {
@@ -92,18 +115,30 @@ class WaitingPlayer <<Server>> {
 
 ' ===== Shared DTOs (Pokemon.Shared) =====
 class PvPTurnResult <<Shared>> {
-  + PlayerState: PvPMonState
-  + OpponentState: PvPMonState
-  + Logs: List<string>
-  + Winner: string?
+  + IsGameOver: bool
+  + WinnerName: string?
+  + Player1Hp: int
+  + Player2Hp: int
+  + CombatLogs: List<string>
+  + Player1Active: PvPMonState?
+  + Player2Active: PvPMonState?
+  + {static} Continue(p1Hp, p2Hp, logs, p1Active, p2Active): PvPTurnResult
+  + {static} GameOver(winnerName, logs, p1Active, p2Active): PvPTurnResult
 }
 
 class PvPMonState <<Shared>> {
   + Name: string
-  + CurrentHp: int
-  + MaxHp: int
-  + Level: int
-  + Moves: List<PokemonMove>
+  + CurrentHP: int
+  + MaxHP: int
+  + IsFainted: bool
+  + Moves: List<PvPMoveState>
+}
+
+class PvPMoveState <<Shared>> {
+  + Name: string
+  + Type: string
+  + Power: int
+  + PP: int
 }
 
 class BattleActionRequest <<Shared>> {
@@ -111,12 +146,14 @@ class BattleActionRequest <<Shared>> {
   + PlayerName: string
   + MoveIndex: int
   + AttackerPokemon: Pokemon
+  + ConnectionId: string
 }
 
 ' ===== Relationships =====
 PvPService ..|> IPvPService
 PvPService --> INetworkService
 PvPService --> GameSession
+PvPService --> IAuthenService
 
 NetworkService ..|> INetworkService
 NetworkService ..> BattleHub : SignalR
@@ -127,6 +164,8 @@ MatchmakingService --> BattleRoom
 BattleRoom --> WaitingPlayer
 PvPManager --> PvPTurnResult
 PvPManager --> BattleActionRequest
+PvPTurnResult --> PvPMonState
+PvPMonState --> PvPMoveState
 
 @enduml</content>
 <parameter name="filePath">c:\C#\PokemonConsole\TurnBasedPokemon\Diagram\ClassDiagram\NetworkAndMatchmakingServices.puml

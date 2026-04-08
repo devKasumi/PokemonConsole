@@ -15,7 +15,7 @@ rectangle "Gym Challenge System" {
   (Switch to BattleScreen)
   (Battle Gym Leader)
   (Player won?)
-  (Player.GymBadges incremented)
+  (Player.Badges updated)
   (ExpService processes rewards)
   (Display error message)
   (Return to StoryScreen)
@@ -31,8 +31,8 @@ Player --> (Select Challenge Gym in StoryScreen)
 (Set GameSession.CurrentEnemyTeam) --> (Switch to BattleScreen)
 (Switch to BattleScreen) --> (Battle Gym Leader)
 (Battle Gym Leader) --> (Player won?)
-(Player won?) --> (Player.GymBadges incremented) : victory
-(Player.GymBadges incremented) --> (ExpService processes rewards)
+(Player won?) --> (Player.Badges updated) : victory
+(Player.Badges updated) --> (ExpService processes rewards)
 (ExpService processes rewards) --> (Return to StoryScreen)
 (Player won?) --> (Return to StoryScreen) : defeat
 (Display error message) --> (Return to StoryScreen)

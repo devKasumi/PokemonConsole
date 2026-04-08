@@ -3,8 +3,8 @@ title UC2 - Battle Wild Pokemon (Activity Diagram)
 start
 :Player explores world in StoryScreen;
 if (Random encounter triggered?) then (yes)
-  :WorldGenService spawns wild Pokemon;
-  :Set GameSession.CurrentEnemyTeam;
+  :StoryService.ExploreWildArea() spawns via PokemonSpawner;
+  :Set GameSession.CurrentEnemyPokemon;
   :ScreenManager switches to BattleScreen;
 else (no)
   :Continue exploring;
@@ -19,19 +19,19 @@ repeat
   :Player selects action;
   if (Action == Use Move?) then (yes)
     :Player selects move;
-    :BattleService.ExecuteTurn() calculates DamageResult;
+    :BattleService.ExecutePlayerTurn(moveIndex) calculates DamageResult;
     :Apply damage to enemy;
     :Display BattleTurnResult;
   elseif (Action == Switch Pokemon?) then (yes)
     :BattleService.CanSwitchPokemon(target);
     :Switch active Pokemon;
   elseif (Action == Run?) then (yes)
-    :BattleService checks run chance;
-    if (Run successful?) then (yes)
-      :Escape from battle;
-      stop
+    if (Is trainer battle?) then (yes)
+      :Display "You can not run, this is a trainer battle!";
     else (no)
-      :Run failed - continue battle;
+      :GameSession.ClearBattle();
+      :"Got away safely!" - escape from battle;
+      stop
     endif
   endif
   

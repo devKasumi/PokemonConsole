@@ -16,7 +16,7 @@ GameSession --> StoryService: Pokemon team list
 deactivate GameSession
 
 loop for each Pokemon in team
-  StoryService -> StoryService: pokemon.CurrentHp = pokemon.MaxHp
+  StoryService -> StoryService: pokemon.Heal(pokemon.MaxHP)
 end
 
 StoryService --> StoryScreen: "All Pokemon healed!" message

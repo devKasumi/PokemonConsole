@@ -79,5 +79,6 @@ users ||--o{ players : "1-to-1"
 players ||--o{ pokemons : "1-to-many"
 pokemons }o--|| pokedex : "references"
 game_phases ||--o{ locations : "1-to-many"
+players }o..o{ items : "InventoryData\n(JSON refs)"
 
 @enduml

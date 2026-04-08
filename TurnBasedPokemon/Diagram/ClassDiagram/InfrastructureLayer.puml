@@ -100,6 +100,15 @@ class NetworkService {
   + CancelMatchmakingAsync(): Task
 }
 
+' ===== Story Repositories =====
+interface IStoryRepository <<Application>> {
+  + LoadStoryData(): GameData
+}
+
+class JsonStoryRepository <<Json>> {
+  + LoadStoryData(): GameData
+}
+
 ' ===== MySql Story Service =====
 class MySqlStoryService {
   - _gameSession: GameSession
@@ -111,7 +120,7 @@ class MySqlStoryService {
 ' ===== Database Seeder =====
 class DatabaseSeeder {
   - _connection: string
-  - _userRepo: MySqlUserRepository
+  - _userRepo: IUserRepository
   + SeedAll()
   - SeedItems()
   - SeedPokedex()
@@ -138,6 +147,8 @@ NetworkService ..|> INetworkService
 
 MySqlStoryService ..|> IStoryService
 
-DatabaseSeeder --> MySqlUserRepository
+DatabaseSeeder --> IUserRepository
+
+JsonStoryRepository ..|> IStoryRepository
 
 @enduml

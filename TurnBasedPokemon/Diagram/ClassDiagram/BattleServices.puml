@@ -27,17 +27,18 @@ class BattleService {
   + CanSwitchPokemon(target: Pokemon): bool
 }
 
-record BattleTurnResult {
+class BattleTurnResult <<record>> {
   + IsEnemyFainted: bool
   + IsPlayerFainted: bool
   + MoveUsed: string?
   + CombatLogs: List<string>
   + {static} Continue(): BattleTurnResult
-  + {static} EnemyFainted(logs): BattleTurnResult
-  + {static} PlayerFainted(logs): BattleTurnResult
+  + {static} Continue(moveName: string, logs: List<string>): BattleTurnResult
+  + {static} EnemyFainted(logs: List<string>): BattleTurnResult
+  + {static} PlayerFainted(logs: List<string>): BattleTurnResult
 }
 
-record ProcessExpResult {
+class ProcessExpResult <<record>> {
   + ExpGained: int
   + LeveledUp: bool
   + OldName: string?

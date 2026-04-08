@@ -1,29 +1,31 @@
 @startuml UC5_ManageTeam_UseCase
 title UC5 - Manage Pokemon Team (Use Case Diagram)
-note "**Under Development**\nNo dedicated TeamScreen exists.\nTeam management is handled inline\nvia CatchService and BattleScreen." as N1
-skinparam linetype ortho
 left to right direction
+skinparam linetype ortho
+skinparam usecase {
+  BackgroundColor #FFF9E6
+  BorderColor #333333
+}
+
+note "**Under Development**\nNo dedicated TeamScreen exists.\nTeam management is handled inline\nvia CatchService and BattleScreen." as N1
 
 actor Player
 
 rectangle "Team Management System" {
   (View PokemonTeam)
-  (CatchService adds Pokemon)
-  (BattleScreen switch Pokemon)
-  (StoryService heals team)
+  (CatchService adds Pokemon) as UC_Catch
+  (BattleScreen switch Pokemon) as UC_Switch
+  (StoryService heals team) as UC_Heal
 }
 
 Player --> (View PokemonTeam)
-(View PokemonTeam) --> Player
+Player --> UC_Catch
+Player --> UC_Switch
+Player --> UC_Heal
 
-Player --> (CatchService adds Pokemon) : via catch in battle
-(CatchService adds Pokemon) --> Player
-
-Player --> (BattleScreen switch Pokemon) : during battle
-(BattleScreen switch Pokemon) --> Player
-
-Player --> (StoryService heals team) : at Pokemon Center
-(StoryService heals team) --> Player
+note bottom of UC_Catch : via catch in battle
+note bottom of UC_Switch : during battle
+note bottom of UC_Heal : at Pokemon Center
 
 note right of (View PokemonTeam)
   Planned features:

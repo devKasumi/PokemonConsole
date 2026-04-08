@@ -6,17 +6,15 @@ start
 
 :Player enters username;
 :Player enters password;
-:Player confirms password;
 
 :LoginScreen calls AuthenService.Register(RegisterRequest);
 :AuthenService checks UserRepository for existing username;
 
 if (Username available?) then (yes)
-  :AuthenService creates new User in users.json;
-  :AuthenService initializes empty Player;
-  :AuthenService sets GameSession.Player;
+  :AuthenService hashes password (BCrypt);
+  :AuthenService creates new User and saves via UserRepository;
   :Display "Account created!";
-  :ScreenManager switches to StoryScreen (starter selection);
+  :Return to login menu (player must login);
 else (no)
   :Display "Username already taken";
   :Return to registration form;

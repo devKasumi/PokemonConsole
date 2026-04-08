@@ -48,7 +48,7 @@
 - **Activity Diagram:** [Detailed_UC3_Catch_Activity.plantuml](ActivityDiagram/Detailed_UC3_Catch_Activity.plantuml)
 - **Sequence Diagram:** [Detailed_UC3_Catch_Sequence.plantuml](SequenceDiagram/Detailed_UC3_Catch_Sequence.plantuml)
 
-**Description:** Catching via CatchService.ExecuteCapture(), CatchFormula, CatchResult with shake count.
+**Description:** Catching via CatchService.ExecuteCapture(), CatchFormula returns CatchAttemptResult, mapped to CatchResult with shake count.
 
 #### UC_4: Use Items (Potions/Pokeballs)
 - **Use Case Diagram:** [Detailed_UC4_UseItems.plantuml](UsecaseDiagram/Detailed_UC4_UseItems.plantuml)
@@ -91,7 +91,7 @@
 - **Activity Diagram:** [Detailed_UC6_ExploreStory_Activity.plantuml](ActivityDiagram/Detailed_UC6_ExploreStory_Activity.plantuml)
 - **Sequence Diagram:** [Detailed_UC6_ExploreStory_Sequence.plantuml](SequenceDiagram/Detailed_UC6_ExploreStory_Sequence.plantuml)
 
-**Description:** Story mode via StoryScreen → StoryService, location-based progression from story.json.
+**Description:** Story mode via StoryScreen → StoryService, location-based progression via IStoryRepository.
 
 #### UC_7: Interact with NPCs
 - **Use Case Diagram:** [Detailed_UC7_InteractNPC.plantuml](UsecaseDiagram/Detailed_UC7_InteractNPC.plantuml)
@@ -137,7 +137,7 @@
 - **Activity Diagram:** [Detailed_UC9_PvPBattle_Activity.plantuml](ActivityDiagram/Detailed_UC9_PvPBattle_Activity.plantuml)
 - **Sequence Diagram:** [Detailed_UC9_PvPBattle_Sequence.plantuml](SequenceDiagram/Detailed_UC9_PvPBattle_Sequence.plantuml)
 
-**Description:** PvP battle via PvPScreen → INetworkService, server-side PvPManager with DamageResult.
+**Description:** PvP battle via PvPScreen → IPvPService (facade), server-side PvPManager with DamageResult. RecordMatchResult tracks PvPWins/PvPLosses.
 
 ---
 
@@ -199,7 +199,7 @@ Located in `DatabaseDiagram/` — See [DatabaseDiagrams_Index.md](DatabaseDiagra
 ## Key Architecture Notes
 
 - **Clean Architecture:** Domain → Application → Infrastructure → Presentation
-- **Persistence:** JSON files (users.json, pokemon.json, item.json, story.json) via Repositories
+- **Persistence:** JSON files (users.json, pokemon.json, item.json, story.json) via Repository interfaces (IUserRepository, IPokedexRepository, IItemRepository, IStoryRepository)
 - **PvP:** SignalR-based (NetworkService → BattleHub → PvPManager)
 - **Services:** AuthenService, BattleService, CatchService, ExpService, StoryService, PvPService, HealingService, WorldGenService
 - **Screens:** LoginScreen, MainMenuScreen, StoryScreen, BattleScreen, PvPScreen, InventoryScreen

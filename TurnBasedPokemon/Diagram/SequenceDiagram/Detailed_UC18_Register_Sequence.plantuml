@@ -3,7 +3,6 @@ participant NewPlayer
 participant LoginScreen
 participant IAuthenService as AuthenService
 participant IUserRepository as UserRepository
-participant GameSession
 
 NewPlayer -> LoginScreen: Select "Register"
 activate LoginScreen
@@ -21,7 +20,8 @@ UserRepository --> AuthenService: User? (null if available)
 deactivate UserRepository
 
 alt Username available
-  AuthenService -> AuthenService: Create new User(username, password)
+  AuthenService -> AuthenService: Hash password (BCrypt)
+  AuthenService -> AuthenService: Create new User(username, hashedPassword)
   AuthenService -> UserRepository: Save(newUser)
   activate UserRepository
   UserRepository -> UserRepository: Serialize to JSON
@@ -29,12 +29,11 @@ alt Username available
   UserRepository --> AuthenService: User saved
   deactivate UserRepository
 
-  AuthenService -> GameSession: CurrentUser = newUser
   AuthenService --> LoginScreen: true (registration success)
   deactivate AuthenService
 
-  LoginScreen --> NewPlayer: "Registration successful! Switching to main menu..."
-  LoginScreen -> LoginScreen: SwitchTo(MainMenu)
+  LoginScreen --> NewPlayer: "Registration successful!"
+  LoginScreen -> LoginScreen: Return to login menu
 
 else Username already taken
   AuthenService --> LoginScreen: false (registration failed)

@@ -58,12 +58,17 @@ package "Domain Layer" {
   class Item
   class Trainer
   class CatchFormula
+  class CatchAttemptResult
+  class GameData
+  class LocationData
+  class NpcData
 }
 
 package "Infrastructure Layer" {
   class UserRepository
   class PokedexRepository
   class ItemRepository
+  class JsonStoryRepository
   class FileService
   class NetworkService
   class MySqlUserRepository
@@ -75,8 +80,11 @@ package "Infrastructure Layer" {
 
 package "Pokemon.Shared" {
   class DamageCalculator
+  class DamageResult
+  class ExpCalculator
   class TypeChart
   class PvPTurnResult
+  class PvPMonState
   class BattleActionRequest
 }
 

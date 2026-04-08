@@ -28,8 +28,7 @@ StoryService -> GameSession: Player.CurrentPokemon = starter
 
 note over StoryService
   Also gives starter items:
-  - 5x Pokeball
-  - 2x Potion
+  - 5x Poke Ball
 end note
 
 StoryService --> StoryScreen: (true, "You received {starterName}!")

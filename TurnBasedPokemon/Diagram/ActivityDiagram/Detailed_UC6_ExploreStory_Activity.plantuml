@@ -3,7 +3,7 @@ title UC6 - Explore Story (Activity Diagram)
 start
 :Player selects "Story" from MainMenuScreen;
 :ScreenManager switches to StoryScreen;
-:StoryService loads story.json data;
+:StoryService loads story data via IStoryRepository;
 :StoryService determines current chapter/location;
 
 if (Story already started?) then (yes)

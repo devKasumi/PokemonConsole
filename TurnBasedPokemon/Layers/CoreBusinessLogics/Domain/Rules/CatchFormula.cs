@@ -5,10 +5,10 @@ public static class CatchFormula
 {
     private static readonly Random _rand = new Random();
 
-    public static CatchResult AttemptCatch(Pokemon target, CaptureItem ball)
+    public static CatchAttemptResult AttemptCatch(Pokemon target, CaptureItem ball)
     {
         // 1. If a Master Ball is used, the Pokémon is caught.
-        if (ball.Name == "Master Ball") return new CatchResult{IsCaught = true, Shakes = 3};
+        if (ball.Name == "Master Ball") return new CatchAttemptResult(true, 3);
 
         // 2. Generate a random number, N, depending on the type of ball used.
         int nMax = ball.Name switch { "Poke Ball" => 255, "Great Ball" => 200, _ => 150 };
@@ -26,7 +26,7 @@ public static class CatchFormula
         // 4. The Pokémon is caught if... (Status check)
         if (statusThreshold > 0 && N < statusThreshold)
         {
-            return new CatchResult{IsCaught = true, Shakes = 3}; // Caught!
+            return new CatchAttemptResult(true, 3); // Caught!
         }
         // Otherwise, if N minus the status threshold is greater than catch rate, it breaks free.
         else if ((N - statusThreshold) > target.Specie.CatchRate)
@@ -48,7 +48,7 @@ public static class CatchFormula
         // 7. Final Catch Check
         if (!brokeFreeEarly)
         {
-            if (f >= M) return new CatchResult{IsCaught = true, Shakes = 3}; // Caught!
+            if (f >= M) return new CatchAttemptResult(true, 3); // Caught!
         }
 
         // ====================================================================
@@ -60,7 +60,7 @@ public static class CatchFormula
         int d = (target.Specie.CatchRate * 100) / ballValueForShake;
 
         // If d is greater than or equal to 256, the ball shakes three times
-        if (d >= 256) return new CatchResult{IsCaught = true, Shakes = 3};
+        if (d >= 256) return new CatchAttemptResult(true, 3);
 
         // 9. Calculate x = floor(d * f / 255) + s
         int s = target.Status switch {
@@ -72,9 +72,9 @@ public static class CatchFormula
         int x = (d * f / 255) + s;
 
         // 10. Decide the shakes based on x
-        if (x < 10) return new CatchResult{IsCaught = false, Shakes = 0}; // Misses completely
-        if (x < 30) return new CatchResult{IsCaught = false, Shakes = 1}; // Shakes once
-        if (x < 70) return new CatchResult{IsCaught = false, Shakes = 2}; // Shakes twice
-        return new CatchResult{IsCaught = false, Shakes = 3};             // Shakes three times before breaking free
+        if (x < 10) return new CatchAttemptResult(false, 0); // Misses completely
+        if (x < 30) return new CatchAttemptResult(false, 1); // Shakes once
+        if (x < 70) return new CatchAttemptResult(false, 2); // Shakes twice
+        return new CatchAttemptResult(false, 3);             // Shakes three times before breaking free
     }
 }

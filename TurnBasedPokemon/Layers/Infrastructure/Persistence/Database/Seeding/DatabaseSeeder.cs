@@ -4,18 +4,19 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using MySql.Data.MySqlClient;
+using Application.RepoInterfaces;
 
 public class DatabaseSeeder
 {
     private readonly string _connection;
-    private readonly MySqlUserRepository _userRepo;
+    private readonly IUserRepository _userRepo;
     private readonly JsonSerializerOptions _options = new JsonSerializerOptions 
     { 
         PropertyNameCaseInsensitive = true,
         Converters = { new JsonStringEnumConverter() } // This tells the parser to read "None" and map it to PokemonStatus.None
     };
 
-    public DatabaseSeeder(MySqlUserRepository userRepo, string connection) 
+    public DatabaseSeeder(IUserRepository userRepo, string connection) 
     { 
         _connection = connection;
         _userRepo = userRepo; 

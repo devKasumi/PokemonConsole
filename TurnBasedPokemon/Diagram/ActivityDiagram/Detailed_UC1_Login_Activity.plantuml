@@ -8,8 +8,8 @@ start
 
 if (User found in JSON repository?) then (yes)
   if (Password correct?) then (yes)
-    :AuthenService loads Player, PokemonTeam, Inventory;
-    :AuthenService sets GameSession.Player;
+    :AuthenService sets GameSession.CurrentUser = user;
+    :GameSession provides Player, PokemonTeam, Inventory;
     :ScreenManager switches to MainMenuScreen;
     stop
   else (no)

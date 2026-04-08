@@ -8,7 +8,7 @@ actor Player
 rectangle "Story Mode System" {
   (Select Story from MainMenu)
   (Switch to StoryScreen)
-  (StoryService loads story.json)
+  (StoryService loads story via IStoryRepository)
   (Display current location)
   (Choose action)
   (Explore next location)
@@ -27,8 +27,8 @@ rectangle "Story Mode System" {
 
 Player --> (Select Story from MainMenu)
 (Select Story from MainMenu) --> (Switch to StoryScreen)
-(Switch to StoryScreen) --> (StoryService loads story.json)
-(StoryService loads story.json) --> (Display current location)
+(Switch to StoryScreen) --> (StoryService loads story via IStoryRepository)
+(StoryService loads story via IStoryRepository) --> (Display current location)
 (Display current location) --> (Choose action)
 
 (Choose action) --> (Explore next location)

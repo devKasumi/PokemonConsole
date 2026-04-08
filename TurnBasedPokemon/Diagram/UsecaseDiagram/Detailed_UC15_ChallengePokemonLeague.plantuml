@@ -7,7 +7,7 @@ actor Player
 
 rectangle "Pokemon League System" {
   (Select Pokemon League in StoryScreen)
-  (Check Player.GymBadges == 8)
+  (Check Player.Badges count)
   (Has all badges?)
   (StoryService.TryChallengePokemonLeague)
   (PokemonSpawner generates boss team)
@@ -24,8 +24,8 @@ rectangle "Pokemon League System" {
 }
 
 Player --> (Select Pokemon League in StoryScreen)
-(Select Pokemon League in StoryScreen) --> (Check Player.GymBadges == 8)
-(Check Player.GymBadges == 8) --> (Has all badges?)
+(Select Pokemon League in StoryScreen) --> (Check Player.Badges count)
+(Check Player.Badges count) --> (Has all badges?)
 (Has all badges?) --> (StoryService.TryChallengePokemonLeague) : yes
 (Has all badges?) --> (Display not ready message) : no
 

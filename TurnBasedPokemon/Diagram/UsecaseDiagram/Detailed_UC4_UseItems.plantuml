@@ -12,7 +12,6 @@ rectangle "Item System" {
   (Item type check)
   (HealingItem selected)
   (CaptureItem selected)
-  (Choose target Pokemon)
   (HealingService applies effect)
   (Consume item)
   (CatchService.ExecuteCapture)
@@ -27,8 +26,7 @@ Player --> (Open InventoryScreen)
 (Item type check) --> (HealingItem selected) : HealingItem
 (Item type check) --> (CaptureItem selected) : CaptureItem
 
-(HealingItem selected) --> (Choose target Pokemon)
-(Choose target Pokemon) --> (HealingService applies effect)
+(HealingItem selected) --> (HealingService applies effect)
 (HealingService applies effect) --> (Consume item)
 (Consume item) --> Player
 

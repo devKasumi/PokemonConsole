@@ -1,6 +1,7 @@
 @startuml UC9_PvPBattle_Sequence
 participant Player
 participant PvPScreen
+participant IPvPService as PvPService
 participant INetworkService as NetworkService
 participant BattleHub
 participant PvPManager
@@ -10,11 +11,12 @@ participant Opponent
 note over PvPScreen
   PvPScreen receives roomId via
   Initialize(data: { RoomId })
-  from MainMenuScreen after matchmaking
+  from MainMenuScreen after matchmaking.
+  PvPScreen only depends on IPvPService (facade).
 end note
 
 PvPScreen -> PvPScreen: Initialize(roomId)
-PvPScreen -> NetworkService: Subscribe OnTurnResultReceived
+PvPScreen -> PvPService: SubscribeTurnResult(HandleTurnResult)
 
 loop Battle Active
   PvPScreen -> PvPScreen: RenderBattleScene(lastResult)
@@ -22,9 +24,11 @@ loop Battle Active
   Player -> PvPScreen: Select move (1-4)
   activate PvPScreen
 
-  PvPScreen -> PvPScreen: Validate move index (loop until valid)
+  PvPScreen -> PvPScreen: ReadMoveSelection(moveCount) with 60s timeout
 
-  PvPScreen -> NetworkService: SubmitMoveAsync(roomId, playerName, moveIndex, attackerPokemon)
+  PvPScreen -> PvPService: SubmitMove(roomId, moveIndex)
+  activate PvPService
+  PvPService -> NetworkService: SubmitMoveAsync(roomId, username, moveIndex, pokemon)
   activate NetworkService
   NetworkService -> BattleHub: SubmitMove(BattleActionRequest)
   activate BattleHub
@@ -52,19 +56,27 @@ loop Battle Active
     deactivate PvPManager
     BattleHub -> NetworkService: TurnResultReceived(PvPTurnResult)
     deactivate BattleHub
-    NetworkService -> PvPScreen: OnTurnResultReceived event
+    NetworkService -> PvPService: OnTurnResultReceived callback
     deactivate NetworkService
+    PvPService -> PvPScreen: HandleTurnResult(PvPTurnResult)
+    deactivate PvPService
     PvPScreen -> PvPScreen: Cache result in _lastResult (volatile)
   else Waiting for opponent
     PvPScreen --> Player: "Waiting for opponent..."
-    PvPScreen -> PvPScreen: Thread.Sleep(200) polling loop
+    PvPScreen -> PvPScreen: Thread.Sleep(500) polling loop
   end
 
   deactivate PvPScreen
 
-  alt Winner determined
-    PvPScreen --> Player: Display winner + battle summary
-    PvPScreen -> PvPScreen: SwitchTo(MainMenu)
+  alt Winner determined (result.IsGameOver)
+    PvPScreen -> PvPService: RecordMatchResult(winnerName)
+    activate PvPService
+    PvPService -> PvPService: Increment PvPWins or PvPLosses
+    PvPService -> PvPService: SaveProgress() via IAuthenService
+    PvPService --> PvPScreen: bool isWin
+    deactivate PvPService
+    PvPScreen --> Player: Display VICTORY/DEFEAT + W/L record
+    PvPScreen -> PvPScreen: Shutdown() + SwitchTo(MainMenu)
   end
 end
 

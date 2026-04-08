@@ -13,8 +13,9 @@ if (Player has CaptureItems in inventory?) then (yes)
   :CatchService calls CatchFormula.AttemptCatch();
   
   note
-    CatchFormula calculates shake count (0-3)
-    based on HP ratio, ball modifier, status
+    CatchFormula returns CatchAttemptResult(IsCaught, Shakes).
+    CatchService maps it to CatchResult with DisplayMessage.
+    Item is consumed regardless of catch result.
   end note
   
   :CatchService returns CatchResult;
