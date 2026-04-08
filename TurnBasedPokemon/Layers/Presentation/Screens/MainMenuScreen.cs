@@ -6,11 +6,15 @@ public class MainMenuScreen : IScreen
 {
     private readonly ScreenManager _screenManager;
     private readonly GameSession _gameSession;
+    private readonly IPvPService _pvpService;
+    private readonly IAuthenService _authenService;
 
-    public MainMenuScreen(ScreenManager screenManager, GameSession session)
+    public MainMenuScreen(ScreenManager screenManager, GameSession session, IPvPService pvpService, IAuthenService authenService)
     {
         _screenManager = screenManager;
         _gameSession = session;
+        _pvpService = pvpService;
+        _authenService = authenService;
     }
 
     public void Initialize(object? data = null)
@@ -68,7 +72,7 @@ public class MainMenuScreen : IScreen
         
         // 2. Call LoadProgress from GameSession
         // This will update _gameSession.CurrentUser with data from JSON
-        bool success = _gameSession.LoadProgress(username);
+        bool success = _authenService.LoadProgress(username);
 
         if (success)
         {
@@ -107,8 +111,7 @@ public class MainMenuScreen : IScreen
 
     private void HandlePvP()
     {
-
-        if (_gameSession.Player == null || !_gameSession.Player.IsChampion)
+        if (!_pvpService.CanAccessPvP())
         {
             Console.WriteLine($"You can only participate in PvP after completing the game's main storyline.");
             Console.ReadKey(true);
@@ -116,9 +119,8 @@ public class MainMenuScreen : IScreen
         }
 
         // Connect to server first
-        var network = _gameSession.NetworkService;
         Console.WriteLine("[Network] Connecting to PvP server...");
-        bool connected = network.Connect().GetAwaiter().GetResult();
+        bool connected = _pvpService.Connect();
         if (!connected)
         {
             Console.WriteLine("Press any key to return to Main Menu...");
@@ -147,9 +149,9 @@ public class MainMenuScreen : IScreen
             Console.ResetColor();
             wasRejected = true;
         }
-        network.OnMatchFound += OnMatchFound;
-        network.OnMatchmakingRejected += OnRejected;
-        network.FindMatch(_gameSession.CurrentUser.Username, _gameSession.Player.PokemonTeam).GetAwaiter().GetResult();
+        _pvpService.OnMatchFound += OnMatchFound;
+        _pvpService.OnMatchmakingRejected += OnRejected;
+        _pvpService.FindMatch();
 
         // Wait for match or player cancellation
         while (!matchFound && !wasRejected)
@@ -159,8 +161,8 @@ public class MainMenuScreen : IScreen
                 var key = Console.ReadKey(true);
                 if (key.Key == ConsoleKey.Q)
                 {
-                    network.OnMatchFound -= OnMatchFound;
-                    network.CancelMatchmakingAsync().GetAwaiter().GetResult();
+                    _pvpService.OnMatchFound -= OnMatchFound;
+                    _pvpService.CancelMatchmaking();
                     Console.WriteLine("\n[System] PvP matchmaking cancelled. Returning to Main Menu.");
                     Console.ReadKey(true);
                     return;
@@ -169,8 +171,8 @@ public class MainMenuScreen : IScreen
             Thread.Sleep(200);
         }
 
-        network.OnMatchFound -= OnMatchFound;
-        network.OnMatchmakingRejected -= OnRejected;
+        _pvpService.OnMatchFound -= OnMatchFound;
+        _pvpService.OnMatchmakingRejected -= OnRejected;
 
         if (wasRejected)
         {
@@ -203,7 +205,7 @@ public class MainMenuScreen : IScreen
         }
         Console.WriteLine();
         
-        _gameSession.SaveProgress();
+        _authenService.SaveProgress();
 
         Console.ResetColor();
         

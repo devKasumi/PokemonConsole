@@ -3,7 +3,7 @@ using PokemonEntity;
 using System;
 using System.Threading.Tasks;
 
-public class NetworkService
+public class NetworkService : INetworkService
 {
     private HubConnection _connection;
     

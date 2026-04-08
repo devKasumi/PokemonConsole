@@ -94,7 +94,6 @@ public class StoryService : IStoryService
                 return "You advanced to a new Phase of your journey!";
             }
             _gameSession.IsTrainerBattle = false;
-            Console.ReadKey(true);
             return "You cannot go any further in this direction.";
         }
         else // Backward
@@ -113,7 +112,6 @@ public class StoryService : IStoryService
                 return "You traveled back to the previous Phase.";
             }
             _gameSession.IsTrainerBattle = false;
-            Console.ReadKey(true);
             return "You are already at the beginning of your journey.";
         }
     }

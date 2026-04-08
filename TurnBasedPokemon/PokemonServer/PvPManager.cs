@@ -101,9 +101,13 @@ public class PvPManager
             }
 
             logs.Add($"{atkName} used {move!.Name}!");
-            int dmg = DamageCalculator.CalculateDamage(attacker, defender, move);
-            defender.TakeDamage(dmg);
-            logs.Add($"{defName}'s {defender.Specie.Name} took {dmg} damage ({defender.CurrentHP}/{defender.MaxHP})");
+            var dmgResult = DamageCalculator.Calculate(attacker, defender, move);
+            defender.TakeDamage(dmgResult.Damage);
+            if (dmgResult.IsCritical) logs.Add("A critical hit!");
+            if (dmgResult.IsImmune) logs.Add("It doesn't affect the opponent...");
+            else if (dmgResult.IsSuperEffective) logs.Add("It's super effective!");
+            else if (dmgResult.IsNotVeryEffective) logs.Add("It's not very effective...");
+            logs.Add($"{defName}'s {defender.Specie.Name} took {dmgResult.Damage} damage ({defender.CurrentHP}/{defender.MaxHP})");
 
             if (defender.IsFainted)
             {

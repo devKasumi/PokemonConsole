@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
+using Screens;
 
 namespace Program
 {
@@ -49,11 +50,8 @@ namespace Program
             // Create a single NetworkService instance for the whole app
             var networkService = new NetworkService();
             // GameSession gameSession = new GameSession(mySqlUserRepo);
-            GameSession gameSession = new GameSession(userRepository, networkService)
-            {
-                // Overwrite the default with the shared instance
-                // NetworkService = networkService
-            };
+            GameSession gameSession = new GameSession();
+            var pvpService = new PvPService(gameSession, networkService);
             // PokemonSpawner pokemonSpawner = new PokemonSpawner(mySqlPokedexRepo);
             PokemonSpawner pokemonSpawner = new PokemonSpawner(pokedexRepository);
             ItemSpawner itemSpawner = new ItemSpawner(itemRepository);
@@ -74,9 +72,9 @@ namespace Program
 
             // 4. Register Screens for the UI
             screenManager.RegisterScreen(ScreenType.Login, new LoginScreen(screenManager, gameSession, authenService));
-            screenManager.RegisterScreen(ScreenType.MainMenu, new MainMenuScreen(screenManager, gameSession));
+            screenManager.RegisterScreen(ScreenType.MainMenu, new MainMenuScreen(screenManager, gameSession, pvpService, authenService));
             // screenManager.RegisterScreen(ScreenType.Story, new StoryScreen(screenManager, gameSession, mySqlStoryService));
-            screenManager.RegisterScreen(ScreenType.Story, new StoryScreen(screenManager, gameSession, storyService));
+            screenManager.RegisterScreen(ScreenType.Story, new StoryScreen(screenManager, gameSession, storyService, authenService));
             screenManager.RegisterScreen(ScreenType.Battle, new BattleScreen(screenManager, gameSession, battleService));
             screenManager.RegisterScreen(ScreenType.Inventory, new InventoryScreen(screenManager, gameSession, catchService, healingService));
             screenManager.RegisterScreen(ScreenType.PvP, new PvPScreen(screenManager, networkService, gameSession));

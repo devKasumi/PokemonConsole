@@ -6,11 +6,11 @@ public class LoginScreen : IScreen
 {
     private readonly ScreenManager _screenManager;
     private readonly GameSession _gameSession;
-    private readonly AuthenService _authenService;
+    private readonly IAuthenService _authenService;
 
     public LoginScreen(ScreenManager screenManager,
                        GameSession session,
-                       AuthenService authenService)
+                       IAuthenService authenService)
     {
         _screenManager = screenManager;
         _gameSession = session;

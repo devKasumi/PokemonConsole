@@ -1,3 +1,5 @@
+namespace Screens;
+
 public enum ScreenType
 {
     Login,

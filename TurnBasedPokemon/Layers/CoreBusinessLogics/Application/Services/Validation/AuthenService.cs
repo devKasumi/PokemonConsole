@@ -4,7 +4,7 @@ using Application.RepoInterfaces;
 public record RegisterRequest(string Username, string Password);
 public record LoginRequest(string Username, string Password);
 
-public class AuthenService
+public class AuthenService : IAuthenService
 {
     private readonly IUserRepository _userRepository;
     private readonly GameSession _gameSession;
@@ -49,5 +49,30 @@ public class AuthenService
         }
 
         return false;
+    }
+
+    public bool LoadProgress(string username)
+    {
+        var loadedUser = _userRepository.GetByUsername(username);
+        
+        if (loadedUser != null)
+        {
+            _gameSession.CurrentUser = loadedUser;
+            return true;
+        }
+        
+        return false;
+    }
+
+    public void SaveProgress()
+    {
+        if (_gameSession.CurrentUser != null)
+            _userRepository.Save(_gameSession.CurrentUser);
+    }
+
+    public void SetChampion()
+    {
+        if (_gameSession.Player != null)
+            _gameSession.Player.IsChampion = true;
     }
 }

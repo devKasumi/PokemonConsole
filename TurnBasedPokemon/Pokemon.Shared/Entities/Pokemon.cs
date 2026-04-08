@@ -38,10 +38,6 @@ public class Pokemon
         {
             Moves[index] = newMove;
         }
-        else
-        {
-            Console.WriteLine("Invalid move index.");
-        }
     }
 
     public void Heal(int hpAmount)
@@ -90,10 +86,6 @@ public class Pokemon
         CurrentHP += hpGain;
         if (CurrentHP > MaxHP) CurrentHP = MaxHP;
 
-        Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine($"\n★ {Specie.Name} leveled up to Level {Level}!");
-        Console.WriteLine($"Stats increased! (+{hpGain} HP, +{attackGain} Atk, +{defenseGain} Def, +{spAttackGain} SpAtk, +{spDefenseGain} SpDef, +{speedGain} Sp)");
-        Console.ResetColor();
     }
 
     public void TakeDamage(int damage)
@@ -102,18 +94,8 @@ public class Pokemon
         if (CurrentHP <= 0)
         {
             CurrentHP = 0;
-            OnFaint();
+            IsFainted = true;
         }
-        else
-        {
-            Console.WriteLine($"{Specie.Name} took {damage} damage!");
-        }
-    }
-
-    private void OnFaint()
-    {
-        Console.WriteLine($"{Specie.Name} has fainted!");
-        IsFainted = true;
     }
 
     public bool CanEvolve()

@@ -8,13 +8,15 @@ public class StoryScreen : IScreen
     private readonly ScreenManager _screenManager;
     private readonly GameSession _gameSession;
     private readonly IStoryService _storyService;
+    private readonly IAuthenService _authenService;
     private readonly object? data;
 
-    public StoryScreen(ScreenManager sm, GameSession gameSession, IStoryService ss)
+    public StoryScreen(ScreenManager sm, GameSession gameSession, IStoryService ss, IAuthenService authenService)
     {
         _screenManager = sm;
         _gameSession = gameSession;
         _storyService = ss;
+        _authenService = authenService;
     }
 
     public void Initialize(object? data = null)
@@ -299,7 +301,7 @@ public class StoryScreen : IScreen
 
         // If the loop finishes and the player is still alive, they beat everyone!
         ShowHallOfFame();
-        _gameSession.HandlePlayerBecomeChampion();
+        _authenService.SetChampion();
 
     }
 

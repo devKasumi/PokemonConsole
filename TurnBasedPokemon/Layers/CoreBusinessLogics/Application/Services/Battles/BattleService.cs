@@ -28,9 +28,13 @@ public class BattleService : IBattleService
         logs.Add($"{playerPokemon.Specie.Name} used {move.Name}!");
 
         // 2. Calculate and apply damage
-        int damage = DamageCalculator.CalculateDamage(playerPokemon, enemyPokemon, move);
-        enemyPokemon.TakeDamage(damage);
-        logs.Add($"{enemyPokemon.Specie.Name} took {damage} damage.");
+        var result = DamageCalculator.Calculate(playerPokemon, enemyPokemon, move);
+        enemyPokemon.TakeDamage(result.Damage);
+        if (result.IsCritical) logs.Add("A critical hit!");
+        if (result.IsImmune) logs.Add("It doesn't affect the opponent...");
+        else if (result.IsSuperEffective) logs.Add("It's super effective!");
+        else if (result.IsNotVeryEffective) logs.Add("It's not very effective...");
+        logs.Add($"{enemyPokemon.Specie.Name} took {result.Damage} damage.");
 
         // 3. Check for fainting conditions
         if (enemyPokemon.IsFainted)
@@ -57,12 +61,16 @@ public class BattleService : IBattleService
         logs.Add($"Enemy {enemyPoke.Specie.Name} used {move.Name}!");
 
         // 2. Calculate and apply damage
-        int damage = DamageCalculator.CalculateDamage(enemyPoke, playerPoke, move);
-        playerPoke.TakeDamage(damage);
-        logs.Add($"{playerPoke.Specie.Name} took {damage} damage.");
+        var result = DamageCalculator.Calculate(enemyPoke, playerPoke, move);
+        playerPoke.TakeDamage(result.Damage);
+        if (result.IsCritical) logs.Add("A critical hit!");
+        if (result.IsImmune) logs.Add("It doesn't affect the opponent...");
+        else if (result.IsSuperEffective) logs.Add("It's super effective!");
+        else if (result.IsNotVeryEffective) logs.Add("It's not very effective...");
+        logs.Add($"{playerPoke.Specie.Name} took {result.Damage} damage.");
 
         // 3. Check for fainting conditions
-        if (playerPoke.IsFainted) // Dùng IsFainted cho đồng nhất với Model
+        if (playerPoke.IsFainted)
         {
             logs.Add($"{playerPoke.Specie.Name} fainted!");
             return BattleTurnResult.PlayerFainted(logs);

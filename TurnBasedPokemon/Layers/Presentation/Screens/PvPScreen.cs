@@ -5,7 +5,7 @@ using Screens;
 public class PvPScreen : IScreen
 {
     private readonly ScreenManager _sm;
-    private readonly NetworkService _network;
+    private readonly INetworkService _network;
     private readonly GameSession _session;
     
     private string _roomId = "";
@@ -13,7 +13,7 @@ public class PvPScreen : IScreen
     private bool _initialized = false;
     private volatile bool _waitingForResult = false;
 
-    public PvPScreen(ScreenManager sm, NetworkService network, GameSession session)
+    public PvPScreen(ScreenManager sm, INetworkService network, GameSession session)
     {
         _sm = sm;
         _network = network;

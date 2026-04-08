@@ -1,10 +1,23 @@
 using PokemonEntity;
 
+/// <summary>
+/// Result of a damage calculation, including the final damage and any combat messages.
+/// </summary>
+public record DamageResult(int Damage, bool IsCritical, float TypeMultiplier)
+{
+    public bool IsImmune => TypeMultiplier == 0f;
+    public bool IsSuperEffective => TypeMultiplier > 1f;
+    public bool IsNotVeryEffective => TypeMultiplier > 0f && TypeMultiplier < 1f;
+}
+
 public static class DamageCalculator
 {
     private static readonly Random _rng = new Random();
 
-    public static int CalculateDamage(Pokemon attacker, Pokemon defender, PokemonMove pokemonMove)
+    /// <summary>
+    /// Calculates damage and returns a DamageResult with metadata (no Console output).
+    /// </summary>
+    public static DamageResult Calculate(Pokemon attacker, Pokemon defender, PokemonMove pokemonMove)
     {
         int level = attacker.Level;
 
@@ -46,12 +59,14 @@ public static class DamageCalculator
         else if (finalDamage < 1)
             finalDamage = 1;
 
-        // Show messages
-        if (isCritical) Console.WriteLine("A critical hit!");
-        if (typeMultiplier == 0f) Console.WriteLine("It doesn't affect the opponent...");
-        else if (typeMultiplier > 1f) Console.WriteLine("It's super effective!");
-        else if (typeMultiplier < 1f) Console.WriteLine("It's not very effective...");
+        return new DamageResult(finalDamage, isCritical, typeMultiplier);
+    }
 
-        return finalDamage;
+    /// <summary>
+    /// Legacy wrapper: calculates damage and returns only the int value.
+    /// </summary>
+    public static int CalculateDamage(Pokemon attacker, Pokemon defender, PokemonMove pokemonMove)
+    {
+        return Calculate(attacker, defender, pokemonMove).Damage;
     }
 }
