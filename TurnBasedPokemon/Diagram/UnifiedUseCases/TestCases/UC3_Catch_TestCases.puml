@@ -6,7 +6,7 @@ map "TC-UC3-01: Successful Pokemon catch" as TC1 {
   Test Case Name => Successfully catch a wild Pokemon
   Description => Verify player can catch a wild Pokemon with a Poke Ball
   Preconditions => 1. Player is in a wild Pokemon battle (UC2) \n 2. Player has at least 1 Poke Ball \n 3. Wild Pokemon HP is low
-  Test Case Input => Wild Pokemon: Rattata (Lv.3, HP 2/15) \n Item: Poke Ball (qty: 5)
+  Test Case Input => Wild Pokemon: Rattata (Lv.3, HP 2/31) \n Item: Poke Ball (qty: 5)
   Expected Output => 1. Catch rate calculation succeeds \n 2. Ball shakes 3 times \n 3. Rattata added to player team \n 4. Poke Ball count reduced to 4 \n 5. Battle ends
   Steps => 1. Select Catch action from battle menu \n 2. System verifies Poke Ball in inventory \n 3. System calculates catch rate (low HP = high chance) \n 4. Ball shakes 3 times, all pass \n 5. Verify Rattata added to team \n 6. Verify Poke Ball count is 4 \n 7. Verify battle ends
   Default Value Preserving => Player team size increased by 1, inventory updated
@@ -21,6 +21,17 @@ map "TC-UC3-02: Failed catch - no Poke Balls" as TC2 {
   Expected Output => 1. System displays "No Poke Balls available" message \n 2. Player returns to battle action menu \n 3. No items consumed
   Steps => 1. Select Catch action from battle menu \n 2. System checks Poke Ball inventory \n 3. System finds 0 Poke Balls \n 4. Verify error message displayed \n 5. Verify return to battle menu \n 6. Verify inventory unchanged
   Default Value Preserving => No changes to inventory or team
+}
+
+map "TC-UC3-03: Failed catch - Pokemon broke free" as TC3 {
+  Test Case Number => TC-UC3-03
+  Test Case Name => Pokemon breaks free from Poke Ball
+  Description => Verify that catch fails when Pokemon is at full HP and ball shakes less than 3 times
+  Preconditions => 1. Player is in a wild Pokemon battle (UC2) \n 2. Player has at least 1 Poke Ball \n 3. Wild Pokemon is at full HP
+  Test Case Input => Wild Pokemon: Pidgey (Lv.5, HP 44/44 - full HP) \n Item: Poke Ball (qty: 5)
+  Expected Output => 1. Catch rate calculation results in low chance (full HP) \n 2. Ball shakes fewer than 3 times \n 3. Pokemon breaks free \n 4. Poke Ball count reduced to 4 \n 5. Battle continues
+  Steps => 1. Select Catch action from battle menu \n 2. System verifies Poke Ball in inventory \n 3. System calculates catch rate (full HP = low chance) \n 4. Ball shakes fewer than 3 times \n 5. Verify "Pokemon broke free!" message displayed \n 6. Verify Poke Ball count is 4 \n 7. Verify Pokemon is NOT added to team \n 8. Verify battle continues
+  Default Value Preserving => Poke Ball consumed, team unchanged, battle ongoing
 }
 
 @enduml

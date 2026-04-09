@@ -73,7 +73,17 @@ Server -- UC8
 Server -- UC9
 
 ' ===== INCLUDE / EXTEND =====
-UC1 ..> UC10 : <<extend>>
+' --- Login is required (included) by major features ---
+UC6 ..> UC1 : <<include>>
+UC8 ..> UC1 : <<include>>
+UC5 ..> UC1 : <<include>>
+UC10 ..> UC1 : <<include>>
+UC17 ..> UC1 : <<include>>
+UC14 ..> UC1 : <<include>>
+UC15 ..> UC1 : <<include>>
+UC11 ..> UC1 : <<include>>
+
+' --- Other relationships ---
 UC6 ..> UC7 : <<include>>
 UC6 ..> UC2 : <<extend>>
 UC6 ..> UC14 : <<extend>>

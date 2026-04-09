@@ -1,26 +1,26 @@
 @startuml
 title UC6 - Explore Story - Test Cases
 
-map "TC-UC6-01: Progress through story chapter" as TC1 {
+map "TC-UC6-01: Move between locations" as TC1 {
   Test Case Number => TC-UC6-01
-  Test Case Name => Successfully progress through a story chapter
-  Description => Verify player can read story content, make choices, and advance to next chapter
-  Preconditions => 1. Player is logged in \n 2. Player has a starter Pokemon \n 3. Story data loaded from story.json
-  Test Case Input => Current chapter: Chapter 1 \n Player choice: Option A (explore forest)
-  Expected Output => 1. Story text displayed correctly \n 2. Player choice processed \n 3. Next event triggered (wild encounter or NPC) \n 4. Progress auto-saved at chapter transition
-  Steps => 1. Select Continue Story from Main Menu \n 2. System loads Chapter 1 \n 3. Read story text \n 4. Select Option A \n 5. System processes choice \n 6. Verify next event triggers \n 7. Complete event \n 8. Verify progress auto-saved
-  Default Value Preserving => Player story progress updated in GameSession
+  Test Case Name => Move forward, backward, and boundary check between cities
+  Description => Verify player can navigate between locations and system displays current city name
+  Preconditions => 1. Player is logged in \n 2. Player has a starter Pokemon
+  Test Case Input => Input 1: Select "Move Forward" (not at last location) \n Input 2: Select "Move Backward" (not at first location) \n Input 3: Select "Move Backward" at first location of Phase 1 \n Input 4: Select "Move Forward" at last location of final Phase
+  Expected Output => 1. "You moved forward to the next area." or "You advanced to a new Phase of your journey!" \n 2. "You returned to the previous area." or "You traveled back to the previous Phase." \n 3. "You are already at the beginning of your journey." (location unchanged) \n 4. "You cannot go any further in this direction." (location unchanged) \n All cases: Screen shows "CURRENT LOCATION: [ {CityName} ]"
+  Steps => 1. Select Continue Story from Main Menu \n 2. Verify "CURRENT LOCATION: [ {CityName} ]" displayed \n 3. Test each input scenario \n 4. Verify corresponding movement message displayed \n 5. Verify city name header updated (or unchanged for boundary) \n 6. Verify location's NPCs and facilities loaded correctly
+  Default Value Preserving => Player CurrentLocation updated in GameSession (unchanged for boundary cases)
 }
 
-map "TC-UC6-02: Exit story and return to menu" as TC2 {
+map "TC-UC6-02: Explore wild area" as TC2 {
   Test Case Number => TC-UC6-02
-  Test Case Name => Exit story exploration without losing progress
-  Description => Verify player can exit story and return to Main Menu with progress intact
-  Preconditions => 1. Player is in story exploration \n 2. Player has made progress in current chapter
-  Test Case Input => Action: Exit story during Chapter 3
-  Expected Output => 1. Player returns to Main Menu \n 2. Progress preserved \n 3. Re-entering story resumes at Chapter 3
-  Steps => 1. During story chapter 3, select Exit \n 2. Verify return to Main Menu \n 3. Select Continue Story again \n 4. Verify story resumes at Chapter 3 \n 5. Verify all progress intact
-  Default Value Preserving => Story progress maintained at last checkpoint
+  Test Case Name => Explore wild area with different outcomes
+  Description => Verify wild area exploration handles encounter, no encounter, and fainted team scenarios
+  Preconditions => 1. Player is at a location with wild Pokemon
+  Test Case Input => Input 1: Select "Explore Wild Area" with healthy team (encounter triggered - 60% chance) \n Input 2: Select "Explore Wild Area" with healthy team (no encounter - 40% chance) \n Input 3: Select "Explore Wild Area" with all Pokemon fainted
+  Expected Output => 1. "You walk into the tall grass..." then "A wild {PokemonName} jumped out of the tall grass!" → battle begins (UC2) \n 2. "You walk into the tall grass..." then "You searched the grass but only found peace and quiet." Possibly "[!] You found a {ItemName}!" → return to story screen \n 3. "It's too dangerous! All your Pokemon have fainted. Go to the Center!" → no encounter, return to story screen
+  Steps => 1. From story screen, select "Explore Wild Area" \n 2. System calls StoryService.ExploreWildArea() \n 3. Verify correct message displayed based on outcome \n 4. Verify battle initiated (Input 1) or return to story screen (Input 2, 3)
+  Default Value Preserving => 1. Battle outcome handled by UC2 \n 2. Item may be added to inventory \n 3. No changes
 }
 
 @enduml

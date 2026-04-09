@@ -48,8 +48,23 @@ public class LoginScreen : IScreen
         Menu.PrintHeader("LOGIN TO YOUR ADVENTURE");
         Console.Write("  Enter Username: ");
         string user = Console.ReadLine() ?? "";
+
+        if (string.IsNullOrWhiteSpace(user))
+        {
+            Console.WriteLine("Username cannot be empty. Returning to menu...");
+            _screenManager.SwitchTo(ScreenType.Login);
+            return;
+        }
+
         Console.Write("  Enter Password: ");
-        string pass = Console.ReadLine() ?? ""; // Helper for hidden password or just ReadLine
+        string pass = Console.ReadLine() ?? "";
+
+        if (string.IsNullOrWhiteSpace(pass))
+        {
+            Console.WriteLine("Password cannot be empty. Returning to menu...");
+            _screenManager.SwitchTo(ScreenType.Login);
+            return;
+        }
 
         // Calling the Service logic
         bool success = _authenService.Login(new LoginRequest(user, pass));
@@ -73,8 +88,24 @@ public class LoginScreen : IScreen
         Console.WriteLine("--- CREATE NEW ADVENTURE ---");
         Console.Write("Choose a username: ");
         string username = Console.ReadLine() ?? string.Empty;
+
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            Console.WriteLine("Username cannot be empty. Returning to menu...");
+            _screenManager.SwitchTo(ScreenType.Login);
+            return;
+        }
+
         Console.Write("Choose a password: ");
         string password = Console.ReadLine() ?? string.Empty;
+
+        if (string.IsNullOrWhiteSpace(password))
+        {
+            Console.WriteLine("Password cannot be empty. Returning to menu...");
+            _screenManager.SwitchTo(ScreenType.Login);
+            return;
+        }
+
         bool success = _authenService.Register(new RegisterRequest(username, password));
 
         Console.Clear();
@@ -84,8 +115,10 @@ public class LoginScreen : IScreen
         }
         else
         {
-            Console.WriteLine("Registration failed. Username may already be taken.");
+            Console.WriteLine("Registration failed. Username \"" + username + "\" is already taken. Please choose a different username.");
         }
+        Console.WriteLine("Press any key to continue...");
+        Console.ReadKey();
         _screenManager.SwitchTo(ScreenType.Login);
     }
 

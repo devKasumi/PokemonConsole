@@ -7,9 +7,9 @@ map "TC-UC9-01: Win PvP battle" as TC1 {
   Description => Verify player can win PvP battle and stats are updated correctly
   Preconditions => 1. Both players matched via UC8 \n 2. BattleRoom created \n 3. Both connected via SignalR
   Test Case Input => Player 1: Charizard (Lv.50) \n Player 2: Blastoise (Lv.45) \n Action: Attack (Flamethrower)
-  Expected Output => 1. Battle proceeds with turn-based mechanics \n 2. Opponent Pokemon defeated \n 3. Player 1 wins \n 4. PvPWins incremented \n 5. Results saved to MySQL
-  Steps => 1. BattleRoom initializes with both teams \n 2. Both players select actions \n 3. Server determines turn order by Speed \n 4. Attacks executed sequentially \n 5. Opponent Pokemon faints \n 6. Verify winner declared \n 7. Verify PvPWins updated \n 8. Verify results saved to MySQL
-  Default Value Preserving => Winner PvPWins +1, Loser PvPLosses +1 in MySQL
+  Expected Output => 1. Battle proceeds with turn-based mechanics \n 2. Opponent Pokemon defeated \n 3. Player 1 wins \n 4. PvPWins incremented in GameSession \n 5. Player must select Save Data from Main Menu to persist results to MySQL
+  Steps => 1. BattleRoom initializes with both teams \n 2. Both players select actions \n 3. Server determines turn order by Speed \n 4. Attacks executed sequentially \n 5. Opponent Pokemon faints \n 6. Verify winner declared \n 7. Verify PvPWins updated in GameSession \n 8. Player returns to Main Menu \n 9. Player selects Save Data to save results to MySQL
+  Default Value Preserving => Winner PvPWins +1, Loser PvPLosses +1 in GameSession (saved to MySQL only when player selects Save Data from Main Menu)
 }
 
 map "TC-UC9-02: Opponent disconnects during battle" as TC2 {
@@ -18,9 +18,9 @@ map "TC-UC9-02: Opponent disconnects during battle" as TC2 {
   Description => Verify player wins by default when opponent connection is lost
   Preconditions => 1. PvP battle is in progress \n 2. Both players connected
   Test Case Input => Opponent connection: disconnected at turn 3
-  Expected Output => 1. System detects opponent disconnect \n 2. Player wins by default \n 3. PvPWins incremented \n 4. Return to Main Menu
-  Steps => 1. Battle in progress at turn 3 \n 2. Opponent connection drops \n 3. Server detects disconnect timeout \n 4. Verify player declared winner by default \n 5. Verify PvPWins updated \n 6. Verify return to Main Menu
-  Default Value Preserving => Winner PvPWins +1, disconnected player PvPLosses +1
+  Expected Output => 1. System detects opponent disconnect \n 2. Player wins by default \n 3. PvPWins incremented in GameSession \n 4. Return to Main Menu \n 5. Player must select Save Data from Main Menu to persist results to MySQL
+  Steps => 1. Battle in progress at turn 3 \n 2. Opponent connection drops \n 3. Server detects disconnect timeout \n 4. Verify player declared winner by default \n 5. Verify PvPWins updated in GameSession \n 6. Verify return to Main Menu \n 7. Player selects Save Data to save results to MySQL
+  Default Value Preserving => Winner PvPWins +1, disconnected player PvPLosses +1 (saved to MySQL only when player selects Save Data from Main Menu)
 }
 
 @enduml

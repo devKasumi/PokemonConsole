@@ -6,9 +6,9 @@ map "TC-UC18-01: Successful registration" as TC1 {
   Test Case Name => Successfully register new account
   Description => Verify new player can create an account with valid credentials
   Preconditions => 1. Application is running at Auth menu \n 2. Username "newplayer" does not exist in MySQL
-  Test Case Input => Username: "newplayer" \n Password: "SecureP@ss1" \n Confirm Password: "SecureP@ss1"
-  Expected Output => 1. Username validated as unique \n 2. Password hashed with BCrypt \n 3. Account created in MySQL database \n 4. Success message displayed \n 5. Redirect to Login (UC1)
-  Steps => 1. Select Register from Auth menu \n 2. Enter username "newplayer" \n 3. System validates uniqueness \n 4. Enter password "SecureP@ss1" \n 5. Re-enter password "SecureP@ss1" \n 6. System verifies match \n 7. System hashes and stores in MySQL \n 8. Verify success message \n 9. Verify redirect to Login
+  Test Case Input => Username: "newplayer" \n Password: "SecureP@ss1"
+  Expected Output => 1. Username validated as unique \n 2. Password hashed with BCrypt \n 3. Account created in MySQL database \n 4. Success message displayed \n 5. "Press any key to continue..." prompt shown \n 6. Redirect to Auth menu
+  Steps => 1. Select Register from Auth menu \n 2. Enter username "newplayer" \n 3. System validates uniqueness \n 4. Enter password "SecureP@ss1" \n 5. System hashes password and stores in MySQL \n 6. Verify "Registration successful! You can now log in." displayed \n 7. Press any key to continue \n 8. Verify redirect to Auth menu
   Default Value Preserving => New user record created in MySQL database
 }
 
@@ -18,8 +18,19 @@ map "TC-UC18-02: Registration with existing username" as TC2 {
   Description => Verify registration fails when username already exists
   Preconditions => 1. Application is running at Auth menu \n 2. Username "player1" already exists in MySQL
   Test Case Input => Username: "player1" \n Password: "AnyP@ss123"
-  Expected Output => 1. System detects duplicate username \n 2. Error message displayed \n 3. Player prompted to choose different username \n 4. No account created
-  Steps => 1. Select Register from Auth menu \n 2. Enter username "player1" \n 3. System checks MySQL for existing username \n 4. Duplicate found \n 5. Verify error message displayed \n 6. Verify prompted for new username \n 7. Verify no new record in MySQL
+  Expected Output => 1. System detects duplicate username \n 2. Error message displayed with username shown \n 3. "Press any key to continue..." prompt shown \n 4. Player returned to Auth menu \n 5. No account created
+  Steps => 1. Select Register from Auth menu \n 2. Enter username "player1" \n 3. Enter password "AnyP@ss123" \n 4. System checks MySQL for existing username \n 5. Duplicate found \n 6. Verify error "Registration failed. Username "player1" is already taken." displayed \n 7. Press any key to continue \n 8. Verify redirect to Auth menu \n 9. Verify no new record in MySQL
+  Default Value Preserving => No changes to MySQL database
+}
+
+map "TC-UC18-03: Registration with empty input" as TC3 {
+  Test Case Number => TC-UC18-03
+  Test Case Name => Registration rejected for empty username or password
+  Description => Verify registration fails immediately when player submits empty username or password (just presses Enter)
+  Preconditions => 1. Application is running at Auth menu
+  Test Case Input => Username: "" (empty) \n Password: "" (empty)
+  Expected Output => 1. System displays error "Username/Password cannot be empty" \n 2. Player returned to Auth menu \n 3. No registration attempt made
+  Steps => 1. Select Register from Auth menu \n 2. Press Enter without typing username \n 3. System displays "Username cannot be empty. Returning to menu..." \n 4. Verify player is returned to Auth menu
   Default Value Preserving => No changes to MySQL database
 }
 

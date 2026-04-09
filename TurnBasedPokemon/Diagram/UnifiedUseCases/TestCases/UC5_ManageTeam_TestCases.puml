@@ -1,5 +1,5 @@
 @startuml
-title UC5 - Manage Team - Test Cases
+title UC5 - Manage Team - Test Cases (Under Development)
 
 map "TC-UC5-01: View team roster" as TC1 {
   Test Case Number => TC-UC5-01
@@ -22,5 +22,7 @@ map "TC-UC5-02: Swap Pokemon positions" as TC2 {
   Steps => 1. Access Team Management \n 2. Select Charmander (Position 1) \n 3. Choose Swap Position action \n 4. Select Rattata (Position 3) \n 5. System swaps positions \n 6. Verify new order: Rattata, Pidgey, Charmander \n 7. Verify GameSession updated
   Default Value Preserving => Team composition unchanged, only order modified
 }
+
+note "This feature is Under Development.\nAll test cases are planned but not yet implemented." as N1
 
 @enduml

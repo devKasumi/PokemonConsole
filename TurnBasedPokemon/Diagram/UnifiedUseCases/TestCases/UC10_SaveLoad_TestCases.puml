@@ -12,14 +12,14 @@ map "TC-UC10-01: Save game successfully" as TC1 {
   Default Value Preserving => Player data in MySQL matches current GameSession
 }
 
-map "TC-UC10-02: Load game with corrupted data" as TC2 {
+map "TC-UC10-02: Handle corrupted save data" as TC2 {
   Test Case Number => TC-UC10-02
-  Test Case Name => Handle corrupted save data gracefully
-  Description => Verify system handles corrupted save data without crashing
-  Preconditions => 1. Player is logged in \n 2. Save data in MySQL is corrupted
+  Test Case Name => Handle corrupted or incomplete save data gracefully
+  Description => Verify system detects corrupted/incomplete save data and does not crash
+  Preconditions => 1. Player is logged in \n 2. Save data in users.json is corrupted or missing PlayerData
   Test Case Input => Player: "player1" \n Save data: corrupted/incomplete record
-  Expected Output => 1. System detects corruption during deserialization \n 2. Warning message displayed \n 3. Option to start new game offered \n 4. Application remains stable
-  Steps => 1. Select Load option \n 2. System queries MySQL for save data \n 3. System attempts deserialization \n 4. Deserialization fails \n 5. Verify warning message displayed \n 6. Verify new game option offered \n 7. Verify no crash occurs
+  Expected Output => 1. System detects corruption or missing PlayerData \n 2. Warning message displayed: "Save data corrupted or incomplete. Cannot load game." \n 3. Option to start new game offered \n 4. Application remains stable
+  Steps => 1. Select Load option from Main Menu \n 2. System queries users.json for save data \n 3. System attempts deserialization \n 4. Deserialization fails or PlayerData is null \n 5. Verify warning message displayed \n 6. Verify new game option offered \n 7. Verify no crash occurs
   Default Value Preserving => Corrupted data not loaded, no changes to GameSession
 }
 

@@ -23,4 +23,7 @@ map "TC-UC11-02: View match history - no records" as TC2 {
   Default Value Preserving => No changes to any data
 }
 
+note "This feature is Under Development. All test cases are planned but not yet implemented." as N1
+
+
 @enduml

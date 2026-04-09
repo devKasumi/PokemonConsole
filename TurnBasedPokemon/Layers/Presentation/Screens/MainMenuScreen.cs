@@ -80,8 +80,8 @@ public class MainMenuScreen : IScreen
             // (Sometimes a user exists but has never started a game)
             if (_gameSession.Player == null)
             {
-                Console.WriteLine("\n[Notice] Account found, but no character data exists.");
-                Console.WriteLine("Please select 'Start New Game' to create your character.");
+                Console.WriteLine("\n[Warning] Save data corrupted or incomplete. Cannot load game.");
+                Console.WriteLine("Please select 'Start New Game' to create a new character.");
                 Console.WriteLine("\nPress any key to return...");
                 Console.ReadKey();
                 _screenManager.SwitchTo(ScreenType.MainMenu);
@@ -101,8 +101,8 @@ public class MainMenuScreen : IScreen
         }
         else
         {
-            // Case: Username not found in users.json
-            Console.WriteLine("\n[Error] Save file not found.");
+            // Case: Username not found in users.json or corrupted file
+            Console.WriteLine("\n[Error] Save file not found or corrupted.");
             Console.WriteLine("Please start a new adventure first!");
             Console.ReadKey();
             _screenManager.SwitchTo(ScreenType.MainMenu);

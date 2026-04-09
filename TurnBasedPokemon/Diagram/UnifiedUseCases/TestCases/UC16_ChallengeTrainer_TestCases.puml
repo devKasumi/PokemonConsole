@@ -23,4 +23,6 @@ map "TC-UC16-02: Catch option disabled in trainer battle" as TC2 {
   Default Value Preserving => No Poke Balls consumed, inventory unchanged
 }
 
+note "This feature is Under Development. All test cases are planned but not yet implemented." as N1
+
 @enduml

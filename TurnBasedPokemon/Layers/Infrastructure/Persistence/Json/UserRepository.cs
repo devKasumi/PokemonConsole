@@ -21,7 +21,19 @@ public class UserRepository : IUserRepository
 
     public User? GetByUsername(string username)
     {
-        return GetAll().FirstOrDefault(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+        try
+        {
+            var user = GetAll().FirstOrDefault(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+            // Corrupted if user is null or missing PlayerData
+            if (user == null || user.PlayerData == null)
+                return null;
+            return user;
+        }
+        catch
+        {
+            // If deserialization fails or file is corrupted, treat as corrupted
+            return null;
+        }
     }
 
     /// <summary>

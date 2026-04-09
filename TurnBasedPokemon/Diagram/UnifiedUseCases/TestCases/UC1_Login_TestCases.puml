@@ -19,7 +19,18 @@ map "TC-UC1-02: Failed Login with invalid password" as TC2 {
   Preconditions => 1. Application is running \n 2. Player account "player1" exists in MySQL database
   Test Case Input => Username: "player1" \n Password: "WrongPass"
   Expected Output => 1. System displays authentication error \n 2. Player remains at Auth menu \n 3. No GameSession created
-  Steps => 1. Launch application \n 2. Select Login from Auth menu \n 3. Enter username "player1" \n 4. Enter password "WrongPass" \n 5. System rejects credentials \n 6. Verify error message displayed \n 7. Verify Auth menu still shown
+  Steps => 1. Launch application \n 2. Select Login from Auth menu \n 3. Enter username "player1" \n 4. Enter password "WrongPass" \n 5. System rejects credentials (BCrypt.Verify fails) \n 6. Verify error message displayed \n 7. Verify Auth menu still shown
+  Default Value Preserving => No changes to MySQL database or player data
+}
+
+map "TC-UC1-03: Failed Login with empty input" as TC3 {
+  Test Case Number => TC-UC1-03
+  Test Case Name => Failed Login with empty username or password
+  Description => Verify that login fails immediately when player submits empty username or password (just presses Enter)
+  Preconditions => 1. Application is running
+  Test Case Input => Username: "" (empty) \n Password: "" (empty)
+  Expected Output => 1. System displays error "Username/Password cannot be empty" \n 2. Player returns to Auth menu \n 3. No authentication attempt made
+  Steps => 1. Launch application \n 2. Select Login from Auth menu \n 3. Press Enter without typing username \n 4. System displays empty input error \n 5. Verify player is returned to Auth menu
   Default Value Preserving => No changes to MySQL database or player data
 }
 
