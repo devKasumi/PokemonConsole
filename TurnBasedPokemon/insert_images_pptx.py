@@ -13,6 +13,34 @@ try:
 except Exception:
     Image = None
 
+def add_design_details_section(prs, img_dir):
+    from pptx.util import Inches
+    # Header slide
+    slide = prs.slides.add_slide(prs.slide_layouts[0])
+    if slide.shapes.title:
+        slide.shapes.title.text = "Design Details"
+    # Chèn từng ảnh
+    img_paths = sorted([os.path.join(img_dir, x) for x in os.listdir(img_dir) if x.lower().endswith('.png')])
+    for p in img_paths:
+        name = os.path.splitext(os.path.basename(p))[0]
+        s = prs.slides.add_slide(prs.slide_layouts[6] if len(prs.slide_layouts)>6 else 0)
+        s.shapes.add_textbox(Inches(0.5), Inches(0.2), Inches(8), Inches(0.5)).text_frame.text = name
+        # scale cho ảnh dưới title
+        l = Inches(0.5); r = Inches(0.5); t = Inches(1.0); b = Inches(0.5)
+        aw = prs.slide_width - l - r; ah = prs.slide_height - t - b
+        try:
+            from PIL import Image
+            im = Image.open(p)
+            # Nếu muốn fit cả kích thước, dùng đoạn logic như trong các hàm add_image_slide của file trước nhé
+            iw, ih = im.size
+            scale = min(aw/iw, ah/ih)
+            iw = int(iw*scale); ih = int(ih*scale)
+            left = int((prs.slide_width - iw)/2)
+            top = int(t + (ah - ih)/2)
+            s.shapes.add_picture(p, left, top, width=iw, height=ih)
+        except Exception:
+            s.shapes.add_picture(p, l, t, width=aw)
+
 def find_all_images(base_dir, exts=('.png','.jpg','.jpeg')):
     out=[]
     if not os.path.isdir(base_dir):
@@ -256,3 +284,8 @@ if __name__ == "__main__":
     ap.add_argument('--end', type=int, default=18)
     args = ap.parse_args()
     build(args.project_root, os.path.abspath(args.output), start=args.start, end=args.end)
+
+# Thêm vào gần cuối cùng, trước prs.save(output_path)
+img_dir = os.path.join(project_root, 'Documentation', 'Screenshots_genimg')
+if os.path.isdir(img_dir):
+    add_design_details_section(prs, img_dir)
