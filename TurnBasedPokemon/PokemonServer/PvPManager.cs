@@ -112,7 +112,6 @@ public class PvPManager
             if (defender.IsFainted)
             {
                 string winnerName = _battleStates[roomId].Player1Name;
-                _battleStates[roomId].Player2ActiveIndex++;
                 if (_battleStates[roomId].Player2ActiveIndex == _battleStates[roomId].Player2Party.Count - 1)
                 {
                     _pendingMoves.TryRemove(roomId, out _);
@@ -123,11 +122,11 @@ public class PvPManager
                         ToPvPMonState(poke1), ToPvPMonState(poke2)
                     );
                 }
+                _battleStates[roomId].Player2ActiveIndex++;
             }
             else if (attacker.IsFainted)
             {
                 string winnerName = _battleStates[roomId].Player2Name;
-                _battleStates[roomId].Player1ActiveIndex++;
                 if (_battleStates[roomId].Player1ActiveIndex == _battleStates[roomId].Player1Party.Count - 1)
                 {
                     _pendingMoves.TryRemove(roomId, out _);
@@ -138,6 +137,7 @@ public class PvPManager
                         ToPvPMonState(poke1), ToPvPMonState(poke2)
                     );
                 }
+                _battleStates[roomId].Player1ActiveIndex++;
             }
         }
         _pendingMoves.TryRemove(roomId, out _);
