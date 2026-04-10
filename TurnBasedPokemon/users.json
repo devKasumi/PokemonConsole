@@ -128,12 +128,148 @@
           "Status": "None",
           "CurrentExp": 0,
           "MaxExpForNextLevel": 0
+        },
+        {
+          "Specie": {
+            "Id": 19,
+            "Name": "Rattata",
+            "Types": [
+              "Normal"
+            ],
+            "BaseStats": {
+              "HP": 32,
+              "Attack": 60,
+              "Defense": 37,
+              "SpAttack": 27,
+              "SpDefense": 37,
+              "Speed": 77
+            },
+            "MoveSet": [
+              {
+                "Name": "Tackle",
+                "Type": "Normal",
+                "Power": 40,
+                "PP": 0,
+                "MoveType": "Physical",
+                "LevelLearned": 1
+              },
+              {
+                "Name": "Quick Attack",
+                "Type": "Normal",
+                "Power": 40,
+                "PP": 0,
+                "MoveType": "Physical",
+                "LevelLearned": 7
+              },
+              {
+                "Name": "Bite",
+                "Type": "Dark",
+                "Power": 60,
+                "PP": 0,
+                "MoveType": "Physical",
+                "LevelLearned": 15
+              },
+              {
+                "Name": "Hyper Fang",
+                "Type": "Normal",
+                "Power": 80,
+                "PP": 0,
+                "MoveType": "Physical",
+                "LevelLearned": 25
+              },
+              {
+                "Name": "Crunch",
+                "Type": "Dark",
+                "Power": 80,
+                "PP": 0,
+                "MoveType": "Physical",
+                "LevelLearned": 35
+              }
+            ],
+            "CatchRate": 255,
+            "BaseExp": 57,
+            "EvolutionId": 20,
+            "EvolutionLevel": 20
+          },
+          "Level": 4,
+          "TotalExp": 0,
+          "CurrentHP": 32,
+          "MaxHP": 32,
+          "Moves": [
+            {
+              "Name": "Tackle",
+              "Type": "Normal",
+              "Power": 40,
+              "PP": 0,
+              "MoveType": "Physical",
+              "LevelLearned": 1
+            }
+          ],
+          "IsFainted": false,
+          "Status": "None",
+          "CurrentExp": 0,
+          "MaxExpForNextLevel": 0
         }
       ],
       "Inventory": {
-        "0": {},
+        "0": {
+          "Super Potion": [
+            {
+              "$type": "healing",
+              "HealAmount": 100,
+              "Id": 2,
+              "Name": "Super Potion",
+              "Description": "Restores 50 HP.",
+              "Category": "Healing",
+              "Price": 500
+            },
+            {
+              "$type": "healing",
+              "HealAmount": 100,
+              "Id": 2,
+              "Name": "Super Potion",
+              "Description": "Restores 50 HP.",
+              "Category": "Healing",
+              "Price": 500
+            }
+          ],
+          "Potion": [
+            {
+              "$type": "healing",
+              "HealAmount": 20,
+              "Id": 1,
+              "Name": "Potion",
+              "Description": "Restores 20 HP.",
+              "Category": "Healing",
+              "Price": 200
+            }
+          ]
+        },
         "1": {},
-        "2": {}
+        "2": {
+          "Rainbow Wing": [
+            {
+              "$type": "general",
+              "SoldRate": 10,
+              "Id": 8,
+              "Name": "Rainbow Wing",
+              "Description": "The item required to encounter Ho-Oh in Generation II.",
+              "Category": "General",
+              "Price": 1000000
+            }
+          ],
+          "Relic Gold": [
+            {
+              "$type": "general",
+              "SoldRate": 10,
+              "Id": 7,
+              "Name": "Relic Gold",
+              "Description": "is a valuable item introduced in Generation V.",
+              "Category": "General",
+              "Price": 1000000
+            }
+          ]
+        }
       },
       "CurrentPokemon": {
         "Specie": {
@@ -231,7 +367,7 @@
         },
         "Level": 5,
         "TotalExp": 0,
-        "CurrentHP": 29,
+        "CurrentHP": 16,
         "MaxHP": 42,
         "Moves": [
           {
@@ -249,8 +385,8 @@
         "MaxExpForNextLevel": 0
       },
       "IsChampion": true,
-      "PvPWins": 0,
-      "PvPLosses": 2
+      "PvPWins": 2,
+      "PvPLosses": 3
     }
   },
   {
@@ -511,8 +647,8 @@
         "MaxExpForNextLevel": 0
       },
       "IsChampion": true,
-      "PvPWins": 2,
-      "PvPLosses": 0
+      "PvPWins": 3,
+      "PvPLosses": 2
     }
   }
 ]

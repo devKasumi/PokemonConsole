@@ -109,16 +109,35 @@ public class PvPManager
             else if (dmgResult.IsNotVeryEffective) logs.Add("It's not very effective...");
             logs.Add($"{defender.Specie.Name} took {dmgResult.Damage} damage ({defender.CurrentHP}/{defender.MaxHP})");
 
-            string winnerName = _battleStates[roomId].Player1Name;
             if (defender.IsFainted)
             {
-                _pendingMoves.TryRemove(roomId, out _);
-                state.IsGameOver = true;
-                state.WinnerName = winnerName;
-                return PvPTurnResult.GameOver(
-                    winnerName, logs,
-                    ToPvPMonState(poke1), ToPvPMonState(poke2)
-                );
+                string winnerName = _battleStates[roomId].Player1Name;
+                _battleStates[roomId].Player2ActiveIndex++;
+                if (_battleStates[roomId].Player2ActiveIndex == _battleStates[roomId].Player2Party.Count - 1)
+                {
+                    _pendingMoves.TryRemove(roomId, out _);
+                    state.IsGameOver = true;
+                    state.WinnerName = winnerName;
+                    return PvPTurnResult.GameOver(
+                        winnerName, logs,
+                        ToPvPMonState(poke1), ToPvPMonState(poke2)
+                    );
+                }
+            }
+            else if (attacker.IsFainted)
+            {
+                string winnerName = _battleStates[roomId].Player2Name;
+                _battleStates[roomId].Player1ActiveIndex++;
+                if (_battleStates[roomId].Player1ActiveIndex == _battleStates[roomId].Player1Party.Count - 1)
+                {
+                    _pendingMoves.TryRemove(roomId, out _);
+                    state.IsGameOver = true;
+                    state.WinnerName = winnerName;
+                    return PvPTurnResult.GameOver(
+                        winnerName, logs,
+                        ToPvPMonState(poke1), ToPvPMonState(poke2)
+                    );
+                }
             }
         }
         _pendingMoves.TryRemove(roomId, out _);
