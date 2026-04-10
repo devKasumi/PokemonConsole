@@ -107,15 +107,16 @@ public class PvPManager
             if (dmgResult.IsImmune) logs.Add("It doesn't affect the opponent...");
             else if (dmgResult.IsSuperEffective) logs.Add("It's super effective!");
             else if (dmgResult.IsNotVeryEffective) logs.Add("It's not very effective...");
-            logs.Add($"{defName}'s {defender.Specie.Name} took {dmgResult.Damage} damage ({defender.CurrentHP}/{defender.MaxHP})");
+            logs.Add($"{defender.Specie.Name} took {dmgResult.Damage} damage ({defender.CurrentHP}/{defender.MaxHP})");
 
+            string winnerName = _battleStates[roomId].Player1Name;
             if (defender.IsFainted)
             {
                 _pendingMoves.TryRemove(roomId, out _);
                 state.IsGameOver = true;
-                state.WinnerName = atkName;
+                state.WinnerName = winnerName;
                 return PvPTurnResult.GameOver(
-                    atkName, logs,
+                    winnerName, logs,
                     ToPvPMonState(poke1), ToPvPMonState(poke2)
                 );
             }

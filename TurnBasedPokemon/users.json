@@ -250,7 +250,7 @@
       },
       "IsChampion": true,
       "PvPWins": 0,
-      "PvPLosses": 0
+      "PvPLosses": 2
     }
   },
   {
@@ -511,7 +511,7 @@
         "MaxExpForNextLevel": 0
       },
       "IsChampion": true,
-      "PvPWins": 0,
+      "PvPWins": 2,
       "PvPLosses": 0
     }
   }
