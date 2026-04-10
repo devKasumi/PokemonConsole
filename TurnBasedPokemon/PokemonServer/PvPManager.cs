@@ -60,6 +60,7 @@ public class PvPManager
                 new PvPMonState(), new PvPMonState()
             );
         }
+        
         // If the battle state is missing, return error
         if (!_battleStates.TryGetValue(roomId, out var state))
         {
@@ -68,32 +69,38 @@ public class PvPManager
                 new PvPMonState(), new PvPMonState()
             );
         }
+        
         var logs = new List<string>();
         // Map requests to the correct player
         var req1 = moves.First(m => m.PlayerName == state.Player1Name);
         var req2 = moves.First(m => m.PlayerName == state.Player2Name);
-        var poke1 = state.Player1Active;
-        var poke2 = state.Player2Active;
+        
+        // Cache the initial pokemon for this turn's actions ONLY
+        var turnPoke1 = state.Player1Active;
+        var turnPoke2 = state.Player2Active;
 
         // MoveIndex = -1 means the player skipped (timeout)
-        bool p1Skipped = req1.MoveIndex < 0 || req1.MoveIndex >= poke1.Moves.Count;
-        bool p2Skipped = req2.MoveIndex < 0 || req2.MoveIndex >= poke2.Moves.Count;
+        bool p1Skipped = req1.MoveIndex < 0 || req1.MoveIndex >= turnPoke1.Moves.Count;
+        bool p2Skipped = req2.MoveIndex < 0 || req2.MoveIndex >= turnPoke2.Moves.Count;
 
-        PokemonMove? move1 = p1Skipped ? null : poke1.Moves[req1.MoveIndex];
-        PokemonMove? move2 = p2Skipped ? null : poke2.Moves[req2.MoveIndex];
+        PokemonMove? move1 = p1Skipped ? null : turnPoke1.Moves[req1.MoveIndex];
+        PokemonMove? move2 = p2Skipped ? null : turnPoke2.Moves[req2.MoveIndex];
 
         // Determine move order by speed
-        bool p1First = poke1.Specie.BaseStats.Speed >= poke2.Specie.BaseStats.Speed;
+        bool p1First = turnPoke1.Specie.BaseStats.Speed >= turnPoke2.Specie.BaseStats.Speed;
 
         // Execute moves in order
         var attackOrder = p1First
-            ? new[] { (state.Player1Name, poke1, move1, state.Player2Name, poke2, p1Skipped),
-                      (state.Player2Name, poke2, move2, state.Player1Name, poke1, p2Skipped) }
-            : new[] { (state.Player2Name, poke2, move2, state.Player1Name, poke1, p2Skipped),
-                      (state.Player1Name, poke1, move1, state.Player2Name, poke2, p1Skipped) };
+            ? new[] { (state.Player1Name, turnPoke1, move1, state.Player2Name, turnPoke2, p1Skipped),
+                      (state.Player2Name, turnPoke2, move2, state.Player1Name, turnPoke1, p2Skipped) }
+            : new[] { (state.Player2Name, turnPoke2, move2, state.Player1Name, turnPoke1, p2Skipped),
+                      (state.Player1Name, turnPoke1, move1, state.Player2Name, turnPoke2, p1Skipped) };
 
         foreach (var (atkName, attacker, move, defName, defender, skipped) in attackOrder)
         {
+            // FIX: If the attacker died before their move (e.g., the faster Pokemon killed them), skip their attack!
+            if (attacker.CurrentHP <= 0) continue;
+
             if (skipped)
             {
                 logs.Add($"{atkName} did nothing this turn!");
@@ -103,47 +110,71 @@ public class PvPManager
             logs.Add($"{atkName} used {move!.Name}!");
             var dmgResult = DamageCalculator.Calculate(attacker, defender, move);
             defender.TakeDamage(dmgResult.Damage);
+            
             if (dmgResult.IsCritical) logs.Add("A critical hit!");
             if (dmgResult.IsImmune) logs.Add("It doesn't affect the opponent...");
             else if (dmgResult.IsSuperEffective) logs.Add("It's super effective!");
             else if (dmgResult.IsNotVeryEffective) logs.Add("It's not very effective...");
-            logs.Add($"{defender.Specie.Name} took {dmgResult.Damage} damage ({defender.CurrentHP}/{defender.MaxHP})");
+            
+            // Format HP cleanly so it doesn't show negative numbers
+            logs.Add($"{defender.Specie.Name} took {dmgResult.Damage} damage ({Math.Max(0, defender.CurrentHP)}/{defender.MaxHP})");
 
+            // FIX: Check who the fainting defender actually belongs to!
             if (defender.IsFainted)
             {
-                string winnerName = _battleStates[roomId].Player1Name;
-                if (_battleStates[roomId].Player2ActiveIndex == _battleStates[roomId].Player2Party.Count - 1)
+                logs.Add($"{defender.Specie.Name} fainted!");
+                
+                bool isPlayer1TheDefender = (defName == state.Player1Name);
+                
+                if (isPlayer1TheDefender)
                 {
-                    _pendingMoves.TryRemove(roomId, out _);
-                    state.IsGameOver = true;
-                    state.WinnerName = winnerName;
-                    return PvPTurnResult.GameOver(
-                        winnerName, logs,
-                        ToPvPMonState(poke1), ToPvPMonState(poke2)
-                    );
+                    // Player 1's Pokémon fainted
+                    if (state.Player1ActiveIndex >= state.Player1Party.Count - 1)
+                    {
+                        // Player 1 has no more Pokémon. Player 2 wins.
+                        state.IsGameOver = true;
+                        state.WinnerName = state.Player2Name; 
+                        _pendingMoves.TryRemove(roomId, out _);
+                        return PvPTurnResult.GameOver(state.WinnerName, logs, ToPvPMonState(state.Player1Active), ToPvPMonState(state.Player2Active));
+                    }
+                    else
+                    {
+                        // Swap to the next Pokemon
+                        state.Player1ActiveIndex++;
+                        logs.Add($"{state.Player1Name} sent out {state.Player1Active.Specie.Name}!");
+                    }
                 }
-                _battleStates[roomId].Player2ActiveIndex++;
-            }
-            else if (attacker.IsFainted)
-            {
-                string winnerName = _battleStates[roomId].Player2Name;
-                if (_battleStates[roomId].Player1ActiveIndex == _battleStates[roomId].Player1Party.Count - 1)
+                else
                 {
-                    _pendingMoves.TryRemove(roomId, out _);
-                    state.IsGameOver = true;
-                    state.WinnerName = winnerName;
-                    return PvPTurnResult.GameOver(
-                        winnerName, logs,
-                        ToPvPMonState(poke1), ToPvPMonState(poke2)
-                    );
+                    // Player 2's Pokémon fainted
+                    if (state.Player2ActiveIndex >= state.Player2Party.Count - 1)
+                    {
+                        // Player 2 has no more Pokémon. Player 1 wins.
+                        state.IsGameOver = true;
+                        state.WinnerName = state.Player1Name;
+                        _pendingMoves.TryRemove(roomId, out _);
+                        return PvPTurnResult.GameOver(state.WinnerName, logs, ToPvPMonState(state.Player1Active), ToPvPMonState(state.Player2Active));
+                    }
+                    else
+                    {
+                        // Swap to the next Pokemon
+                        state.Player2ActiveIndex++;
+                        logs.Add($"{state.Player2Name} sent out {state.Player2Active.Specie.Name}!");
+                    }
                 }
-                _battleStates[roomId].Player1ActiveIndex++;
+                
+                // FIX: Break the loop early! A newly sent out Pokemon shouldn't be attacked in the exact same turn.
+                break; 
             }
         }
+
         _pendingMoves.TryRemove(roomId, out _);
+        
+        // FIX: Always pull directly from state.PlayerXActive here, NOT the cached 'turnPoke' variables.
+        // If a swap occurred, state.PlayerXActive correctly points to the new Pokemon.
         return PvPTurnResult.Continue(
-            poke1.CurrentHP, poke2.CurrentHP, logs,
-            ToPvPMonState(poke1), ToPvPMonState(poke2)
+            state.Player1Active.CurrentHP, state.Player2Active.CurrentHP, logs,
+            ToPvPMonState(state.Player1Active), ToPvPMonState(state.Player2Active)
         );
     }
 
