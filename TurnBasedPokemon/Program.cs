@@ -52,23 +52,22 @@ namespace Program
             var networkService = new NetworkService();
             // GameSession gameSession = new GameSession(mySqlUserRepo);
             GameSession gameSession = new GameSession();
-            // PokemonSpawner pokemonSpawner = new PokemonSpawner(mySqlPokedexRepo);
-            PokemonSpawner pokemonSpawner = new PokemonSpawner(pokedexRepository);
-            ItemSpawner itemSpawner = new ItemSpawner(itemRepository);
-            // ItemSpawner itemSpawner = new ItemSpawner(mySqlItemRepo);
+            PokemonSpawner pokemonSpawner = new PokemonSpawner(mySqlPokedexRepo);
+            // PokemonSpawner pokemonSpawner = new PokemonSpawner(pokedexRepository);
+            // ItemSpawner itemSpawner = new ItemSpawner(itemRepository);
+            ItemSpawner itemSpawner = new ItemSpawner(mySqlItemRepo);
 
-            // MySqlStoryService mySqlStoryService = new MySqlStoryService(gameSession, pokemonSpawner, itemSpawner, dbConnection);
             IStoryRepository storyRepository = new JsonStoryRepository();
             IStoryService storyService = new StoryService(gameSession, pokemonSpawner, itemSpawner, storyRepository);
 
             ScreenManager screenManager = new ScreenManager();
             IWorldGenerationService worldGenerationService = new WorldGenerationService(gameSession, pokemonSpawner, itemSpawner);
-            // AuthenService authenService = new AuthenService(mySqlUserRepo, gameSession);
-            IAuthenService authenService = new AuthenService(userRepository, gameSession);
+            AuthenService authenService = new AuthenService(mySqlUserRepo, gameSession);
+            // IAuthenService authenService = new AuthenService(userRepository, gameSession);
             var pvpService = new PvPService(gameSession, networkService, authenService);
             IExpService expService = new ExpService(gameSession, worldGenerationService);
-            IBattleService battleService = new BattleService(gameSession, userRepository, worldGenerationService, expService);
-            // BattleService battleService = new BattleService(gameSession, mySqlUserRepo, worldGenerationService, expService);
+            // IBattleService battleService = new BattleService(gameSession, userRepository, worldGenerationService, expService);
+            BattleService battleService = new BattleService(gameSession, mySqlUserRepo, worldGenerationService, expService);
             ICatchService catchService = new CatchService(gameSession);
             IHealingService healingService = new HealingService(gameSession);
 

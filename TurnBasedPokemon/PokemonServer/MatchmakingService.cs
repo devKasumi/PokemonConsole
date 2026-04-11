@@ -95,5 +95,26 @@ namespace PokemonServer.Services
             _activeRooms.TryGetValue(roomId, out var room);
             return room;
         }
+
+        /// <summary>
+        /// Finds an active battle room based on a player's connection ID.
+        /// </summary>
+        public BattleRoom? GetRoomByConnectionId(string connectionId)
+        {
+            return _activeRooms.Values.FirstOrDefault(r => 
+                r.Player1.ConnectionId == connectionId || 
+                r.Player2.ConnectionId == connectionId);
+        }
+
+        /// <summary>
+        /// Deletes the room from server memory once the battle is over or someone disconnects.
+        /// </summary>
+        public void RemoveRoom(string roomId)
+        {
+            if (_activeRooms.TryRemove(roomId, out _))
+            {
+                Console.WriteLine($"[Matchmaking] Room {roomId} has been closed and removed from memory.");
+            }
+        }
     }
 }

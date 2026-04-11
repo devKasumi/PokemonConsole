@@ -276,4 +276,38 @@ public class PvPManager
             MaxExpForNextLevel = p.MaxExpForNextLevel
         };
     }
+
+    /// <summary>
+    /// Forces the battle to end, granting victory to the player who did not disconnect.
+    /// </summary>
+    public PvPTurnResult? HandlePlayerDisconnect(string roomId, string disconnectedConnectionId, string p1ConnId, string p2ConnId)
+    {
+        if (!_battleStates.TryGetValue(roomId, out var state)) return null;
+
+        state.IsGameOver = true;
+        
+        // Determine who the remaining player is
+        string remainingPlayerName = (disconnectedConnectionId == p1ConnId) ? state.Player2Name : state.Player1Name;
+        state.WinnerName = remainingPlayerName;
+
+        var logs = new List<string> 
+        { 
+            "The opponent fled the battle! (Disconnected)", 
+            "You win by default!" 
+        };
+
+        // Create the final result payload
+        var result = PvPTurnResult.GameOver(
+            remainingPlayerName, 
+            logs,
+            ToPvPMonState(state.Player1Active), 
+            ToPvPMonState(state.Player2Active)
+        );
+
+        // Clean up pending moves and the battle state to prevent memory leaks
+        _pendingMoves.TryRemove(roomId, out _);
+        _battleStates.TryRemove(roomId, out _);
+
+        return result;
+    }
 }

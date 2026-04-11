@@ -269,13 +269,46 @@ namespace PokemonServer.Hubs
         }
 
         /// <summary>
-        /// Handles when a player disconnects unexpectedly (e.g., closing the console).
+        /// Handles when a player disconnects unexpectedly (e.g., closing the console, network loss).
         /// </summary>
         public override async Task OnDisconnectedAsync(System.Exception? exception)
         {
-            Console.WriteLine($"[Network] Client disconnected: {Context.ConnectionId}");
-            // Clean up: remove from queue if they were waiting
-            _matchmakingService.LeaveQueue(Context.ConnectionId);
+            string disconnectedId = Context.ConnectionId;
+            Console.WriteLine($"[Network] Client disconnected: {disconnectedId}");
+
+            // 1. Clean up: remove from queue if they were just waiting
+            _matchmakingService.LeaveQueue(disconnectedId);
+
+            // 2. Check if the player was in the middle of an active battle
+            var activeRoom = _matchmakingService.GetRoomByConnectionId(disconnectedId);
+            
+            if (activeRoom != null)
+            {
+                Console.WriteLine($"[PvP] Player dropped from active room {activeRoom.RoomId}. Granting default win.");
+
+                // Calculate the default win result
+                var disconnectResult = _pvpManager.HandlePlayerDisconnect(
+                    activeRoom.RoomId, 
+                    disconnectedId, 
+                    activeRoom.Player1.ConnectionId, 
+                    activeRoom.Player2.ConnectionId
+                );
+
+                if (disconnectResult != null)
+                {
+                    // Find the Connection ID of the player who survived
+                    string remainingConnId = (activeRoom.Player1.ConnectionId == disconnectedId) 
+                        ? activeRoom.Player2.ConnectionId 
+                        : activeRoom.Player1.ConnectionId;
+
+                    // Send the "You Win" screen to the remaining player
+                    await Clients.Client(remainingConnId).SendAsync("ReceiveTurnResult", disconnectResult);
+                }
+
+                // 3. Remove the room completely from server memory
+                _matchmakingService.RemoveRoom(activeRoom.RoomId);
+            }
+
             await base.OnDisconnectedAsync(exception);
         }
     }
