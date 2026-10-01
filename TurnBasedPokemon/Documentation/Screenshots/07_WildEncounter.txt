@@ -1,5 +1,0 @@
-  [System]: You walk into the tall grass...
-
-  [System]: [!] You found a Potion!
-
-  [System]: A wild Pokemon appeared!
